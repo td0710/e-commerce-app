@@ -26,7 +26,7 @@ export const Navbar = () => {
                 navigate({ pathname: "/home" });
               }
             }}
-            src={require("../imgs/logo.png")}
+            src={require("../../imgs/logo.png")}
             className="logo"
           />
           <img
@@ -46,7 +46,7 @@ export const Navbar = () => {
                 navigate({ pathname: "/home" });
               }
             }}
-            src={require("../imgs/A-logo.png")}
+            src={require("../../imgs/A-logo.png")}
             className="logo2"
           />
 
@@ -59,7 +59,10 @@ export const Navbar = () => {
               onChange={(e) => setSearchText(e.target.value)}
             />
             <button className="search-btn">
-              <img src={require("../imgs/search.png")} className="search-img" />
+              <img
+                src={require("../../imgs/search.png")}
+                className="search-img"
+              />
             </button>
           </div>
         </div>
@@ -81,7 +84,7 @@ export const Navbar = () => {
                 navigate("/wishlists");
               }
             }}
-            src={require("../imgs/wishlist.png")}
+            src={require("../../imgs/wishlist.png")}
             className="wishlist"
           />
           <p
@@ -112,7 +115,7 @@ export const Navbar = () => {
                 navigate("/cart");
               }
             }}
-            src={require("../imgs/cart.png")}
+            src={require("../../imgs/cart.png")}
             className="cart"
           />
 
@@ -144,7 +147,7 @@ export const Navbar = () => {
                 navigate("/orders");
               }
             }}
-            src={require("../imgs/orders.png")}
+            src={require("../../imgs/orders.png")}
             className="orders"
           />
           {/* <p
@@ -160,7 +163,7 @@ export const Navbar = () => {
 
           <img
             onClick={() => navigate("/account")}
-            src={require("../imgs/default.png")}
+            src={require("../../imgs/default.png")}
             className="default"
           />
         </div>

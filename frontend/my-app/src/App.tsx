@@ -1,24 +1,9 @@
 import React from "react";
 import "./App.css";
+import { Homepage } from "./layouts/Homepage";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React 1234
-        </a>
-      </header>
-    </div>
-  );
+  return <Homepage></Homepage>;
 }
 
 export default App;
