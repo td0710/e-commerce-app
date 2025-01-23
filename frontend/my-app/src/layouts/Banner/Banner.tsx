@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "../home.css";
-import "../lists.css";
+import "../Deals/lists.css";
 import "../../App.css";
 export const Banner = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -18,7 +18,7 @@ export const Banner = () => {
     }, 100);
   };
   return (
-    <div className="content">
+    <div>
       <div className="poster-area">
         <div className="poster-data">
           <p className="poster-head">Free Delivery!</p>
