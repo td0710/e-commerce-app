@@ -1,4 +1,4 @@
-package com.example.ecommerce_app.config;
+package com.example.ecommerce_app.security;
 import com.example.ecommerce_app.entity.Product;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,6 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config
     , CorsRegistry cors) {
         HttpMethod[] theUnsupportedActions = {
-                HttpMethod.POST,
                 HttpMethod.PATCH,
                 HttpMethod.DELETE,
                 HttpMethod.PUT};

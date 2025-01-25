@@ -3,6 +3,7 @@ import { Navbar } from "./NavbarAndFooter/Navbar";
 import "../App.css";
 import "./Deals/lists.css";
 import Deals from "./Deals/Deals";
+import Footer from "./NavbarAndFooter/Footer";
 export const Homepage = () => {
   return (
     <>

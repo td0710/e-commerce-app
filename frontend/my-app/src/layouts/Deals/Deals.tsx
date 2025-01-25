@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "./lists.css";
 import "./deals.css";
 import Spinner from "../../utils/Spinner";
+import Footer from "../NavbarAndFooter/Footer";
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,7 +119,7 @@ function Deals() {
       {/* <div className="lowerNav">
         {/* <LowerNav /> */}
       {/* </div> */}
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }
