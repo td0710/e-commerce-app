@@ -2,9 +2,11 @@ import swal from "sweetalert";
 import "./navbar.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../../Context/useAuth";
 export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+  const { logout } = useAuth();
   return (
     <>
       <div className="navbar">
@@ -98,26 +100,7 @@ export const Navbar = () => {
             {/* {ListItems.length} */}
           </p>
 
-          <img
-            onClick={() => {
-              if (window.location.href.includes("/payment")) {
-                swal({
-                  title: "Are you sure?",
-                  text: "Your transaction is still pending!",
-                  icon: "warning",
-                  buttons: ["Cancel", "Yes"],
-                }).then((willNavigate) => {
-                  if (willNavigate) {
-                    navigate("/cart");
-                  }
-                });
-              } else {
-                navigate("/cart");
-              }
-            }}
-            src={require("../../imgs/cart.png")}
-            className="cart"
-          />
+          <img src={require("../../imgs/cart.png")} className="cart" />
 
           <p
           // style={
@@ -166,7 +149,11 @@ export const Navbar = () => {
             src={require("../../imgs/default.png")}
             className="default"
           />
+          <button className="signout-btn" onClick={logout}>
+            Log out
+          </button>
         </div>
+
         <div className="search-bar2">
           <input
             type="text"

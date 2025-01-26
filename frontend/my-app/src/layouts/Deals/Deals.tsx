@@ -6,11 +6,20 @@ import "./lists.css";
 import "./deals.css";
 import Spinner from "../../utils/Spinner";
 import Footer from "../NavbarAndFooter/Footer";
+
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchProducts = async () => {
+      // for (let i = 0; i < localStorage.length; i++) {
+      //   let key = localStorage.key(i); // Lấy key của mục tại vị trí i
+      //   if (key !== null) {
+      //     // Kiểm tra xem key có hợp lệ không
+      //     let value = localStorage.getItem(key); // Lấy giá trị của mục
+      //     console.log(key + ": " + value); // In key và giá trị
+      //   }
+      // }
       console.log(123);
       const url = `http://localhost:8080/api/products`;
 

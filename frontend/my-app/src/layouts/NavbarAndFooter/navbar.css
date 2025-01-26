@@ -92,6 +92,7 @@ a {
 }
 
 .right-section {
+  margin-right: 30px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -365,4 +366,27 @@ a {
   .search-box {
     width: 90px;
   }
+}
+.signout-btn {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background-color: rgb(250, 55, 55);
+  border: none;
+  color: white;
+
+  font-family: "Poppins";
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+  transition: all 0.2s ease;
+}
+
+.signout-btn:hover {
+  transform: scale(1.05);
+}
+
+.signout-btn:active {
+  transform: scale(0.92);
 }

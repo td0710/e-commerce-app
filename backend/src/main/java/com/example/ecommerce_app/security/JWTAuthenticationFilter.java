@@ -27,7 +27,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        System.out.println(request.getRequestURI());
+        System.out.println(request.getHeader("Authorization"));
+        System.out.println(response.getHeader("Authorization"));
         String token = getJWTFromRequest(request);
+        System.out.println(token);
         if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
             String username = tokenGenerator.getUsernameFromJwt(token);
 
@@ -49,4 +53,3 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
-

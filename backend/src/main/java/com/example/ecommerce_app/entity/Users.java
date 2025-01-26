@@ -30,7 +30,7 @@ public class Users {
     @Column(name = "user_email")
     private String user_email ;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

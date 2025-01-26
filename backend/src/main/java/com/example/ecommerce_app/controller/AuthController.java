@@ -15,13 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Optional;
 
+
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -39,8 +39,10 @@ public class AuthController {
         this.jwtGenerator = jwtGenerator;
     }
 
+
     @PostMapping("login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto) {
+        String username = loginDto.getUsername();
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -48,7 +50,9 @@ public class AuthController {
                 ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
+        Optional<Users> user= userRepository.findByUsername(username);
+        System.out.println("!"+token);
+        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email()), HttpStatus.OK);
     }
 
     @PostMapping("register")
@@ -56,7 +60,9 @@ public class AuthController {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
         }
-
+        System.out.println(registerDto.getUsername());
+        System.out.println(registerDto.getEmail());
+        System.out.println(registerDto.getPassword()+"123");
         Users user = new Users();
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
@@ -65,7 +71,6 @@ public class AuthController {
         Role roles = roleRepository.findByName("USER").get();
 
         user.setRoles(Collections.singletonList(roles));
-
         userRepository.save(user);
 
         return new ResponseEntity<>("User created", HttpStatus.OK);
