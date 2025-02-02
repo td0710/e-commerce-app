@@ -22,6 +22,7 @@ const validation = Yup.object().shape({
 });
 export const Signin = (props: Props) => {
   const { loginUser } = useAuth();
+  const { logout } = useAuth();
   const {
     register,
     handleSubmit,

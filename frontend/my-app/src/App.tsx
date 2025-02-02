@@ -6,6 +6,7 @@ import { Signin } from "./layouts/Signin/Sigin";
 import { Signup } from "./layouts/Signup/Signup";
 import { UserProvider } from "./Context/useAuth";
 import ProtectedRoute from "./Routes/ProtectedRoute";
+import { WishlistPage } from "./WishlistPage/WishlistPage";
 function App() {
   return (
     <BrowserRouter>
@@ -15,11 +16,12 @@ function App() {
 
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/homepage" element={<Homepage />} />
           <Route
-            path="/homepage"
+            path="/wishlists"
             element={
               <ProtectedRoute>
-                <Homepage />
+                <WishlistPage></WishlistPage>
               </ProtectedRoute>
             }
           />

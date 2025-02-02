@@ -10,6 +10,7 @@ import Footer from "../NavbarAndFooter/Footer";
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [add, isAdd] = useState(false);
   useEffect(() => {
     const fetchProducts = async () => {
       // for (let i = 0; i < localStorage.length; i++) {
@@ -54,9 +55,15 @@ function Deals() {
       console.log(error.messages);
     });
   }, []);
+  useEffect(() => {
+    const addWishlist = async () => {};
+  });
+  const setadd = () => {
+    isAdd(true);
+  };
   return (
     <div className="Deals">
-      <p className="deals-head">Hot Deals 🔥</p>
+      <p className="deals-head">Hot Deals 🔥{localStorage.getItem("id")}</p>
       {loading && <Spinner />}
       <div className="deal-items">
         {products &&
@@ -65,17 +72,10 @@ function Deals() {
               <div className="card" key={items.id}>
                 <div className="card-img-data">
                   <img src={items.image} className="card-img" />
-                  {/* <img
-                    onClick={() => {
-                      if (!isAdded(items.id)) {
-                        dispatch(AddToList(items));
-                      } else {
-                        dispatch(RemoveList(items.id));
-                      }
-                    }}
-                    src={isAdded(items.id) ? Added : Add}
+                  <img
+                    src={require("../../imgs/heart.png")}
                     className="add-list"
-                  /> */}
+                  />
 
                   {/* <NavLink to={`/product/${items.id}`} key={items.id}>
                     <button className="view">View product</button>

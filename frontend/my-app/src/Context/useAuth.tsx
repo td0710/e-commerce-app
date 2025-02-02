@@ -5,6 +5,12 @@ import axios from "axios";
 import { signinAPI, signupAPI } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+}
+
 type UserContextType = {
   user: UserProfile | null;
   token: string | null;
@@ -28,9 +34,13 @@ export const UserProvider = ({ children }: Props) => {
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
     if (user && token) {
+      const decodedToken = jwtDecode<CustomJwtPayload>(token);
+      const userId = decodedToken.id;
+      localStorage.setItem("id", userId);
       setUser(JSON.parse(user));
       setToken(token);
       axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+      axios.defaults.headers.common["Content-Type"] = "application/json";
     }
     setIsReady(true);
   }, []);
@@ -52,7 +62,7 @@ export const UserProvider = ({ children }: Props) => {
           setToken(res?.data.token!);
           setUser(userObj!);
           toast.success("Login Success!");
-          navigate("/home");
+          navigate("/homepage");
         }
       })
       .catch((e) => toast.warning("Server error occured"));

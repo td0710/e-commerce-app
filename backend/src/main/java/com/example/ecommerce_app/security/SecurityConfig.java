@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+
 public class SecurityConfig {
 
     private JwtAuthEntryPoint authEntryPoint;
@@ -34,9 +35,10 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless session management
                 )
-                .authorizeHttpRequests(configurer-> configurer
-
-                        .anyRequest().permitAll())
+                .authorizeHttpRequests(configurer->
+                        configurer.
+                                requestMatchers("/api/products/secure/**","/api/wishlists/secure/**").authenticated()
+                                .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

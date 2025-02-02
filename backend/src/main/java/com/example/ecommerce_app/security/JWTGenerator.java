@@ -1,5 +1,7 @@
 package com.example.ecommerce_app.security;
 
+import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -10,14 +12,24 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JWTGenerator {
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public static String generateToken(Authentication authentication) {
+
+    private UserRepository userRepository;
+
+    public JWTGenerator(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public String generateToken(Authentication authentication) {
         String username = authentication.getName();
-        String userId = authentication.getPrincipal().toString();
+        Optional<Users> user = userRepository.findByUsername(username);
+        Long userid = user.get().getId();
+        String userId = userid.toString();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
 

@@ -25,7 +25,7 @@ export const Navbar = () => {
                   }
                 });
               } else {
-                navigate({ pathname: "/home" });
+                navigate({ pathname: "/homepage" });
               }
             }}
             src={require("../../imgs/logo.png")}
