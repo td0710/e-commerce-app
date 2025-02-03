@@ -1,5 +1,6 @@
 package com.example.ecommerce_app.security;
 import com.example.ecommerce_app.entity.Product;
+import com.example.ecommerce_app.entity.Wishlist;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -16,12 +17,15 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
                 HttpMethod.DELETE,
                 HttpMethod.PUT};
         config.exposeIdsFor(Product.class);
-
+        config.exposeIdsFor(Wishlist.class);
         disableHttpMethods(Product.class, config, theUnsupportedActions);
 
         /* Configure CORS Mapping */
         cors.addMapping(config.getBasePath() + "/**")
-                .allowedOrigins(theAllowedOrigins);
+                .allowedOrigins(theAllowedOrigins)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 👈 Fix lỗi
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 
     private void disableHttpMethods(Class theClass,

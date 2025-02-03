@@ -15,14 +15,12 @@ export const WishlistPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const url = `http://localhost:8080/api/wishlists/secure/1?page=0&size=3`;
-        const response = await axios.get(url, {
-          // headers: {
-          //   Authorization: "Bearer " + localStorage.getItem("token"),
-          // },
-        });
+        const url = `http://localhost:8080/api/wishlists/secure/${localStorage.getItem(
+          "id"
+        )}?page=0&size=20`;
+        const response = await axios.get(url);
 
-        console.log(response);
+        console.log("Fetched data:", response);
 
         const loadedProducts = response.data.content.map((item: any) => ({
           id: item.id,

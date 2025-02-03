@@ -39,8 +39,8 @@ export const UserProvider = ({ children }: Props) => {
       localStorage.setItem("id", userId);
       setUser(JSON.parse(user));
       setToken(token);
-      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
-      axios.defaults.headers.common["Content-Type"] = "application/json";
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      axios.defaults.headers.common["Content-Type"] = `application/json`;
     }
     setIsReady(true);
   }, []);
