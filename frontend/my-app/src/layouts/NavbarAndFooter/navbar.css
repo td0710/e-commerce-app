@@ -92,10 +92,9 @@ a {
 }
 
 .right-section {
-  margin-right: 30px;
+  transform: translateX(-50px);
   display: flex;
   align-items: center;
-  gap: 10px;
   width: 300px;
   padding-right: 15px;
 }
@@ -130,7 +129,8 @@ a {
 
 .default {
   cursor: pointer;
-  margin-left: 15px;
+  margin-right: 20px;
+  margin-left: -10px;
   width: 40px;
   border-radius: 50%;
   border: 2px solid white;

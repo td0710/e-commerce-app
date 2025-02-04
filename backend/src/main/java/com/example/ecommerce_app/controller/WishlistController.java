@@ -63,4 +63,10 @@ public class WishlistController {
         boolean isFavorite = wishlistService.isProductInWishlist(userId, productId);
         return ResponseEntity.ok(isFavorite);
     }
+    @GetMapping("/" +
+            "total/{userId}")
+    public ResponseEntity<Long> getTotalWishlist(@PathVariable Long userId) {
+        Long total = wishlistService.totalProductsInWishlist(userId);
+        return ResponseEntity.ok(total);
+    }
 }

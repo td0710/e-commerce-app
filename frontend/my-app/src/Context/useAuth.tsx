@@ -18,6 +18,8 @@ type UserContextType = {
   loginUser: (username: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
+  wishlistCount: number;
+  updateWishlistCount: () => void;
 };
 
 type Props = { children: React.ReactNode };
@@ -29,6 +31,7 @@ export const UserProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -42,7 +45,21 @@ export const UserProvider = ({ children }: Props) => {
     }
     setIsReady(true);
   }, []);
-
+  const updateWishlistCount = async () => {
+    const userId = localStorage.getItem("id");
+    if (!userId || !token) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/wishlists/secure/total/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setWishlistCount(response.data);
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error);
+    }
+  };
   const registerUser = async (
     username: string,
     password: string,
@@ -102,7 +119,16 @@ export const UserProvider = ({ children }: Props) => {
 
   return (
     <UserContext.Provider
-      value={{ loginUser, user, token, logout, isLoggedIn, registerUser }}
+      value={{
+        loginUser,
+        user,
+        token,
+        logout,
+        isLoggedIn,
+        registerUser,
+        wishlistCount,
+        updateWishlistCount,
+      }}
     >
       {isReady ? children : null}
     </UserContext.Provider>

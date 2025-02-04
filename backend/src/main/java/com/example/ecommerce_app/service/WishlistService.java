@@ -54,4 +54,7 @@ public class WishlistService {
         }
         return false ;
     }
+    public long totalProductsInWishlist(Long userId) {
+        return wishlistRepository.countByUserId(userId);
+    }
 }

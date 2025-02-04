@@ -3,12 +3,14 @@ import ProductModel from "../../models/ProductModel";
 import "./lists.css";
 import "./deals.css";
 import axios from "axios";
+import { useAuth } from "../../Context/useAuth";
 export const List: React.FC<{
   product: ProductModel;
 }> = (props) => {
   const [add, setAdd] = useState(false);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("id");
+  const { updateWishlistCount } = useAuth();
   useEffect(() => {
     const checkWishlist = async () => {
       if (!userId || !token) return;
@@ -56,6 +58,7 @@ export const List: React.FC<{
       );
       setAdd(true);
     }
+    updateWishlistCount();
   };
   return (
     <div className="card" key={props.product.id}>

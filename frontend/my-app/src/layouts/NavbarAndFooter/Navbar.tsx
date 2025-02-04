@@ -1,12 +1,33 @@
 import swal from "sweetalert";
 import "./navbar.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../Context/useAuth";
+import axios from "axios";
 export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { wishlistCount, updateWishlistCount } = useAuth();
+
+  const userId = localStorage.getItem("id");
+  const token = localStorage.getItem("token");
+
+  // useEffect(() => {
+  //   const fetchTotalItemsWishList = async () => {
+  //     const url = `http://localhost:8080/api/wishlists/secure/total/${userId}`;
+
+  //     const response = await axios.get(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     console.log(response.data);
+  //     setTotalItemsWishlist(response.data);
+  //   };
+  //   fetchTotalItemsWishList();
+  // }, []);
   return (
     <>
       <div className="navbar">
@@ -89,28 +110,34 @@ export const Navbar = () => {
             src={require("../../imgs/wishlist.png")}
             className="wishlist"
           />
-          <p
-          // style={
-          //   ListItems && ListItems.length > 0
-          //     ? { opacity: 1 }
-          //     : { opacity: 0 }
-          // }
-          // className="list-count"
-          >
-            {/* {ListItems.length} */}
+
+          <p style={{ opacity: 1 }} className="list-count">
+            {wishlistCount}
           </p>
 
-          <img src={require("../../imgs/cart.png")} className="cart" />
+          <img
+            onClick={() => {
+              if (window.location.href.includes("/payment")) {
+                swal({
+                  title: "Are you sure?",
+                  text: "Your transaction is still pending!",
+                  icon: "warning",
+                  buttons: ["Cancel", "Yes"],
+                }).then((willNavigate) => {
+                  if (willNavigate) {
+                    navigate("/cart");
+                  }
+                });
+              } else {
+                navigate("/cart");
+              }
+            }}
+            src={require("../../imgs/cart.png")}
+            className="cart"
+          />
 
-          <p
-          // style={
-          //   CartItems && CartItems.length > 0
-          //     ? { opacity: 1 }
-          //     : { opacity: 0 }
-          // }
-          // className="cart-count"
-          >
-            {/* {totalQuantity} */}
+          <p style={{ opacity: 1 }} className="cart-count">
+            {wishlistCount}
           </p>
 
           <img
@@ -133,16 +160,10 @@ export const Navbar = () => {
             src={require("../../imgs/orders.png")}
             className="orders"
           />
-          {/* <p
-            style={
-              OrderItems && OrderItems.length > 0
-                ? { opacity: 1 }
-                : { opacity: 0 }
-            }
-            className="order-count"
-          >
-            {totalLength}
-          </p> */}
+
+          <p style={{ opacity: 1 }} className="order-count">
+            {wishlistCount}
+          </p>
 
           <img
             onClick={() => navigate("/account")}
