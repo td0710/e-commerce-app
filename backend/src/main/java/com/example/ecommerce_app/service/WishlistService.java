@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,5 +42,16 @@ public class WishlistService {
         wishlist.setUser(user);
         wishlist.setProduct(product);
         wishlistRepository.save(wishlist);
+    }
+    public void deleteWishlist(Product product, Users user) {
+        wishlistRepository.deleteByUserIdAndProductId(user.getId(), product.getId());
+    }
+
+    public boolean isProductInWishlist(Long userId, Long productId) {
+        Wishlist wishlist = wishlistRepository.findByUserIdAndProductId(userId, productId);
+        if(wishlist!=null) {
+            return true;
+        }
+        return false ;
     }
 }

@@ -18,7 +18,12 @@ export const WishlistPage = () => {
         const url = `http://localhost:8080/api/wishlists/secure/${localStorage.getItem(
           "id"
         )}?page=0&size=20`;
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         console.log("Fetched data:", response);
 

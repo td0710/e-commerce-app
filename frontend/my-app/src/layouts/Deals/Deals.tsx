@@ -6,6 +6,7 @@ import "./lists.css";
 import "./deals.css";
 import Spinner from "../../utils/Spinner";
 import Footer from "../NavbarAndFooter/Footer";
+import { List } from "./List";
 
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -68,61 +69,7 @@ function Deals() {
       <div className="deal-items">
         {products &&
           products.map((items) => {
-            return (
-              <div className="card" key={items.id}>
-                <div className="card-img-data">
-                  <img src={items.image} className="card-img" />
-                  <img
-                    src={require("../../imgs/heart.png")}
-                    className="add-list"
-                  />
-
-                  {/* <NavLink to={`/product/${items.id}`} key={items.id}>
-                    <button className="view">View product</button>
-                  </NavLink> */}
-                </div>
-                <div className="card-data">
-                  <p className="card-title">
-                    {items.title.length >= 32
-                      ? items.title.slice(0, 32) + ".."
-                      : items.title}
-                  </p>
-                  <div className="category-rating">
-                    <p className="card-category">{items.category}</p>
-                    <div className="rating">
-                      <img
-                        src={require("../../imgs/rating.png")}
-                        className="rating-img"
-                      />
-                      <img
-                        src={require("../../imgs/rating.png")}
-                        className="rating-img"
-                      />
-                      <img
-                        src={require("../../imgs/rating.png")}
-                        className="rating-img"
-                      />
-                      <img
-                        src={require("../../imgs/rating.png")}
-                        className="rating-img"
-                      />
-                      <img
-                        src={require("../../imgs/rating.png")}
-                        className="rating-img"
-                      />
-                      <p className="rating-text">
-                        {/* {"5 " + "(" + items.reviewNumber + " reviews)"} */}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="card-price">
-                    <p className="discount">${items.price}</p>
-                    <p className="mrp">${Math.round(items.price * 1.66)}</p>
-                    <p className="price-off">(60% OFF)</p>
-                  </div>
-                </div>
-              </div>
-            );
+            return <List product={items} key={items.id}></List>;
           })}
       </div>
       {/* <div className="lowerNav">

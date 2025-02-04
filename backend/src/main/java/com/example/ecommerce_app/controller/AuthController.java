@@ -60,9 +60,9 @@ public class AuthController {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
         }
-        System.out.println(registerDto.getUsername());
-        System.out.println(registerDto.getEmail());
-        System.out.println(registerDto.getPassword()+"123");
+//        System.out.println(registerDto.getUsername());
+//        System.out.println(registerDto.getEmail());
+//        System.out.println(registerDto.getPassword()+"123");
         Users user = new Users();
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
