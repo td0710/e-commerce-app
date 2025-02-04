@@ -7,6 +7,7 @@ import { Signup } from "./layouts/Signup/Signup";
 import { UserProvider } from "./Context/useAuth";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import { WishlistPage } from "./WishlistPage/WishlistPage";
+import ProductPage from "./ProductPage/ProductPage";
 function App() {
   return (
     <BrowserRouter>
@@ -22,6 +23,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <WishlistPage></WishlistPage>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product/:id"
+            element={
+              <ProtectedRoute>
+                <ProductPage />
               </ProtectedRoute>
             }
           />

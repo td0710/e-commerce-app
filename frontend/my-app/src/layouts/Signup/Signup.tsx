@@ -87,7 +87,7 @@ export const Signup = (props: Props) => {
               )}
               <input
                 type="password"
-                placeholder="Passcode"
+                placeholder="Password"
                 className="password"
                 {...register("password")}
               />

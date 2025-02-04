@@ -63,7 +63,7 @@ export const Signin = (props: Props) => {
             </div>
             <form className="user-details" onSubmit={handleSubmit(handleLogin)}>
               <input
-                placeholder="Enter Email"
+                placeholder="Enter Username"
                 className="email"
                 {...register("username")}
                 required
@@ -73,7 +73,7 @@ export const Signin = (props: Props) => {
               )}
               <input
                 type="password"
-                placeholder="Passcode"
+                placeholder="Password"
                 className="password"
                 {...register("password")}
               />

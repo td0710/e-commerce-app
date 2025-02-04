@@ -4,10 +4,14 @@ import "./lists.css";
 import "./deals.css";
 import axios from "axios";
 import { useAuth } from "../../Context/useAuth";
+import { NavLink, useNavigate } from "react-router-dom";
 export const List: React.FC<{
   product: ProductModel;
 }> = (props) => {
   const [add, setAdd] = useState(false);
+
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("id");
   const { updateWishlistCount } = useAuth();
@@ -74,9 +78,9 @@ export const List: React.FC<{
           className="add-list"
         />
 
-        {/* <NavLink to={`/product/${props.product.id}`} key={props.product.id}>
-                    <button className="view">View product</button>
-                  </NavLink> */}
+        <NavLink to={`/product/${props.product.id}`} key={props.product.id}>
+          <button className="view">View product</button>
+        </NavLink>
       </div>
       <div className="card-data">
         <p className="card-title">
