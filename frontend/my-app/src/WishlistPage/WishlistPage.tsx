@@ -6,6 +6,8 @@ import Footer from "../layouts/NavbarAndFooter/Footer";
 import ProductModel from "../models/ProductModel";
 import axios from "axios";
 import "../layouts/Deals/lists.css";
+import { List } from "../layouts/Deals/List";
+import { WhishlistList } from "./WishlistList";
 
 export const WishlistPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -42,9 +44,11 @@ export const WishlistPage = () => {
         console.error("Error fetching products:", error);
       }
     };
-
     fetchProducts();
   }, []);
+  const handleDelete = (id: number) => {
+    setProducts((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
   return (
     <>
       <Navbar />
@@ -75,63 +79,11 @@ export const WishlistPage = () => {
               products.length > 0 &&
               products.map((items) => {
                 return (
-                  <div className="card" key={items.id}>
-                    <div className="card-img-data">
-                      <img src={items.image} className="card-img" />
-                      <img
-                        // onClick={() => {
-                        //   if (!isAdded(items.id)) {
-                        //     dispatch(AddToList(items));
-                        //   } else {
-                        //     dispatch(RemoveList(items.id));
-                        //   }
-                        // }}
-                        // src={isAdded(items.id) ? Added : Add}
-                        className="add-list2"
-                      />
-                      <NavLink to={`/product/${items.id}`} key={items.id}>
-                        <button className="view">View product</button>
-                      </NavLink>
-                    </div>
-                    <div className="card-data">
-                      <p className="card-title">
-                        {items.title.length >= 32
-                          ? items.title.slice(0, 32) + ".."
-                          : items.title}
-                      </p>
-                      <div className="category-rating">
-                        <p className="card-category">{items.category}</p>
-                        <div className="rating">
-                          <img
-                            src={require("../imgs/rating.png")}
-                            className="rating-img"
-                          />
-                          <img
-                            src={require("../imgs/rating.png")}
-                            className="rating-img"
-                          />
-                          <img
-                            src={require("../imgs/rating.png")}
-                            className="rating-img"
-                          />
-                          <img
-                            src={require("../imgs/rating.png")}
-                            className="rating-img"
-                          />
-                          <img
-                            src={require("../imgs/rating.png")}
-                            className="rating-img"
-                          />
-                          <p className="rating-text">5</p>
-                        </div>
-                      </div>
-                      <div className="card-price">
-                        <p className="discount">${items.price}</p>
-                        <p className="mrp">${Math.round(items.price * 1.66)}</p>
-                        <p className="price-off">(60% OFF)</p>
-                      </div>
-                    </div>
-                  </div>
+                  <WhishlistList
+                    product={items}
+                    key={items.id}
+                    onDelete={handleDelete}
+                  ></WhishlistList>
                 );
               })}
           </div>
