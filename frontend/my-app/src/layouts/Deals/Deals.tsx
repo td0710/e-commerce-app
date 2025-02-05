@@ -7,11 +7,13 @@ import "./deals.css";
 import Spinner from "../../utils/Spinner";
 import Footer from "../NavbarAndFooter/Footer";
 import { List } from "./List";
+import { useAuth } from "../../Context/useAuth";
 
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
+  const { updateWishlistCount } = useAuth();
   useEffect(() => {
     const fetchProducts = async () => {
       // for (let i = 0; i < localStorage.length; i++) {
@@ -51,6 +53,7 @@ function Deals() {
       }
       setProducts(loadedProducts);
       setLoading(false);
+      updateWishlistCount();
     };
     fetchProducts().catch((error: any) => {
       console.log(error.messages);

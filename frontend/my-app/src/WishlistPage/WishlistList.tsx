@@ -4,6 +4,7 @@ import "../layouts/Deals/lists.css";
 import "../layouts/Deals/deals.css";
 import axios from "axios";
 import { useAuth } from "../Context/useAuth";
+import { NavLink } from "react-router-dom";
 export const WhishlistList: React.FC<{
   product: ProductModel;
   onDelete: (id: number) => void;
@@ -36,9 +37,9 @@ export const WhishlistList: React.FC<{
           className="add-list"
         />
 
-        {/* <NavLink to={`/product/${props.product.id}`} key={props.product.id}>
-                    <button className="view">View product</button>
-                  </NavLink> */}
+        <NavLink to={`/product/${props.product.id}`} key={props.product.id}>
+          <button className="view">View product</button>
+        </NavLink>
       </div>
       <div className="card-data">
         <p className="card-title">
