@@ -38,7 +38,7 @@ public class ProductService {
         for (Product product : productList) {
             ProductDto productDto = new ProductDto();
 
-            // Ánh xạ từng trường từ Product sang ProductDto
+
             productDto.setId(product.getId());
             productDto.setTitle(product.getTitle());
             productDto.setDescription(product.getDescription());
@@ -60,5 +60,6 @@ public class ProductService {
 
         return productResponse;
     }
+
 
 }

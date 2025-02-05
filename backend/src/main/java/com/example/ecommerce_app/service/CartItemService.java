@@ -1,9 +1,9 @@
 package com.example.ecommerce_app.service;
 
-
 import com.example.ecommerce_app.entity.Cart;
+import com.example.ecommerce_app.entity.CartItem;
 import com.example.ecommerce_app.repository.CartItemRepository;
-import com.example.ecommerce_app.repository.CartRepository;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,19 +14,16 @@ import java.util.List;
 
 @Transactional
 @Service
-public class CartService {
+public class CartItemService {
 
-    private CartRepository cartRepository;
-    private CartItemRepository cartItemRepository;
+    private final CartItemRepository cartItemRepository;
 
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository) {
-        this.cartRepository = cartRepository;
+    public CartItemService(CartItemRepository cartItemRepository) {
         this.cartItemRepository = cartItemRepository;
     }
-    public Page<Cart> findAll(Pageable pageable) {
-        return cartRepository.findAll(pageable);
-    }
-    public Cart findById(Long id) {
-        return cartRepository.findAllByUserId(id) ;
+
+    public Page<CartItem> findByCart(Cart cart, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cartItemRepository.findByCart(cart,pageable);
     }
 }
