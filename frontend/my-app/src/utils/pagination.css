@@ -1,0 +1,58 @@
+/* General pagination styling */
+.pagination {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style for each page item */
+.page-item {
+  margin: 0 5px;
+}
+
+/* Style for page links (buttons) */
+.page-link {
+  background-color: #f8f9fa; /* Light background */
+  border: 1px solid #ddd; /* Border color */
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #333; /* Text color */
+  text-decoration: none; /* No underline */
+  font-size: 16px;
+  border-radius: 4px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Active page (selected page) styling */
+.page-item.active .page-link {
+  background-color: #e99317; /* Highlight active page with this color */
+  color: white; /* Text color when active */
+  border-color: #e99317; /* Border color for active page */
+}
+
+/* Styling for first and last page buttons */
+.page-item button.page-link {
+  font-weight: bold; /* Bold text */
+  background-color: #f1f1f1; /* Lighter background */
+  border: 1px solid #ccc; /* Border for first/last page buttons */
+}
+
+/* Hover effect on page buttons */
+.page-link:hover {
+  background-color: #e99317;
+  color: white;
+}
+
+/* Styling for the 'First Page' and 'Last Page' buttons */
+.page-item:first-child .page-link {
+  border-radius: 4px 0 0 4px; /* Rounded left corners for first button */
+}
+
+.page-item:last-child .page-link {
+  border-radius: 0 4px 4px 0; /* Rounded right corners for last button */
+}
+
+.page-item button.page-link:hover {
+  background-color: #d07c12; /* Slightly darker color on hover */
+}

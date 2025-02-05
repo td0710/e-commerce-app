@@ -8,12 +8,22 @@ import Spinner from "../../utils/Spinner";
 import Footer from "../NavbarAndFooter/Footer";
 import { List } from "./List";
 import { useAuth } from "../../Context/useAuth";
+import { Pagination } from "../../utils/Pagination";
+import axios from "axios";
 
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
+  const token = localStorage.getItem("token");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productPerPage] = useState(12);
+  const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
   const { updateWishlistCount } = useAuth();
+
   useEffect(() => {
     const fetchProducts = async () => {
       // for (let i = 0; i < localStorage.length; i++) {
@@ -25,46 +35,36 @@ function Deals() {
       //   }
       // }
       console.log(123);
-      const url = `http://localhost:8080/api/products`;
+      const url = `http://localhost:8080/api/products/secure/getall?page=${
+        currentPage - 1
+      }&size=${productPerPage}`;
 
-      const response = await fetch(url);
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const loadedProducts = response.data.content.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        price: item.price,
+        image: item.image,
+      }));
 
-      if (!response.ok) {
-        throw new Error("Something went wrong!");
-      }
-
-      const responseJson = await response.json();
-
-      const responseData = responseJson._embedded.products;
-
-      const loadedProducts: ProductModel[] = [];
-
-      console.log(responseData);
-
-      for (const key in responseData) {
-        loadedProducts.push({
-          id: responseData[key].id,
-          title: responseData[key].title,
-          description: responseData[key].description,
-          category: responseData[key].category,
-          price: responseData[key].price,
-          image: responseData[key].image,
-        });
-      }
       setProducts(loadedProducts);
+
+      setTotalPages(response.data.totalPages);
       setLoading(false);
       updateWishlistCount();
     };
     fetchProducts().catch((error: any) => {
       console.log(error.messages);
     });
-  }, []);
-  useEffect(() => {
-    const addWishlist = async () => {};
-  });
-  const setadd = () => {
-    isAdd(true);
-  };
+  }, [currentPage]);
+  const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <div className="Deals">
       <p className="deals-head">Hot Deals 🔥{localStorage.getItem("id")}</p>
@@ -75,6 +75,11 @@ function Deals() {
             return <List product={items} key={items.id}></List>;
           })}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        paginate={paginate}
+      ></Pagination>
       {/* <div className="lowerNav">
         {/* <LowerNav /> */}
       {/* </div> */}

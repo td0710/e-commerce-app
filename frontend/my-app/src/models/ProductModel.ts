@@ -1,3 +1,5 @@
+import ProductVariantModel from "./ProductVariantModel";
+
 class ProductModel {
   id: number;
   title: string;
@@ -5,6 +7,7 @@ class ProductModel {
   category: string;
   price: number;
   image: string;
+  variants: ProductVariantModel[];
 
   constructor(
     id: number,
@@ -12,7 +15,8 @@ class ProductModel {
     description: string,
     category: string,
     price: number,
-    image: string
+    image: string,
+    variants: ProductVariantModel[] = []
   ) {
     this.id = id;
     this.title = title;
@@ -20,6 +24,7 @@ class ProductModel {
     this.category = category;
     this.price = price;
     this.image = image;
+    this.variants = variants;
   }
 }
 

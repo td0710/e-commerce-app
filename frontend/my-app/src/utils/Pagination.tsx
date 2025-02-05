@@ -1,3 +1,5 @@
+import "./pagination.css";
+
 export const Pagination: React.FC<{
   currentPage: number;
   totalPages: number;

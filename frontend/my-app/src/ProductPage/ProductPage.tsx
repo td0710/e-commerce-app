@@ -106,6 +106,29 @@ export const ProductPage = () => {
                 </p>
               </div>
             </div>
+            <div style={{ display: "block" }} className="cloth-size">
+              <p className="choose">Choose a color</p>
+              <div className="options">
+                <p
+                  //   onClick={() => setSize("S")}
+                  className="size "
+                >
+                  Red
+                </p>
+                <p
+                  //   onClick={() => setSize("M")}
+                  className="size "
+                >
+                  Blue
+                </p>
+                <p
+                  //   onClick={() => setSize("L")}
+                  className="size "
+                >
+                  Yellow
+                </p>
+              </div>
+            </div>
             {(product && product?.category === "men's clothing") ||
             product?.category === "women's clothing" ? (
               <hr className="horizontal" />

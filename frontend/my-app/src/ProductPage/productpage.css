@@ -39,7 +39,7 @@
 
 .item-title {
   font-family: "Jost", sans-serif;
-  font-size: 35px;
+  font-size: 30px;
   font-weight: bolder;
   margin: 0;
 }
@@ -347,10 +347,10 @@
   .product-actual-price {
     font-size: 20px;
   }
-  .product-actual-price>p:nth-child(3) {
+  .product-actual-price > p:nth-child(3) {
     font-size: 15.5px;
   }
-  
+
   .buy-btn,
   .add-cart-btn {
     padding-left: 15px;

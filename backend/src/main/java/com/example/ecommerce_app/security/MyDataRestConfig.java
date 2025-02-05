@@ -1,4 +1,6 @@
 package com.example.ecommerce_app.security;
+import com.example.ecommerce_app.entity.Cart;
+import com.example.ecommerce_app.entity.CartItem;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.Wishlist;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -18,6 +20,9 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
                 HttpMethod.PUT};
         config.exposeIdsFor(Product.class);
         config.exposeIdsFor(Wishlist.class);
+        config.exposeIdsFor(Cart.class);
+        config.exposeIdsFor(CartItem.class);
+
         disableHttpMethods(Product.class, config, theUnsupportedActions);
 
         /* Configure CORS Mapping */

@@ -4,6 +4,8 @@ package com.example.ecommerce_app.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "product")
 @Data
@@ -29,6 +31,7 @@ public class Product {
     @Column(name = "image")
     private String image;
 
-
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ProductVariant> variants;
 
 }
