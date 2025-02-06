@@ -5,8 +5,7 @@ import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.repository.UserRepository;
-import com.example.ecommerce_app.service.WishlistService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.ecommerce_app.service.impl.WishlistServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,11 @@ import java.util.Optional;
 @RequestMapping("/api/wishlists/secure")
 public class WishlistController {
 
-    private WishlistService wishlistService;
+    private WishlistServiceImpl wishlistService;
     private UserRepository userRepository;
     private ProductRepository productRepository;
 
-    WishlistController(WishlistService wishlistService, UserRepository userRepository,
+    WishlistController(WishlistServiceImpl wishlistService, UserRepository userRepository,
                        ProductRepository productRepository) {
         this.wishlistService = wishlistService;
         this.userRepository = userRepository;

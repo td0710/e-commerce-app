@@ -2,8 +2,7 @@ package com.example.ecommerce_app.controller;
 
 
 import com.example.ecommerce_app.dto.response.ProductResponse;
-import com.example.ecommerce_app.entity.Product;
-import com.example.ecommerce_app.service.ProductService;
+import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/products/secure")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productService;
 
-    ProductController(ProductService productService) {
+    ProductController(ProductServiceImpl productService) {
         this.productService = productService;
     }
 

@@ -7,8 +7,8 @@ import com.example.ecommerce_app.entity.Cart;
 import com.example.ecommerce_app.entity.CartItem;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
-import com.example.ecommerce_app.service.CartItemService;
-import com.example.ecommerce_app.service.CartService;
+import com.example.ecommerce_app.service.impl.CartItemServiceImpl;
+import com.example.ecommerce_app.service.impl.CartServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +21,9 @@ import java.util.List;
 @RequestMapping("/api/carts/secure")
 public class CartController {
 
-    private final CartService cartService;
-    private final CartItemService cartItemService;
-    public CartController(CartService cartService, CartItemService cartItemService) {
+    private final CartServiceImpl cartService;
+    private final CartItemServiceImpl cartItemService;
+    public CartController(CartServiceImpl cartService, CartItemServiceImpl cartItemService) {
         this.cartService = cartService;
         this.cartItemService = cartItemService;
     }
