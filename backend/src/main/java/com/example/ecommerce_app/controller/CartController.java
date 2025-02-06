@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/carts/secure")
 public class CartController {
@@ -55,8 +56,7 @@ public class CartController {
             productCartDto.setImage(product.getImage());
             productCartDto.setColor(productVariant.getColor());
             productCartDto.setSize(productVariant.getSize());
-            productCartDto.setStock(productVariant.getStock());
-
+            productCartDto.setQuantity(cartItem.getQuantity());
             productCartDtos.add(productCartDto);
         }
 

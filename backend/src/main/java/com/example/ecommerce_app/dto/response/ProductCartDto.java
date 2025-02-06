@@ -27,5 +27,5 @@ public class ProductCartDto {
 
     private String size ;
 
-    private int stock ;
+    private int quantity ;
 }

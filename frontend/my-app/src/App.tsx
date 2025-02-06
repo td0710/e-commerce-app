@@ -8,6 +8,7 @@ import { UserProvider } from "./Context/useAuth";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import { WishlistPage } from "./WishlistPage/WishlistPage";
 import ProductPage from "./ProductPage/ProductPage";
+import CartPage from "./CartPage/CartPage";
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +32,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProductPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <CartPage />
               </ProtectedRoute>
             }
           />
