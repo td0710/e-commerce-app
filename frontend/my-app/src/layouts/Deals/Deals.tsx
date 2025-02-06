@@ -1,6 +1,6 @@
 import ProductModel from "../../models/ProductModel";
 import { Navbar } from "../NavbarAndFooter/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./lists.css";
 import "./deals.css";
@@ -23,6 +23,8 @@ function Deals() {
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
   const { updateWishlistCount } = useAuth();
+
+  const productRef = useRef<HTMLParagraphElement | null>(null); // Định kiểu ref
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -59,6 +61,12 @@ function Deals() {
       setTotalPages(response.data.totalPages);
       setLoading(false);
       updateWishlistCount();
+      setTimeout(() => {
+        productRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 300);
     };
     fetchProducts().catch((error: any) => {
       console.log(error.messages);
@@ -67,7 +75,9 @@ function Deals() {
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <div className="Deals">
-      <p className="deals-head">Hot Deals 🔥{localStorage.getItem("id")}</p>
+      <p className="deals-head" ref={productRef}>
+        Hot Deals 🔥
+      </p>
       {loading && <Spinner />}
       <div className="deal-items">
         {products &&

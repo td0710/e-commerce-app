@@ -18,13 +18,14 @@ export const ProductPage = () => {
       const products = new ProductModel(
         response.data.id,
         response.data.title,
-        response.data.desciption,
+        response.data.description,
         response.data.category,
         response.data.price,
         response.data.image
       );
       setProduct(products);
       window.scrollTo(0, 0);
+      console.log(products.description);
     };
     fetchProduct();
   }, []);
