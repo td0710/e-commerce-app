@@ -7,6 +7,11 @@ import axios from "axios";
 import "./productpage.css";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
+
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const [choose, setChoose] = useState(false);
+
   const { id } = useParams();
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -23,12 +28,21 @@ export const ProductPage = () => {
         response.data.price,
         response.data.image
       );
-      setProduct(products);
+
       window.scrollTo(0, 0);
       console.log(products.description);
+      const url1 = `http://localhost:8080/api/products/${id}/variants`;
+
+      const response1 = await axios.get(url1);
+
+      console.log(response1);
+      const variants = response1.data._embedded?.productVariants || [];
+      setProduct(products);
+      products.variants = variants;
     };
     fetchProduct();
   }, []);
+  console.log(product);
   return (
     <>
       <Navbar />
@@ -71,65 +85,50 @@ export const ProductPage = () => {
                 <p className="rating-no">20</p>
               </div>
             </div>
-            {product ? <hr className="horizontal" /> : ""}
-            <div style={{ display: "block" }} className="cloth-size">
-              <p className="choose">Choose a size</p>
-              <div className="options">
-                <p
-                  //   onClick={() => setSize("S")}
-                  className="size "
-                >
-                  S
-                </p>
-                <p
-                  //   onClick={() => setSize("M")}
-                  className="size "
-                >
-                  M
-                </p>
-                <p
-                  //   onClick={() => setSize("L")}
-                  className="size "
-                >
-                  L
-                </p>
-                <p
-                  // onClick={() => setSize("XL")}
-                  className="size"
-                >
-                  XL
-                </p>
-                <p
-                  //   onClick={() => setSize("XXL")}
-                  className="size "
-                >
-                  XXL
-                </p>
-              </div>
-            </div>
             <div style={{ display: "block" }} className="cloth-size">
               <p className="choose">Choose a color</p>
               <div className="options">
-                <p
-                  //   onClick={() => setSize("S")}
-                  className="size "
-                >
-                  Red
-                </p>
-                <p
-                  //   onClick={() => setSize("M")}
-                  className="size "
-                >
-                  Blue
-                </p>
-                <p
-                  //   onClick={() => setSize("L")}
-                  className="size "
-                >
-                  Yellow
-                </p>
+                {Array.from(new Set(product?.variants.map((v) => v.color))).map(
+                  (c, index) => (
+                    <p
+                      key={index}
+                      className={`size ${color === c ? `size-clicked` : ""}`}
+                      onClick={() => setColor(c)}
+                    >
+                      {c}
+                    </p>
+                  )
+                )}
               </div>
             </div>
+            {product ? <hr className="horizontal" /> : ""}
+
+            {color &&
+              product?.variants?.some(
+                (v) => v.color === color && v.size !== null
+              ) && (
+                <div style={{ display: "block" }} className="cloth-size">
+                  <p className="choose">Choose a size</p>
+                  <div className="options">
+                    {color &&
+                      Array.from(
+                        new Set(
+                          product?.variants
+                            .filter((v) => v.color === color)
+                            .map((v) => v.size)
+                        )
+                      ).map((s, index) => (
+                        <p
+                          key={index}
+                          className={`size ${size === s ? "size-clicked" : ""}`}
+                          onClick={() => setSize(s)} // ✅ Chọn size
+                        >
+                          {s}
+                        </p>
+                      ))}
+                  </div>
+                </div>
+              )}
             {(product && product?.category === "men's clothing") ||
             product?.category === "women's clothing" ? (
               <hr className="horizontal" />
