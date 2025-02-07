@@ -22,6 +22,6 @@ public class CartServiceImpl implements CartService {
         this.cartItemRepository = cartItemRepository;
     }
     public Cart findById(Long id) {
-        return cartRepository.findAllByUserId(id) ;
+        return cartRepository.findByUserId(id) ;
     }
 }

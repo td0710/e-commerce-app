@@ -43,7 +43,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(configurer->
                         configurer.
-                                requestMatchers("/api/products/secure/**","/api/wishlists/secure/**").authenticated()
+                                requestMatchers("/api/products/secure/**",
+                                        "/api/wishlists/secure/**",
+                                        "/api/carts/secure/**").authenticated()
                                 .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());
         http.cors(Customizer.withDefaults());

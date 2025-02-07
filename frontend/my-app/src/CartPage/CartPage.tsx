@@ -20,7 +20,7 @@ export const CartSection = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      const url = `http://localhost:8080/api/carts/secure/get/cart/1?page=0&size=5`;
+      const url = `http://localhost:8080/api/carts/secure/get/cart/1?page=0&size=50`;
 
       const response = await axios.get(url, {
         headers: {
@@ -45,7 +45,7 @@ export const CartSection = () => {
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
-  });
+  }, []);
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
 
   return (
@@ -107,6 +107,17 @@ export const CartSection = () => {
                           className="cart-size"
                         >
                           Size: {item.size ? item.size : "Not choosen"}
+                        </p>
+                        <p
+                          style={
+                            (item && item.category === "men's clothing") ||
+                            item.category === "women's clothing"
+                              ? { display: "block" }
+                              : { display: "none" }
+                          }
+                          className="cart-size"
+                        >
+                          Color: {item.color ? item.color : "Not choosen"}
                         </p>
                       </div>
                       <div className="more-buttons">

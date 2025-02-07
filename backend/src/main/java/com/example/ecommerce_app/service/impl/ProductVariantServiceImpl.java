@@ -17,4 +17,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public ProductVariant findById(Long id) {
         return productVariantRepository.findById(id).orElse(null);
     }
+
+    public ProductVariant findByProductIdAndSizeAndColor(Long productId, String size, String color) {
+        return productVariantRepository.findByProduct_IdSizeAndColor(productId,size,color) ;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class CartResponse {
-    List<ProductCartDto> products;
+    List<ProductCartResponse> products;
     private int pageNo;
     private int pageSize;
     private long totalElements;

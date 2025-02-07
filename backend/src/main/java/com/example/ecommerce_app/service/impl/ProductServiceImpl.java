@@ -60,4 +60,8 @@ public class ProductServiceImpl implements ProductService {
 
         return productResponse;
     }
+
+    public Product findProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
 }

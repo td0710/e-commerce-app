@@ -8,12 +8,15 @@ import "./productpage.css";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
 
+  const userId = localStorage.getItem("id");
+  const token = localStorage.getItem("token");
+
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const [choose, setChoose] = useState(false);
 
   const { id } = useParams();
-  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const fetchProduct = async () => {
       const url = `http://localhost:8080/api/products/${id}`;
@@ -43,6 +46,20 @@ export const ProductPage = () => {
     fetchProduct();
   }, []);
   console.log(product);
+  const addToCart = async () => {
+    const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response);
+  };
   return (
     <>
       <Navbar />
@@ -121,7 +138,7 @@ export const ProductPage = () => {
                         <p
                           key={index}
                           className={`size ${size === s ? "size-clicked" : ""}`}
-                          onClick={() => setSize(s)} // ✅ Chọn size
+                          onClick={() => setSize(s)}
                         >
                           {s}
                         </p>
@@ -167,7 +184,11 @@ export const ProductPage = () => {
                   src={require("../imgs/not-added.png")}
                   className="cart-img"
                 />
-                <p style={{ marginLeft: "8px" }} className="cart-text">
+                <p
+                  onClick={addToCart}
+                  style={{ marginLeft: "8px" }}
+                  className="cart-text"
+                >
                   Add
                 </p>
               </button>

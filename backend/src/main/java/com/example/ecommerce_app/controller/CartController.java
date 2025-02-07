@@ -1,7 +1,7 @@
 package com.example.ecommerce_app.controller;
 
 
-import com.example.ecommerce_app.dto.response.ProductCartDto;
+import com.example.ecommerce_app.dto.response.ProductCartResponse;
 import com.example.ecommerce_app.dto.response.CartResponse;
 import com.example.ecommerce_app.entity.Cart;
 import com.example.ecommerce_app.entity.CartItem;
@@ -9,6 +9,8 @@ import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
 import com.example.ecommerce_app.service.impl.CartItemServiceImpl;
 import com.example.ecommerce_app.service.impl.CartServiceImpl;
+import com.example.ecommerce_app.service.impl.ProductServiceImpl;
+import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +25,15 @@ public class CartController {
 
     private final CartServiceImpl cartService;
     private final CartItemServiceImpl cartItemService;
-    public CartController(CartServiceImpl cartService, CartItemServiceImpl cartItemService) {
+    private final ProductVariantServiceImpl productVariantService;
+    private final ProductServiceImpl productService;
+    public CartController(CartServiceImpl cartService, CartItemServiceImpl cartItemService,
+                          ProductVariantServiceImpl productVariantService,
+                          ProductServiceImpl productService) {
         this.cartService = cartService;
         this.cartItemService = cartItemService;
+        this.productVariantService = productVariantService;
+        this.productService = productService;
     }
 
     @GetMapping("/get/cart/{userId}")
@@ -39,7 +47,7 @@ public class CartController {
 
         List<CartItem> cartItems = cartItems1.getContent();
 
-        List<ProductCartDto> productCartDtos = new ArrayList<>();
+        List<ProductCartResponse> productCartDtos = new ArrayList<>();
 
         CartResponse cartResponse = new CartResponse();
 
@@ -47,7 +55,7 @@ public class CartController {
 
             Product product = cartItem.getProduct();
             ProductVariant productVariant = cartItem.getProductVariant();
-            ProductCartDto productCartDto = new ProductCartDto();
+            ProductCartResponse productCartDto = new ProductCartResponse();
 
             productCartDto.setId(cartItem.getId());
             productCartDto.setCategory(product.getCategory());
@@ -69,4 +77,25 @@ public class CartController {
         return ResponseEntity.ok(cartResponse);
     }
 
+    @PostMapping("/add/cart/{userId}/{productId}")
+    public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId,
+                                     @RequestParam String size,
+                                     @RequestParam String color) {
+
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+        Cart cart = cartService.findById(userId);
+        CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
+        if(cartItem != null) {
+            cartItem.setQuantity(cartItem.getQuantity()+1);
+            cartItemService.addCartItem(cartItem);
+            return ResponseEntity.ok("add cart success");
+        }
+        CartItem newCartItem = new CartItem();
+        newCartItem.setProductVariant(productVariant);
+        newCartItem.setQuantity(1);
+        newCartItem.setProduct(productService.findProductById(productId)) ;
+        newCartItem.setCart(cartService.findById(userId));
+        cartItemService.addCartItem(newCartItem);
+        return ResponseEntity.ok("add cart success");
+    }
 }

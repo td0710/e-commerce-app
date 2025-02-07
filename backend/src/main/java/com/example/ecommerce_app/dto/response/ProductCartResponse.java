@@ -3,7 +3,7 @@ package com.example.ecommerce_app.dto.response;
 import lombok.Data;
 
 @Data
-public class ProductCartDto {
+public class ProductCartResponse {
 
     private Long id;
 
