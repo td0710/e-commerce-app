@@ -8,4 +8,6 @@ public interface CartService {
     Cart findById(Long id);
     void createCart(Long userId);
     void saveCart(Cart cart);
+
+    Long totalProductsInCart(Long userId);
 }

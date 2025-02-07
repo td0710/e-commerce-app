@@ -5,9 +5,12 @@ import Footer from "../layouts/NavbarAndFooter/Footer";
 import ProductModel from "../models/ProductModel";
 import axios from "axios";
 import "./productpage.css";
+import { useAuth } from "../Context/useAuth";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [variants, setVariants] = useState([]);
+
+  const { updateCartCount } = useAuth();
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -64,6 +67,7 @@ export const ProductPage = () => {
         },
       }
     );
+    updateCartCount();
     console.log(response);
   };
   return (

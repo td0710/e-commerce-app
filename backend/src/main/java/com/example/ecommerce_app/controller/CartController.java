@@ -109,5 +109,11 @@ public class CartController {
         cartItemService.addCartItem(newCartItem);
         return ResponseEntity.ok("add cart success");
     }
+    @GetMapping("/" +
+            "total/{userId}")
+    public ResponseEntity<Long> getTotalWishlist(@PathVariable Long userId) {
+        Long total = cartService.totalProductsInCart(userId);
+        return ResponseEntity.ok(total);
+    }
 }
 

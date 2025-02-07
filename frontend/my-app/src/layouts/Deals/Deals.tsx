@@ -22,7 +22,7 @@ function Deals() {
 
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
-  const { updateWishlistCount } = useAuth();
+  const { updateWishlistCount, updateCartCount } = useAuth();
 
   const productRef = useRef<HTMLParagraphElement | null>(null); // Định kiểu ref
 
@@ -61,6 +61,7 @@ function Deals() {
       setTotalPages(response.data.totalPages);
       setLoading(false);
       updateWishlistCount();
+      updateCartCount();
       setTimeout(() => {
         productRef.current?.scrollIntoView({
           behavior: "smooth",

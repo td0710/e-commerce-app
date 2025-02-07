@@ -1,5 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
+import com.example.ecommerce_app.dto.response.ProductWishlistResponse;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.entity.Wishlist;
@@ -27,12 +28,12 @@ public class WishlistServiceImpl implements WishlistService {
         this.productRepository = productRepository;
     }
 
-    public Page<Product> getProductsInWishListByUserId(Long userId, Pageable pageable) {
+    public Page<ProductWishlistResponse> getProductsInWishListByUserId(Long userId, Pageable pageable) {
         Page<Wishlist> wishlists = wishlistRepository.findByUserId(userId, pageable);
 
-        List<Product> products = wishlists.getContent()
+        List<ProductWishlistResponse> products = wishlists.getContent()
                 .stream()
-                .map(Wishlist::getProduct)
+                .map(wishlist -> new ProductWishlistResponse(wishlist.getProduct()))
                 .collect(Collectors.toList());
 
         return new PageImpl<>(products, pageable, wishlists.getTotalElements());

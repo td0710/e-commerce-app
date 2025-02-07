@@ -8,8 +8,7 @@ export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { wishlistCount, updateWishlistCount } = useAuth();
-
+  const { wishlistCount, updateWishlistCount, cartCount } = useAuth();
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
@@ -137,7 +136,7 @@ export const Navbar = () => {
           />
 
           <p style={{ opacity: 1 }} className="cart-count">
-            {wishlistCount}
+            {cartCount}
           </p>
 
           <img

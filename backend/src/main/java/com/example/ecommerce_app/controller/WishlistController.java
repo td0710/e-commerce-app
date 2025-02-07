@@ -1,6 +1,7 @@
 package com.example.ecommerce_app.controller;
 
 
+import com.example.ecommerce_app.dto.response.ProductWishlistResponse;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.repository.ProductRepository;
@@ -30,7 +31,7 @@ public class WishlistController {
         this.productRepository = productRepository;
     }
     @GetMapping("/{userId}")
-    public Page<Product> getProductsInWishlistByUserId(
+    public Page<ProductWishlistResponse> getProductsInWishlistByUserId(
             @PathVariable Long userId,
             Pageable pageable) {
         return wishlistService.getProductsInWishListByUserId(userId, pageable);

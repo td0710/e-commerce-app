@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ProductCartModel from "../models/ProdcutCartModel";
 import "./cart.css";
+import { useAuth } from "../Context/useAuth";
 export const CartSection = () => {
   const navigate = useNavigate();
 

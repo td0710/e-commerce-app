@@ -20,6 +20,8 @@ type UserContextType = {
   isLoggedIn: () => boolean;
   wishlistCount: number;
   updateWishlistCount: () => void;
+  cartCount: number;
+  updateCartCount: () => void;
 };
 
 type Props = { children: React.ReactNode };
@@ -32,6 +34,7 @@ export const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -56,6 +59,22 @@ export const UserProvider = ({ children }: Props) => {
         }
       );
       setWishlistCount(response.data);
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error);
+    }
+  };
+
+  const updateCartCount = async () => {
+    const userId = localStorage.getItem("id");
+    if (!userId || !token) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/carts/secure/total/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCartCount(response.data);
     } catch (error) {
       console.error("Error fetching wishlist count:", error);
     }
@@ -128,6 +147,8 @@ export const UserProvider = ({ children }: Props) => {
         registerUser,
         wishlistCount,
         updateWishlistCount,
+        cartCount,
+        updateCartCount,
       }}
     >
       {isReady ? children : null}
