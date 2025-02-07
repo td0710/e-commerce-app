@@ -88,7 +88,13 @@ public class CartController {
         }
 
         ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
-
+        if(productVariant.getStock() <= 0) {
+            return ResponseEntity.ok("out of stock");
+        }
+        cart.setTotal(cart.getTotal()+1);
+        cartService.saveCart(cart);
+        productVariant.setStock(productVariant.getStock()-1);
+        productVariantService.saveProductVariant(productVariant);
         CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
         if(cartItem != null) {
             cartItem.setQuantity(cartItem.getQuantity()+1);

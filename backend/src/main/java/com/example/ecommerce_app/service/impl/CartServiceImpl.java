@@ -34,4 +34,8 @@ public class CartServiceImpl implements CartService {
         cart.setTotal(0L);
         cartRepository.save(cart);
     }
+
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
+    }
 }

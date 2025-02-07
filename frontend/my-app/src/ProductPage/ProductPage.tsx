@@ -23,7 +23,6 @@ export const ProductPage = () => {
       const url = `http://localhost:8080/api/products/${id}`;
 
       const response = await axios.get(url);
-      console.log(response);
       const products = new ProductModel(
         response.data.id,
         response.data.title,
@@ -42,19 +41,8 @@ export const ProductPage = () => {
 
       const variants = response1.data._embedded?.productVariants || [];
 
-      setProduct(
-        new ProductModel(
-          response.data.id,
-          response.data.title,
-          response.data.description,
-          response.data.category,
-          response.data.price,
-          response.data.image,
-          variants
-        )
-      );
-      setProduct(products);
       products.variants = variants;
+      setProduct(products);
     };
     fetchProduct();
   }, [token]);
@@ -63,6 +51,8 @@ export const ProductPage = () => {
       alert("Please select size and color before adding to cart.");
       return;
     }
+    console.log(product);
+
     const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
     const response = await axios.post(
       url,
