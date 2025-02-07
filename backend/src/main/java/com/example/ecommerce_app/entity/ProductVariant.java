@@ -1,6 +1,7 @@
 package com.example.ecommerce_app.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class ProductVariant {
     @Column(name = "stock", nullable = false)
     private int stock;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 }

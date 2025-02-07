@@ -20,8 +20,8 @@ export const CartSection = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      const url = `http://localhost:8080/api/carts/secure/get/cart/1?page=0&size=50`;
-
+      const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=0&size=50`;
+      console.log(userId);
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -6,4 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CartService {
     Cart findById(Long id);
+    void createCart(Long userId);
 }

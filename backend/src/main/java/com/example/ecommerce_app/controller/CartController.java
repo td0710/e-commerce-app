@@ -81,9 +81,14 @@ public class CartController {
     public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId,
                                      @RequestParam String size,
                                      @RequestParam String color) {
+        Cart cart = cartService.findById(userId);
+
+        if(cart==null) {
+            cartService.createCart(userId);
+        }
 
         ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
-        Cart cart = cartService.findById(userId);
+
         CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
         if(cartItem != null) {
             cartItem.setQuantity(cartItem.getQuantity()+1);
@@ -99,3 +104,4 @@ public class CartController {
         return ResponseEntity.ok("add cart success");
     }
 }
+

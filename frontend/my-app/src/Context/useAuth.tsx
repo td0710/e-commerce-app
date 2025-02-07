@@ -44,7 +44,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(token);
     }
     setIsReady(true);
-  }, []);
+  }, [token]);
   const updateWishlistCount = async () => {
     const userId = localStorage.getItem("id");
     if (!userId || !token) return;

@@ -7,6 +7,7 @@ import axios from "axios";
 import "./productpage.css";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
+  const [variants, setVariants] = useState([]);
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -33,20 +34,35 @@ export const ProductPage = () => {
       );
 
       window.scrollTo(0, 0);
-      console.log(products.description);
+
       const url1 = `http://localhost:8080/api/products/${id}/variants`;
 
       const response1 = await axios.get(url1);
+      const fetchedVariants = response1.data._embedded?.productVariants || [];
 
-      console.log(response1);
       const variants = response1.data._embedded?.productVariants || [];
+
+      setProduct(
+        new ProductModel(
+          response.data.id,
+          response.data.title,
+          response.data.description,
+          response.data.category,
+          response.data.price,
+          response.data.image,
+          variants
+        )
+      );
       setProduct(products);
       products.variants = variants;
     };
     fetchProduct();
-  }, []);
-  console.log(product);
+  }, [token]);
   const addToCart = async () => {
+    if (!product || !size || !color) {
+      alert("Please select size and color before adding to cart.");
+      return;
+    }
     const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
     const response = await axios.post(
       url,
