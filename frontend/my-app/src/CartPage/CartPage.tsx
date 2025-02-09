@@ -3,13 +3,14 @@ import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ProductCartModel from "../models/ProdcutCartModel";
+import ProductCartModel from "../models/ProductCartModel";
 import "./cart.css";
 import { useAuth } from "../Context/useAuth";
+import { CartItems } from "./CartItems";
 export const CartSection = () => {
   const navigate = useNavigate();
 
-  const [CartItems, setCartItems] = useState<ProductCartModel[]>([]);
+  const [cartItems, setCartItems] = useState<ProductCartModel[]>([]);
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -19,6 +20,9 @@ export const CartSection = () => {
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  const handleDeleteItem = (id: number) => {
+    setCartItems(cartItems.filter((item) => item.id !== id));
+  };
   useEffect(() => {
     const fetchCart = async () => {
       const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=0&size=50`;
@@ -47,6 +51,7 @@ export const CartSection = () => {
     };
     fetchCart();
   }, []);
+
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
 
   return (
@@ -56,22 +61,22 @@ export const CartSection = () => {
       <div className="entire-section">
         <p
           style={{ margin: 0 }}
-          className={CartItems ? `cart-head animate` : `cart-head`}
+          className={cartItems ? `cart-head animate` : `cart-head`}
         >
           Your Cart
         </p>
         <div
           style={
-            CartItems && CartItems.length === 0
+            cartItems && cartItems.length === 0
               ? { height: "40vh" }
               : { height: "100%" }
           }
-          className={CartItems ? `cart-section animate` : `cart-section`}
+          className={cartItems ? `cart-section animate` : `cart-section`}
         >
           <div className="cart-details">
             <div
               style={
-                CartItems && CartItems.length === 0
+                cartItems && cartItems.length === 0
                   ? { display: "block" }
                   : { display: "none" }
               }
@@ -83,97 +88,20 @@ export const CartSection = () => {
               />
             </div>
             <div className="cart-item">
-              {CartItems.map((item) => {
+              {cartItems.map((item) => {
                 return (
-                  <div className="cart-data" key={item.id}>
-                    <img
-                      onClick={() => navigate(`/product/${item.id}`)}
-                      src={item.image}
-                      alt=""
-                      className="cart-item-img"
-                    />
-                    <div className="cart-all-data">
-                      <p className="cart-title">{item.title}</p>
-                      <div className="cart-price">
-                        <p className="cart-discount">
-                          ${(item.price * item.quantity).toFixed(1)}
-                        </p>
-                        <p
-                          style={
-                            (item && item.category === "men's clothing") ||
-                            item.category === "women's clothing"
-                              ? { display: "block" }
-                              : { display: "none" }
-                          }
-                          className="cart-size"
-                        >
-                          Size: {item.size ? item.size : "Not choosen"}
-                        </p>
-                        <p
-                          style={
-                            (item && item.category === "men's clothing") ||
-                            item.category === "women's clothing"
-                              ? { display: "block" }
-                              : { display: "none" }
-                          }
-                          className="cart-size"
-                        >
-                          Color: {item.color ? item.color : "Not choosen"}
-                        </p>
-                      </div>
-                      <div className="more-buttons">
-                        <div className="quantity-section">
-                          <button
-                            // onClick={() => dispatch(IncreaseQuantity(item.id))}
-                            className="increase"
-                          >
-                            +
-                          </button>
-                          <p className="total-items">{item.quantity}</p>
-                          <button
-                            // onClick={() => dispatch(DecreaseQuantity(item.id))}
-                            className="decrease"
-                            disabled={
-                              item && item.quantity === 1 ? true : false
-                            }
-                          >
-                            -
-                          </button>
-                        </div>
-                        <div className="right-btns">
-                          <div className="save-btn">
-                            <img
-                              //   onClick={() => {
-                              //     if (!isAdded(item.id)) {
-                              //       dispatch(AddToList(item));
-                              //     } else {
-                              //       dispatch(RemoveList(item.id));
-                              //     }
-                              //   }}
-                              src={require("../imgs/save.png")}
-                              className="save-img"
-                            />
-                            <p>Save</p>
-                          </div>
-                          <div className="delete-btn">
-                            <img
-                              //   onClick={() => dispatch(RemoveCart(item.id))}
-                              src={require("../imgs/delete.png")}
-                              className="delete-img"
-                            />
-                            <p>Delete</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CartItems
+                    key={item.id}
+                    cartItem={item}
+                    onDelete={handleDeleteItem}
+                  />
                 );
               })}
             </div>
           </div>
           <div
             style={
-              CartItems && CartItems.length === 0
+              cartItems && cartItems.length === 0
                 ? { display: "none" }
                 : { display: "block" }
             }

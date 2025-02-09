@@ -57,7 +57,7 @@ public class CartController {
             ProductVariant productVariant = cartItem.getProductVariant();
             ProductCartResponse productCartDto = new ProductCartResponse();
 
-            productCartDto.setId(cartItem.getId());
+            productCartDto.setId(product.getId());
             productCartDto.setCategory(product.getCategory());
             productCartDto.setPrice(product.getPrice());
             productCartDto.setTitle(product.getTitle());
@@ -107,8 +107,48 @@ public class CartController {
         newCartItem.setProduct(productService.findProductById(productId)) ;
         newCartItem.setCart(cartService.findById(userId));
         cartItemService.addCartItem(newCartItem);
-        return ResponseEntity.ok("add cart success");
+        return ResponseEntity.ok("add item success");
     }
+    @PostMapping("/decrease/cart/{userId}/{productId}")
+    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId,
+                                     @RequestParam String size,
+                                     @RequestParam String color) {
+        Cart cart = cartService.findById(userId);
+
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+
+        cart.setTotal(cart.getTotal()-1);
+        cartService.saveCart(cart);
+        productVariant.setStock(productVariant.getStock()+1);
+        productVariantService.saveProductVariant(productVariant);
+        CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
+        cartItem.setQuantity(cartItem.getQuantity()-1);
+        if (cartItem.getQuantity()!=0) cartItemService.addCartItem(cartItem);
+        else cartItemService.removeCartItem(cartItem);
+        return ResponseEntity.ok("decrease item success");
+    }
+
+    @DeleteMapping("/delete/cart/{userId}/{productId}")
+    public ResponseEntity<?> deleteCart(@PathVariable Long userId,@PathVariable Long productId,
+                                          @RequestParam String size,
+                                          @RequestParam String color) {
+        Cart cart = cartService.findById(userId);
+
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+
+        CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
+
+        productVariant.setStock(productVariant.getStock()+cartItem.getQuantity());
+        productVariantService.saveProductVariant(productVariant);
+
+        cart.setTotal(cart.getTotal()-cartItem.getQuantity());
+        cartService.saveCart(cart);
+
+        cartItemService.removeCartItem(cartItem);
+
+        return ResponseEntity.ok("delete item success");
+    }
+
     @GetMapping("/" +
             "total/{userId}")
     public ResponseEntity<Long> getTotalWishlist(@PathVariable Long userId) {

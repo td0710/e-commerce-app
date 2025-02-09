@@ -34,4 +34,8 @@ public class CartItemServiceImpl implements CartItemService {
     public void addCartItem(CartItem cartItem) {
         cartItemRepository.save(cartItem);
     }
+
+    public void removeCartItem(CartItem cartItem) {
+        cartItemRepository.delete(cartItem);
+    }
 }
