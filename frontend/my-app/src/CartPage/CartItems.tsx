@@ -33,7 +33,6 @@ export const CartItems: React.FC<{
     );
     setQuantity((prev) => prev + 1);
     updateCartCount();
-    console.log(response);
   };
 
   const decreaseItem = async () => {
@@ -58,7 +57,6 @@ export const CartItems: React.FC<{
       return newQuantity;
     });
     updateCartCount();
-    console.log(response);
   };
   const deleteItem = async () => {
     console.log(props.cartItem);
@@ -72,7 +70,6 @@ export const CartItems: React.FC<{
     });
     props.onDelete(props.cartItem.id);
     updateCartCount();
-    console.log(response);
   };
   useEffect(() => {
     const checkWishlist = async () => {
@@ -123,6 +120,7 @@ export const CartItems: React.FC<{
     }
     updateWishlistCount();
   };
+
   return (
     <div className="cart-data" key={props.cartItem.id}>
       <img
@@ -137,27 +135,17 @@ export const CartItems: React.FC<{
           <p className="cart-discount">
             ${(props.cartItem.price * props.cartItem.quantity).toFixed(1)}
           </p>
-          <p
-            style={
-              props.cartItem.category === "men's clothing" ||
-              props.cartItem.category === "women's clothing"
-                ? { display: "block" }
-                : { display: "none" }
-            }
-            className="cart-size"
-          >
-            Size: {props.cartItem.size ? props.cartItem.size : "Not choosen"}
+          <p style={{ display: "block" }} className="cart-size">
+            Size:{" "}
+            {props.cartItem.size && props.cartItem.size != "none"
+              ? props.cartItem.size
+              : "Not choosen"}
           </p>
-          <p
-            style={
-              props.cartItem.category === "men's clothing" ||
-              props.cartItem.category === "women's clothing"
-                ? { display: "block" }
-                : { display: "none" }
-            }
-            className="cart-size"
-          >
-            Color: {props.cartItem.color ? props.cartItem.color : "Not choosen"}
+          <p style={{ display: "block" }} className="cart-size">
+            Color:{" "}
+            {props.cartItem.color && props.cartItem.color != "none"
+              ? props.cartItem.color
+              : "Not choosen"}
           </p>
         </div>
         <div className="more-buttons">

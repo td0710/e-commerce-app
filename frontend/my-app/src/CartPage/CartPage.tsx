@@ -16,6 +16,8 @@ export const CartSection = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
+  const { cartCount } = useAuth();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [productPerPage] = useState(5);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
@@ -50,7 +52,7 @@ export const CartSection = () => {
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
-  }, []);
+  }, [cartCount]);
   useEffect(() => {
     const totalPrice = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -58,15 +60,8 @@ export const CartSection = () => {
     );
     setTotal(totalPrice);
   }, [cartItems]);
-  const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
-  const handleUpdateQuantity = (id: number, newQuantity: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
 
+  const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <>
       <Navbar />

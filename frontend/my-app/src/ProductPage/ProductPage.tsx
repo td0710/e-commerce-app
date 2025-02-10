@@ -112,27 +112,34 @@ export const ProductPage = () => {
                 <p className="rating-no">20</p>
               </div>
             </div>
-            <div style={{ display: "block" }} className="cloth-size">
-              <p className="choose">Choose a color</p>
-              <div className="options">
-                {Array.from(new Set(product?.variants.map((v) => v.color))).map(
-                  (c, index) => (
-                    <p
-                      key={index}
-                      className={`size ${color === c ? `size-clicked` : ""}`}
-                      onClick={() => setColor(c)}
-                    >
-                      {c}
-                    </p>
-                  )
-                )}
-              </div>
-            </div>
+            {Array.isArray(product?.variants) &&
+              product?.variants.some((v) => v.color !== "none") && (
+                <div style={{ display: "block" }} className="cloth-size">
+                  <p className="choose">Choose a color</p>
+                  <div className="options">
+                    {Array.from(
+                      new Set(product?.variants.map((v) => v.color))
+                    ).map((c, index) => (
+                      <p
+                        key={index}
+                        className={`size ${color === c ? `size-clicked` : ""}`}
+                        onClick={() => setColor(c)}
+                      >
+                        {c}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
             {product ? <hr className="horizontal" /> : ""}
 
             {color &&
               product?.variants?.some(
-                (v) => v.color === color && v.size !== null && v.size !== "none"
+                (v) =>
+                  v.color !== "none" &&
+                  v.color === color &&
+                  v.size !== null &&
+                  v.size !== "none"
               ) && (
                 <div style={{ display: "block" }} className="cloth-size">
                   <p className="choose">Choose a size</p>
@@ -156,6 +163,7 @@ export const ProductPage = () => {
                   </div>
                 </div>
               )}
+
             {(product && product?.category === "men's clothing") ||
             product?.category === "women's clothing" ? (
               <hr className="horizontal" />
