@@ -15,8 +15,8 @@ export const ProductPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
-  const [color, setColor] = useState("");
-  const [size, setSize] = useState("");
+  const [color, setColor] = useState("none");
+  const [size, setSize] = useState("none");
   const [choose, setChoose] = useState(false);
 
   const { id } = useParams();
@@ -132,7 +132,7 @@ export const ProductPage = () => {
 
             {color &&
               product?.variants?.some(
-                (v) => v.color === color && v.size !== null
+                (v) => v.color === color && v.size !== null && v.size !== "none"
               ) && (
                 <div style={{ display: "block" }} className="cloth-size">
                   <p className="choose">Choose a size</p>
@@ -177,19 +177,9 @@ export const ProductPage = () => {
               className="buying-buttons"
             >
               <Link to="/cart">
-                <button
-                  // onClick={handleAddToCart2}
-                  className="buy-btn"
-                >
-                  Buy Now
-                </button>
+                <button className="buy-btn">Buy Now</button>
               </Link>
-              <button
-                // onClick={() => {
-                //   handleAddToCart();
-                // }}
-                className="add-cart-btn"
-              >
+              <button className="add-cart-btn">
                 <img
                   src={require("../imgs/not-added.png")}
                   className="cart-img"

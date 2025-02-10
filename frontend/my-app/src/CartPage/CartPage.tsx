@@ -11,6 +11,7 @@ export const CartSection = () => {
   const navigate = useNavigate();
 
   const [cartItems, setCartItems] = useState<ProductCartModel[]>([]);
+  const [total, setTotal] = useState(0);
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -45,14 +46,26 @@ export const CartSection = () => {
         color: item.color,
         quantity: item.quantity,
       }));
-
       setCartItems(loadedProducts);
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
   }, []);
-
+  useEffect(() => {
+    const totalPrice = cartItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    setTotal(totalPrice);
+  }, [cartItems]);
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
+  const handleUpdateQuantity = (id: number, newQuantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
 
   return (
     <>
@@ -83,7 +96,7 @@ export const CartSection = () => {
               className="empty-cart"
             >
               <img
-                src={require("../imgs/empty.png")}
+                src={require("../imgs/cart-empty.png")}
                 className="empty-cart-img"
               />
             </div>
@@ -117,50 +130,13 @@ export const CartSection = () => {
             </div>
             <hr className="horizontal" />
             <div className="promocode">
-              <input
-                type="text"
-                placeholder="Promocode"
-                // onChange={handlePromocode}
-                // value={promocode}
-              />
-              <button
-                // onClick={() => {
-                //   if (promocode === "SHUBHO20") {
-                //     TotalValue(totalPrice1);
-                //     setdiscountCode(promocode);
-                //     setCorrectCode(true);
-                //   } else if (promocode !== "SHUBHO20") {
-                //     setdiscountCode(promocode);
-                //     TotalValue(totalPrice2);
-                //     setCorrectCode(false);
-                //   }
-                // }}
-                className="promocode-btn"
-              >
-                Apply
-              </button>
+              <input type="text" placeholder="Promocode" />
+              <button className="promocode-btn">Apply</button>
             </div>
-            <p
-              style={
-                // CorrectCode === true
-                //   ? { display: "block" }
-                //   :
-                { display: "none" }
-              }
-              className="applied"
-            >
+            <p style={{ display: "none" }} className="applied">
               <b>SHUBHO20</b> has been applied!
             </p>
-            <p
-              style={
-                // CorrectCode === false && discountCode !== ""
-                //   ?
-                { display: "block" }
-                //   :
-                //   { display: "none" }
-              }
-              className="applied2"
-            >
+            <p style={{ display: "block" }} className="applied2">
               Enter a valid promocode.
             </p>
             <hr className="horizontal" />
@@ -168,18 +144,9 @@ export const CartSection = () => {
             <div className="money-data">
               <div className="money-1">
                 <p className="total">Sub-Total</p>
-                <p className="total-price">50000</p>
+                <p className="total-price">${total.toFixed(2)}</p>
               </div>
-              <div
-                style={
-                  //   CorrectCode === true
-                  //     ? { display: "flex" }
-
-                  //     :
-                  { display: "none" }
-                }
-                className="money-2"
-              >
+              <div style={{ display: "none" }} className="money-2">
                 <p className="item-discount">Discount</p>
                 <p className="item-discount2">(20%) </p>
               </div>
@@ -189,49 +156,19 @@ export const CartSection = () => {
               </div>
               <div className="money-4">
                 <p className="item-tax">Tax</p>
-                <p className="item-tax2">(5%)</p>
+                <p className="item-tax2">(5%) + ${(total * 0.05).toFixed(2)}</p>
               </div>
             </div>
             <hr className="horizontal" />
             <div className="money-5">
               <p className="total">Total</p>
-              <p
-                style={
-                  //   CorrectCode === true
-                  //     ? { display: "block" }
-                  //     :
-                  { display: "none" }
-                }
-                className="total-price"
-              >
-                {/* ${totalPrice1} */} 500
-              </p>
-              <p
-                style={
-                  //   CorrectCode !== true?
-                  { display: "block" }
-                  // :
-                  // { display: "none" }
-                }
-                className="total-price2"
-              >
-                {/* ${totalPrice2} */}
+              <p style={{ display: "none" }} className="total-price"></p>
+              <p style={{ display: "block" }} className="total-price2">
+                ${(total + total * 0.05).toFixed(2)}
               </p>
             </div>
             <div className="payment-btn">
-              <button
-                // onClick={() => {
-                //   navigate("/payment");
-                //   if (CorrectCode === true) {
-                //     TotalValue(totalPrice1);
-                //   } else {
-                //     TotalValue(totalPrice2);
-                //   }
-                // }}
-                className="payment"
-              >
-                Proceed to Payment
-              </button>
+              <button className="payment">Proceed to Payment</button>
             </div>
           </div>
         </div>
