@@ -47,7 +47,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(token);
     }
     setIsReady(true);
-  }, [token]);
+  }, []);
   const updateWishlistCount = async () => {
     const userId = localStorage.getItem("id");
     if (!userId || !token) return;
@@ -93,9 +93,10 @@ export const UserProvider = ({ children }: Props) => {
             email: res?.data.email,
           };
           localStorage.setItem("user", JSON.stringify(userObj));
+          localStorage.setItem("username", res.data?.userName);
+          localStorage.setItem("email", res.data?.email);
           setToken(res?.data.token!);
           setUser(userObj!);
-          toast.success("Login Success!");
           navigate("/homepage");
         }
       })
@@ -131,6 +132,7 @@ export const UserProvider = ({ children }: Props) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("id");
     setUser(null);
     setToken("");
     navigate("/");

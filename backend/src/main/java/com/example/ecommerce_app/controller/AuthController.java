@@ -56,13 +56,10 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>("Username already exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponseDTO(null, null, null), HttpStatus.BAD_REQUEST);
         }
-//        System.out.println(registerDto.getUsername());
-//        System.out.println(registerDto.getEmail());
-//        System.out.println(registerDto.getPassword()+"123");
         Users user = new Users();
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
@@ -73,8 +70,14 @@ public class AuthController {
         user.setRoles(Collections.singletonList(roles));
         userRepository.save(user);
 
-        return new ResponseEntity<>("User created", HttpStatus.OK);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(registerDto.getUsername(), registerDto.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtGenerator.generateToken(authentication);
+
+
+        return new ResponseEntity<>(new AuthResponseDTO(token, user.getUsername(), user.getUser_email()), HttpStatus.OK);
 
     }
-
 }
