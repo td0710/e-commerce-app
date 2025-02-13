@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../Context/useAuth";
 import { UserProfileToken } from "../../models/UserProfileToken";
 import axios from "axios";
+import { OAuthConfig } from "../../configuration/configuration";
 
 type Props = {};
 
@@ -16,10 +17,24 @@ type LoginFormsInputs = {
   password: string;
 };
 
+const handleClick = () => {
+  const callbackUrl = OAuthConfig.redirectUri;
+  const authUrl = OAuthConfig.authUri;
+  const googleClientId = OAuthConfig.clientId;
+
+  const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
+    callbackUrl
+  )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
+
+  console.log(targetUrl);
+
+  window.location.href = targetUrl;
+};
 const validation = Yup.object().shape({
   username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
 });
+
 export const Signin = (props: Props) => {
   const { loginUser } = useAuth();
   const { logout } = useAuth();
@@ -83,7 +98,7 @@ export const Signin = (props: Props) => {
               <button className="signin-btn">Sign in</button>
               <div className="extra-buttons">
                 <p className="or">&#x2015; Or &#x2015;</p>
-                <button className="google">
+                <button className="google" onClick={handleClick}>
                   <p>Sign in with</p>
                   <img
                     src={require("../../imgs/google.png")}

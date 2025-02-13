@@ -9,6 +9,7 @@ import ProtectedRoute from "./Routes/ProtectedRoute";
 import { WishlistPage } from "./WishlistPage/WishlistPage";
 import ProductPage from "./ProductPage/ProductPage";
 import CartPage from "./CartPage/CartPage";
+import { LoadingPage } from "./LoadingPage/loadingPage";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/homepage" element={<Homepage />} />
+          <Route path="/auth/google/callback" element={<LoadingPage />} />
           <Route
             path="/wishlists"
             element={

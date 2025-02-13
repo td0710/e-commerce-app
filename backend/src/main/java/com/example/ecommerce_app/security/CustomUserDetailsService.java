@@ -27,9 +27,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new  User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String password = user.getPassword();
+        if (password == null || password.isEmpty()) {
+            password = "{noop}N/A";
+        }
+
+        return new User(user.getUsername(), password, mapRolesToAuthorities(user.getRoles()));
     }
+
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }

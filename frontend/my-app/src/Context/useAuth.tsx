@@ -14,6 +14,7 @@ interface CustomJwtPayload extends JwtPayload {
 type UserContextType = {
   user: UserProfile | null;
   token: string | null;
+  login: boolean | null;
   registerUser: (email: string, username: string, password: string) => void;
   loginUser: (username: string, password: string) => void;
   logout: () => void;
@@ -22,6 +23,7 @@ type UserContextType = {
   updateWishlistCount: () => void;
   cartCount: number;
   updateCartCount: () => void;
+  setlogin: () => void;
 };
 
 type Props = { children: React.ReactNode };
@@ -35,6 +37,7 @@ export const UserProvider = ({ children }: Props) => {
   const [isReady, setIsReady] = useState(false);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [login, setLogin] = useState(false);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -47,7 +50,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(token);
     }
     setIsReady(true);
-  }, []);
+  }, [token]);
   const updateWishlistCount = async () => {
     const userId = localStorage.getItem("id");
     if (!userId || !token) return;
@@ -62,6 +65,10 @@ export const UserProvider = ({ children }: Props) => {
     } catch (error) {
       console.error("Error fetching wishlist count:", error);
     }
+  };
+
+  const setlogin = () => {
+    setLogin(true);
   };
 
   const updateCartCount = async () => {
@@ -95,6 +102,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           localStorage.setItem("username", res.data?.userName);
           localStorage.setItem("email", res.data?.email);
+          setLogin(true);
           setToken(res?.data.token!);
           setUser(userObj!);
           navigate("/homepage");
@@ -116,6 +124,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           localStorage.setItem("username", res.data?.userName);
           localStorage.setItem("email", res.data?.email);
+          setLogin(true);
           setToken(res?.data.token!);
           setUser(userObj!);
           toast.success("Login Success!");
@@ -133,6 +142,7 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("id");
+    setLogin(false);
     setUser(null);
     setToken("");
     navigate("/");
@@ -141,6 +151,7 @@ export const UserProvider = ({ children }: Props) => {
   return (
     <UserContext.Provider
       value={{
+        login,
         loginUser,
         user,
         token,
@@ -151,6 +162,7 @@ export const UserProvider = ({ children }: Props) => {
         updateWishlistCount,
         cartCount,
         updateCartCount,
+        setlogin,
       }}
     >
       {isReady ? children : null}

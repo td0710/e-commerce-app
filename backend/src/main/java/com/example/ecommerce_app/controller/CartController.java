@@ -83,10 +83,6 @@ public class CartController {
                                      @RequestParam String color) {
         Cart cart = cartService.findById(userId);
 
-        if(cart==null) {
-            cartService.createCart(userId);
-        }
-
         ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
         if(productVariant.getStock() <= 0) {
             return ResponseEntity.ok("out of stock");
