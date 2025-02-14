@@ -28,3 +28,17 @@ export const signupAPI = async (
     return data;
   } catch (error) {}
 };
+
+export const signinGoogle = async (username: string, password: string) => {
+  try {
+    const data = await axios.post<UserProfileToken>(
+      "http://localhost:8080/api/auth/login/google",
+      {
+        username: username,
+        password: password,
+      }
+    );
+    console.log(data);
+    return data;
+  } catch (error) {}
+};

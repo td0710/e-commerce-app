@@ -56,7 +56,6 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
         Optional<Users> user= userRepository.findByUsername(username);
-        cartService.createCart(user.get().getId());
         System.out.println("!"+token);
         return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email()), HttpStatus.OK);
     }

@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { UserProfile } from "../models/UserProfile";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { signinAPI, signupAPI } from "../Services/AuthService";
+import { signinAPI, signinGoogle, signupAPI } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
 import { jwtDecode, JwtPayload } from "jwt-decode";
@@ -17,6 +17,7 @@ type UserContextType = {
   login: boolean | null;
   registerUser: (email: string, username: string, password: string) => void;
   loginUser: (username: string, password: string) => void;
+  loginGoogle: (usename: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
   wishlistCount: number;
@@ -110,6 +111,28 @@ export const UserProvider = ({ children }: Props) => {
       })
       .catch((e) => toast.warning("Server error occured"));
   };
+  const loginGoogle = async (username: string, password: string) => {
+    await signinGoogle(username, password)
+      .then((res) => {
+        if (res) {
+          localStorage.setItem("token", res?.data.token);
+          const userObj = {
+            userName: res?.data.userName,
+            email: res?.data.email,
+          };
+          console.log(res);
+          localStorage.setItem("user", JSON.stringify(userObj));
+          localStorage.setItem("username", res.data?.userName);
+          localStorage.setItem("email", res.data?.email);
+          setLogin(true);
+          setToken(res?.data.token!);
+          setUser(userObj!);
+          toast.success("Login Success!");
+          navigate("/homepage");
+        }
+      })
+      .catch((e) => toast.warning("Server error occured"));
+  };
 
   const loginUser = async (username: string, password: string) => {
     await signinAPI(username, password)
@@ -151,6 +174,7 @@ export const UserProvider = ({ children }: Props) => {
   return (
     <UserContext.Provider
       value={{
+        loginGoogle,
         login,
         loginUser,
         user,

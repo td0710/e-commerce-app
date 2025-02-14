@@ -6,11 +6,10 @@ import axios from "axios";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useAuth } from "../Context/useAuth";
 import { OAuthConfig } from "../configuration/configuration";
-import dotenv from "dotenv";
-dotenv.config();
+
 export const LoadingPage = () => {
   const navigate = useNavigate();
-  const { token, setlogin } = useAuth();
+  const { token, setlogin, loginGoogle } = useAuth();
   interface CustomJwtPayload extends JwtPayload {
     email: string;
   }
@@ -27,12 +26,14 @@ export const LoadingPage = () => {
 
         const url = `https://oauth2.googleapis.com/token`;
 
+        console.log(OAuthConfig.authUri);
+
         const response = await axios.post(url, {
           client_id: `${OAuthConfig.clientId}`,
           client_secret: `${process.env.REACT_APP_GOOGLE_CLIENT_SECRET}`,
           code: `${authCode}`,
           grant_type: "authorization_code",
-          redirect_uri: `${OAuthConfig.authUri}`,
+          redirect_uri: `${OAuthConfig.redirectUri}`,
         });
         console.log(response);
         const idToken = response.data.id_token;
@@ -40,22 +41,7 @@ export const LoadingPage = () => {
         const username = decodedUser.email;
         const url1 = `http://localhost:8080/api/auth/login/google`;
 
-        const authen = await axios.post(url1, {
-          username: `${username}`,
-          password: "",
-        });
-
-        localStorage.setItem("token", authen?.data.token);
-        const userObj = {
-          userName: authen?.data.userName,
-          email: authen?.data.email,
-        };
-
-        localStorage.setItem("user", JSON.stringify(userObj));
-        localStorage.setItem("username", authen.data?.userName);
-        localStorage.setItem("email", authen.data?.email);
-        setlogin();
-        navigate("/homepage");
+        loginGoogle(username, "");
       }
     };
     authenticateGoogle();

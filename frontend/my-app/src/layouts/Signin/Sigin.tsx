@@ -18,13 +18,12 @@ type LoginFormsInputs = {
 };
 
 const handleClick = () => {
-  const callbackUrl = OAuthConfig.redirectUri;
+  const callbackUrl = process.env.REACT_APP_REDIRECT_URI;
   const authUrl = OAuthConfig.authUri;
   const googleClientId = OAuthConfig.clientId;
 
-  const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
-    callbackUrl
-  )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
+  console.log(googleClientId);
+  const targetUrl = `${authUrl}?client_id=${googleClientId}&redirect_uri=${callbackUrl}&response_type=code&scope=openid%20email%20profile&prompt=consent`;
 
   console.log(targetUrl);
 

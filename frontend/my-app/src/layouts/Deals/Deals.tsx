@@ -78,6 +78,7 @@ function Deals() {
     <div className="Deals">
       <p className="deals-head" ref={productRef}>
         Hot Deals 🔥 {localStorage.getItem("id")}
+       
       </p>
       {loading && <Spinner />}
       <div className="deal-items">
