@@ -15,31 +15,17 @@ function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const token = localStorage.getItem("token");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productPerPage] = useState(12);
-  const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
   const { updateWishlistCount, updateCartCount } = useAuth();
 
-  const productRef = useRef<HTMLParagraphElement | null>(null); // Định kiểu ref
+  const productRef = useRef<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      // for (let i = 0; i < localStorage.length; i++) {
-      //   let key = localStorage.key(i); // Lấy key của mục tại vị trí i
-      //   if (key !== null) {
-      //     // Kiểm tra xem key có hợp lệ không
-      //     let value = localStorage.getItem(key); // Lấy giá trị của mục
-      //     console.log(key + ": " + value); // In key và giá trị
-      //   }
-      // }
       console.log(123);
-      const url = `http://localhost:8080/api/products/secure/getall?page=${
-        currentPage - 1
-      }&size=${productPerPage}`;
+      const url = `http://localhost:8080/api/products/secure/getall?page=0
+      &size=12`;
 
       const response = await axios.get(url, {
         headers: {
@@ -58,7 +44,6 @@ function Deals() {
 
       setProducts(loadedProducts);
 
-      setTotalPages(response.data.totalPages);
       setLoading(false);
       updateWishlistCount();
       updateCartCount();
@@ -72,13 +57,12 @@ function Deals() {
     fetchProducts().catch((error: any) => {
       console.log(error.messages);
     });
-  }, [currentPage]);
-  const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
+  }, []);
+
   return (
     <div className="Deals">
       <p className="deals-head" ref={productRef}>
         Hot Deals 🔥 {localStorage.getItem("id")}
-       
       </p>
       {loading && <Spinner />}
       <div className="deal-items">
@@ -87,14 +71,7 @@ function Deals() {
             return <List product={items} key={items.id}></List>;
           })}
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        paginate={paginate}
-      ></Pagination>
-      {/* <div className="lowerNav">
-        {/* <LowerNav /> */}
-      {/* </div> */}
+
       <Footer />
     </div>
   );

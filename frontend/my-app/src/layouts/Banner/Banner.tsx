@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../home.css";
 import "../Deals/lists.css";
 import "../../App.css";
+import { Link } from "react-router-dom";
 export const Banner = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -28,9 +29,9 @@ export const Banner = () => {
             orders.
           </p>
         </div>
-        <button onClick={handleScroll} className="browse-btn">
-          Browse products
-        </button>
+        <Link to="/products" className="browse-btn">
+          All Products
+        </Link>
       </div>
       <img className="delivery" src={require("../../imgs/delivery.png")} />
     </div>

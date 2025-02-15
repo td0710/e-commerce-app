@@ -10,6 +10,7 @@ import { WishlistPage } from "./WishlistPage/WishlistPage";
 import ProductPage from "./ProductPage/ProductPage";
 import CartPage from "./CartPage/CartPage";
 import { LoadingPage } from "./LoadingPage/loadingPage";
+import { ProductsPage } from "./ProductsPage/ProductsPage";
 function App() {
   return (
     <BrowserRouter>
@@ -42,6 +43,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                <ProductsPage></ProductsPage>
               </ProtectedRoute>
             }
           />

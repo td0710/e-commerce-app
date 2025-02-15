@@ -48,6 +48,7 @@
 }
 
 .browse-btn {
+  display: inline-block;
   cursor: pointer;
   background-color: white;
   border-radius: 40px;
