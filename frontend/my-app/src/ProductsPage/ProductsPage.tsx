@@ -8,10 +8,13 @@ import ProductModel from "../models/ProductModel";
 import { useAuth } from "../Context/useAuth";
 import { List } from "../layouts/Deals/List";
 import { Pagination } from "../utils/Pagination";
+import { Category } from "./Category";
 
 export const ProductsPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [category, setCatergory] = useState("all");
+
   const token = localStorage.getItem("token");
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,11 +32,16 @@ export const ProductsPage = () => {
   };
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log(123);
-      const url = `http://localhost:8080/api/products/secure/getall?page=${
-        currentPage - 1
-      }&size=${productPerPage}`;
-
+      let url = "";
+      if (category == "all") {
+        url = `http://localhost:8080/api/products/secure/getall?page=${
+          currentPage - 1
+        }&size=${productPerPage}`;
+      } else {
+        url = `http://localhost:8080/api/products/secure/category?page=${
+          currentPage - 1
+        }&size=${productPerPage}&category=${category}`;
+      }
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,17 +73,22 @@ export const ProductsPage = () => {
     fetchProducts().catch((error: any) => {
       console.log(error.messages);
     });
-  }, [currentPage]);
+  }, [currentPage, category]);
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
 
   return (
     <>
       <Navbar />
+
       <div style={{ height: "100%" }} className="content">
         <div className={products ? `lists animate` : `lists`}>
           <p className="wishlist-head" ref={productRef}>
             All Products
           </p>
+          <Category
+            findCategory={category}
+            setCategory={setCatergory}
+          ></Category>
           <div
             style={
               products.length === 0 ? { display: "flex" } : { display: "none" }
@@ -102,6 +115,7 @@ export const ProductsPage = () => {
                 return <List product={items} key={items.id}></List>;
               })}
           </div>
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

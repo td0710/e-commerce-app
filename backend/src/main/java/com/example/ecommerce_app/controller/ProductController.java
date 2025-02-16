@@ -22,4 +22,10 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getAll(@RequestParam int page, @RequestParam int size) {
         return new ResponseEntity<>(productService.findAllProducts(page, size), HttpStatus.OK);
     }
+
+    @GetMapping("/category")
+    public ResponseEntity<ProductResponse> getByCategory(@RequestParam int page, @RequestParam int size,
+                                                         @RequestParam String category) {
+        return new ResponseEntity<>(productService.findProductsByCategory(page, size,category), HttpStatus.OK);
+    }
 }
