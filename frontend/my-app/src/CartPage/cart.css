@@ -259,6 +259,7 @@
   transition: all 0.13s;
   margin-bottom: 14px;
   margin-top: 18px;
+  text-align: center;
 }
 
 .payment:hover {
@@ -277,6 +278,7 @@
 
 .payment-btn {
   display: flex;
+
   flex-direction: column;
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
-import { useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ProductCartModel from "../models/ProductCartModel";
 import "./cart.css";
@@ -22,6 +22,10 @@ export const CartSection = () => {
   const [productPerPage] = useState(5);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  const handlePayment = () => {
+    navigate("/payment");
+  };
 
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<ProductCartModel | null>(null);
@@ -202,7 +206,9 @@ export const CartSection = () => {
               </p>
             </div>
             <div className="payment-btn">
-              <button className="payment">Proceed to Payment</button>
+              <button className="payment" onClick={handlePayment}>
+                Proceed to Payment
+              </button>
             </div>
           </div>
         </div>
