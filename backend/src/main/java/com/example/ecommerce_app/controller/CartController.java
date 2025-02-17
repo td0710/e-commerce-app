@@ -57,7 +57,7 @@ public class CartController {
             ProductVariant productVariant = cartItem.getProductVariant();
             ProductCartResponse productCartDto = new ProductCartResponse();
 
-            productCartDto.setId(product.getId());
+            productCartDto.setId(productVariant.getId());
             productCartDto.setCategory(product.getCategory());
             productCartDto.setPrice(product.getPrice());
             productCartDto.setTitle(product.getTitle());
@@ -78,12 +78,10 @@ public class CartController {
     }
 
     @PostMapping("/add/cart/{userId}/{productId}")
-    public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId,
-                                     @RequestParam String size,
-                                     @RequestParam String color) {
+    public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+        ProductVariant productVariant = productVariantService.findById(productId) ;
         if(productVariant.getStock() <= 0) {
             return ResponseEntity.ok("out of stock");
         }
@@ -106,12 +104,10 @@ public class CartController {
         return ResponseEntity.ok("add item success");
     }
     @PostMapping("/decrease/cart/{userId}/{productId}")
-    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId,
-                                     @RequestParam String size,
-                                     @RequestParam String color) {
+    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+        ProductVariant productVariant = productVariantService.findById(productId) ;
 
         cart.setTotal(cart.getTotal()-1);
         cartService.saveCart(cart);
@@ -125,12 +121,10 @@ public class CartController {
     }
 
     @DeleteMapping("/delete/cart/{userId}/{productId}")
-    public ResponseEntity<?> deleteCart(@PathVariable Long userId,@PathVariable Long productId,
-                                          @RequestParam String size,
-                                          @RequestParam String color) {
+    public ResponseEntity<?> deleteCart(@PathVariable Long userId,@PathVariable Long productId) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color);
+        ProductVariant productVariant = productVariantService.findById(productId) ;
 
         CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
 

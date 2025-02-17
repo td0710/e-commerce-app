@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 export const CartItems: React.FC<{
   cartItem: ProductCartModel;
   onDelete: (id: number) => void;
+  onSelect: () => void;
+  isSelected: boolean;
 }> = (props) => {
   const navigate = useNavigate();
 
@@ -17,10 +19,20 @@ export const CartItems: React.FC<{
   const [add, setAdd] = useState(false);
 
   const { updateCartCount, updateWishlistCount } = useAuth();
+
+  const handleItemClick = (e: React.MouseEvent) => {
+    if (
+      e.target instanceof HTMLElement &&
+      (e.target.closest(".increase") || e.target.closest(".decrease"))
+    ) {
+      return;
+    }
+    props.onSelect();
+  };
   const increaseItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+    const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${props.cartItem.id}`;
     const response = await axios.post(
       url,
       {},
@@ -31,14 +43,21 @@ export const CartItems: React.FC<{
         },
       }
     );
-    setQuantity((prev) => prev + 1);
+    setQuantity((prev) => {
+      const newQuantity = prev + 1;
+      if (newQuantity === 0) {
+        props.onDelete(props.cartItem.id);
+      }
+      props.onSelect();
+      return newQuantity;
+    });
     updateCartCount();
   };
 
   const decreaseItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}`;
     const response = await axios.post(
       url,
       {},
@@ -54,6 +73,7 @@ export const CartItems: React.FC<{
       if (newQuantity === 0) {
         props.onDelete(props.cartItem.id);
       }
+      props.onSelect();
       return newQuantity;
     });
     updateCartCount();
@@ -61,7 +81,7 @@ export const CartItems: React.FC<{
   const deleteItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}`;
     const response = await axios.delete(url, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -91,7 +111,7 @@ export const CartItems: React.FC<{
       }
     };
     checkWishlist();
-  }, [props.cartItem.id, userId, token]);
+  }, [props.cartItem.id, userId, token, updateWishlistCount]);
 
   const addControll = async () => {
     if (add) {
@@ -122,7 +142,11 @@ export const CartItems: React.FC<{
   };
 
   return (
-    <div className="cart-data" key={props.cartItem.id}>
+    <div
+      className={`cart-data ${props.isSelected ? "selected" : ""}`}
+      key={props.cartItem.id}
+      onClick={handleItemClick}
+    >
       <img
         onClick={() => navigate(`/product/${props.cartItem.id}`)}
         src={props.cartItem.image}

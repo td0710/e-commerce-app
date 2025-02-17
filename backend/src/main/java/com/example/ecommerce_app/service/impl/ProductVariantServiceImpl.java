@@ -24,4 +24,5 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public void saveProductVariant(ProductVariant productVariant) {
         productVariantRepository.save(productVariant);
     }
+
 }

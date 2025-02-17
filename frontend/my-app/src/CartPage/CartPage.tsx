@@ -16,16 +16,29 @@ export const CartSection = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
-  const { cartCount } = useAuth();
+  const { cartCount, wishlistCount, updateCartCount } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [productPerPage] = useState(5);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
+  const [selectedItemDetails, setSelectedItemDetails] =
+    useState<ProductCartModel | null>(null);
+
   const handleDeleteItem = (id: number) => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
+
+  const handleSelectItem = (id: number) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      setSelectedItemDetails(item);
+    } else {
+      setSelectedItemDetails(null);
+    }
+  };
+
   useEffect(() => {
     const fetchCart = async () => {
       const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=0&size=50`;
@@ -52,7 +65,7 @@ export const CartSection = () => {
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
-  }, [cartCount]);
+  }, [cartCount, wishlistCount]);
   useEffect(() => {
     const totalPrice = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -102,6 +115,8 @@ export const CartSection = () => {
                     key={item.id}
                     cartItem={item}
                     onDelete={handleDeleteItem}
+                    onSelect={() => handleSelectItem(item.id)}
+                    isSelected={selectedItemDetails?.id === item.id}
                   />
                 );
               })}
@@ -139,7 +154,14 @@ export const CartSection = () => {
             <div className="money-data">
               <div className="money-1">
                 <p className="total">Sub-Total</p>
-                <p className="total-price">${total.toFixed(2)}</p>
+                <p className="total-price">
+                  $
+                  {selectedItemDetails
+                    ? (
+                        selectedItemDetails.price * selectedItemDetails.quantity
+                      ).toFixed(2)
+                    : "0.00"}
+                </p>
               </div>
               <div style={{ display: "none" }} className="money-2">
                 <p className="item-discount">Discount</p>
@@ -151,7 +173,16 @@ export const CartSection = () => {
               </div>
               <div className="money-4">
                 <p className="item-tax">Tax</p>
-                <p className="item-tax2">(5%) + ${(total * 0.05).toFixed(2)}</p>
+                <p className="item-tax2">
+                  (5%) + $
+                  {selectedItemDetails
+                    ? (
+                        selectedItemDetails.price *
+                        selectedItemDetails.quantity *
+                        0.05
+                      ).toFixed(2)
+                    : 0}
+                </p>
               </div>
             </div>
             <hr className="horizontal" />
@@ -159,7 +190,15 @@ export const CartSection = () => {
               <p className="total">Total</p>
               <p style={{ display: "none" }} className="total-price"></p>
               <p style={{ display: "block" }} className="total-price2">
-                ${(total + total * 0.05).toFixed(2)}
+                $ $
+                {selectedItemDetails
+                  ? (
+                      selectedItemDetails.price * selectedItemDetails.quantity +
+                      selectedItemDetails.price *
+                        selectedItemDetails.quantity *
+                        0.05
+                    ).toFixed(2)
+                  : "0.00"}
               </p>
             </div>
             <div className="payment-btn">
