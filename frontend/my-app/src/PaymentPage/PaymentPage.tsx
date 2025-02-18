@@ -1,48 +1,80 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import "./payment.css";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
+import axios from "axios";
 
 export const PaymentPage = () => {
-  // State quản lý hiển thị phần shipping và payment
+  const userId = localStorage.getItem("id");
+  const token = localStorage.getItem("token");
+
   const [shippingDisplay, setShippingDisplay] = useState("block");
   const [cardDisplay, setCardDisplay] = useState("none");
   const [isDisabled, setDisabled] = useState(false);
 
-  // State lưu thông tin người dùng
-  const [OrderID] = useState("12345XYZ"); // Giả định order ID
+  const [OrderID] = useState("12345XYZ");
   const [Name, setName] = useState("");
   const [Address, setAddress] = useState("");
   const [Country, setCountry] = useState("");
-  const [Pincode, setPincode] = useState("");
   const [Number, setNumber] = useState("");
   const [Email, setEmail] = useState("");
 
-  // State lưu lỗi
   const [NameError, setNameError] = useState("");
   const [AddressError, setAddressError] = useState("");
   const [CountryError, setCountryError] = useState("");
-  const [PincodeError, setPincodeError] = useState("");
+
   const [NumberError, setNumberError] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  // Hàm xử lý thay đổi input
   const handleName = (e: ChangeEvent<HTMLInputElement>) =>
     setName(e.target.value);
   const handleAddress = (e: ChangeEvent<HTMLInputElement>) =>
     setAddress(e.target.value);
   const handleCountry = (e: ChangeEvent<HTMLInputElement>) =>
     setCountry(e.target.value);
-  const handlePincode = (e: ChangeEvent<HTMLInputElement>) =>
-    setPincode(e.target.value);
   const handleNumber = (e: ChangeEvent<HTMLInputElement>) =>
     setNumber(e.target.value);
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
 
-  // Hàm hiển thị thông báo lỗi
   const notify1 = () => alert("Vui lòng nhập đầy đủ thông tin!");
+  useEffect(() => {
+    const fetchShippingDetails = async () => {
+      const url = `http://localhost:8080/api/shippingdetails/secure/get?id=${userId}`;
 
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response);
+      setName(response.data.name);
+      setAddress(response.data.homeAddress);
+      setCountry(response.data.country);
+      setNumber(response.data.contactNumber);
+      setEmail(response.data.email);
+    };
+    fetchShippingDetails();
+  }, []);
+
+  const saveShippingDetails = async () => {
+    const url = `http://localhost:8080/api/shippingdetails/secure/save?id=${userId}`;
+    const shippingDetails = {
+      userId: userId,
+      country: Country,
+      name: Name,
+      contactNumber: Number,
+      email: Email,
+      homeAddress: Address,
+    };
+    const response = await axios.put(url, shippingDetails, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+  };
   return (
     <>
       <Navbar></Navbar>
@@ -129,20 +161,6 @@ export const PaymentPage = () => {
                       <div className="error-message">{AddressError}</div>
                     )}
                   </div>
-                  <div className="user-pincode">
-                    <p className="user-pin-number">Pincode*</p>
-                    <input
-                      type="number"
-                      placeholder="Pincode"
-                      onChange={handlePincode}
-                      value={Pincode}
-                      disabled={isDisabled}
-                      required
-                    />
-                    {PincodeError && (
-                      <div className="error-message">{PincodeError}</div>
-                    )}
-                  </div>
                 </div>
               </div>
               <button
@@ -151,19 +169,18 @@ export const PaymentPage = () => {
                     Name.length !== 0 &&
                     Address.length !== 0 &&
                     Country.length !== 0 &&
-                    Pincode.length !== 0 &&
                     Number.length !== 0 &&
                     Email.length !== 0 &&
                     !NameError &&
                     !AddressError &&
                     !CountryError &&
-                    !PincodeError &&
                     !NumberError &&
                     !emailError
                   ) {
                     setDisabled(true);
                     setShippingDisplay("none");
                     setCardDisplay("block");
+                    saveShippingDetails();
                   } else {
                     notify1();
                   }
