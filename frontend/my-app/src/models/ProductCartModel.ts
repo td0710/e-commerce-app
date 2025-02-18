@@ -1,5 +1,6 @@
 class ProductCartModel {
   id: number;
+  cartItemId: number;
   title: string;
   description: string;
   category: string;
@@ -10,6 +11,7 @@ class ProductCartModel {
   quantity: number;
   constructor(
     id: number,
+    cartItemId: number,
     title: string,
     description: string,
     category: string,
@@ -20,6 +22,7 @@ class ProductCartModel {
     quantity: number
   ) {
     this.id = id;
+    this.cartItemId = cartItemId;
     this.title = title;
     this.description = description;
     this.category = category;

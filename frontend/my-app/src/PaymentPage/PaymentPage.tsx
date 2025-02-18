@@ -3,10 +3,14 @@ import "./payment.css";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 export const PaymentPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
+
+  const location = useLocation();
+  const { totalPrice, cartItems } = location.state || {};
 
   const [shippingDisplay, setShippingDisplay] = useState("block");
   const [cardDisplay, setCardDisplay] = useState("none");
@@ -36,7 +40,7 @@ export const PaymentPage = () => {
     setNumber(e.target.value);
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
-
+  console.log(totalPrice);
   const notify1 = () => alert("Vui lòng nhập đầy đủ thông tin!");
   useEffect(() => {
     const fetchShippingDetails = async () => {
@@ -221,7 +225,7 @@ export const PaymentPage = () => {
               </div>
               <div className="total-amount">
                 <p className="subtotal-amount">Total Amount :</p>
-                <p className="main-amount">$100</p>
+                <p className="main-amount">{totalPrice}$</p>
               </div>
               <div className="order-place-btn">
                 <button className="confirm-btn">Place Order</button>

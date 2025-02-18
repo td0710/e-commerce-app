@@ -115,6 +115,7 @@ public class AuthController {
         String token = jwtGenerator.generateToken(authentication);
 
         System.out.println("!"+token);
+
         return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email()), HttpStatus.OK);
     }
 }

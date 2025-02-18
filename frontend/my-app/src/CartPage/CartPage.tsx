@@ -24,7 +24,19 @@ export const CartSection = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const handlePayment = () => {
-    navigate("/payment");
+    let total1;
+    if (selectedItemDetails !== null) {
+      total1 = (
+        selectedItemDetails.price * selectedItemDetails.quantity +
+        selectedItemDetails.price * selectedItemDetails.quantity * 0.05
+      ).toFixed(2);
+    }
+    navigate("/payment", {
+      state: {
+        totalPrice: total1,
+        cartItems: selectedItemDetails?.cartItemId,
+      },
+    });
   };
 
   const [selectedItemDetails, setSelectedItemDetails] =
@@ -56,6 +68,7 @@ export const CartSection = () => {
       console.log(response);
       const loadedProducts = response.data.products.map((item: any) => ({
         id: item.id,
+        cartItemId: item.cartItemId,
         title: item.title,
         description: item.description,
         category: item.category,
