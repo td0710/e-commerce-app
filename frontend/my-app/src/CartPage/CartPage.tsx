@@ -31,6 +31,13 @@ export const CartSection = () => {
         selectedItemDetails.price * selectedItemDetails.quantity * 0.05
       ).toFixed(2);
     }
+    if (selectedItemDetails?.cartItemId != null) {
+      localStorage.setItem(
+        "currentItem",
+        String(selectedItemDetails.cartItemId)
+      );
+    }
+
     navigate("/payment", {
       state: {
         totalPrice: total1,

@@ -10,4 +10,6 @@ public interface CartService {
     void saveCart(Cart cart);
 
     Long totalProductsInCart(Long userId);
+
+    Cart findByUserId(Long userId);
 }

@@ -38,4 +38,12 @@ public class CartItemServiceImpl implements CartItemService {
     public void removeCartItem(CartItem cartItem) {
         cartItemRepository.delete(cartItem);
     }
+
+    public CartItem findById(Long id) {
+        return cartItemRepository.findById(id).orElse(null);
+    }
+
+    public void delete(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
+    }
 }

@@ -9,4 +9,8 @@ public interface CartItemService {
     CartItem findByCartIdAndProductVariantId(Long CartId, Long ProductVariantId);
     void addCartItem(CartItem cartItem);
     void removeCartItem(CartItem cartItem);
+
+    CartItem findById(Long id);
+
+    void delete(Long cartItemId);
 }

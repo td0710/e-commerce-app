@@ -12,6 +12,7 @@ import CartPage from "./CartPage/CartPage";
 import { LoadingPage } from "./LoadingPage/loadingPage";
 import { ProductsPage } from "./ProductsPage/ProductsPage";
 import { PaymentPage } from "./PaymentPage/PaymentPage";
+import { LoadingPayment } from "./LoadingPage/loadingPayment";
 function App() {
   return (
     <BrowserRouter>
@@ -60,6 +61,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PaymentPage></PaymentPage>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vnpay"
+            element={
+              <ProtectedRoute>
+                <LoadingPayment></LoadingPayment>
               </ProtectedRoute>
             }
           />

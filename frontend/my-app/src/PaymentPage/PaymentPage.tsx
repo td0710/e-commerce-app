@@ -42,6 +42,36 @@ export const PaymentPage = () => {
     setEmail(e.target.value);
   console.log(totalPrice);
   const notify1 = () => alert("Vui lòng nhập đầy đủ thông tin!");
+
+  const [paymentMode, setPaymentMode] = useState("COD");
+
+  const handlePaymentChange = (event: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setPaymentMode(event.target.value);
+  };
+  const handleCODPayment = async () => {
+    const url = `http://localhost:8080/api/payment/secure/cod?userId=${userId}&totalPrice=${
+      totalPrice * 25500
+    }&cartItemId=${cartItems}`;
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+  const handlePlaceOrder = () => {
+    if (paymentMode === "COD") {
+      handleCODPayment();
+    } else {
+      window.location.href = `/vnpay/payment?amount=${totalPrice}`;
+    }
+  };
   useEffect(() => {
     const fetchShippingDetails = async () => {
       const url = `http://localhost:8080/api/shippingdetails/secure/get?id=${userId}`;
@@ -206,9 +236,9 @@ export const PaymentPage = () => {
                   <input
                     type="radio"
                     name="payment-method"
-                    // onChange={handlePaymentChange}
+                    onChange={handlePaymentChange}
                     value="COD"
-                    // checked={paymentMode === "COD"}
+                    checked={paymentMode === "COD"}
                   />
                   Cash on Delivery (COD)
                 </div>
@@ -216,9 +246,9 @@ export const PaymentPage = () => {
                   <input
                     type="radio"
                     name="payment-method"
-                    // onChange={handlePaymentChange}
+                    onChange={handlePaymentChange}
                     value="Credit"
-                    // checked={paymentMode === "Credit"}
+                    checked={paymentMode === "Credit"}
                   />
                   Credit/Debit Card
                 </div>
@@ -228,7 +258,9 @@ export const PaymentPage = () => {
                 <p className="main-amount">{totalPrice}$</p>
               </div>
               <div className="order-place-btn">
-                <button className="confirm-btn">Place Order</button>
+                <button className="confirm-btn" onClick={handlePlaceOrder}>
+                  Place Order
+                </button>
               </div>
             </div>
           </div>
