@@ -3,12 +3,15 @@ import "./payment.css";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/useAuth";
 
 export const PaymentPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
+  const { orderCount, updateOrderCount } = useAuth();
 
+  const navigate = useNavigate();
   const location = useLocation();
   const { totalPrice, cartItems } = location.state || {};
 
@@ -64,6 +67,8 @@ export const PaymentPage = () => {
         },
       }
     );
+    updateOrderCount();
+    navigate("/order");
   };
   const handlePlaceOrder = () => {
     if (paymentMode === "COD") {

@@ -8,7 +8,8 @@ export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { wishlistCount, updateWishlistCount, cartCount } = useAuth();
+  const { wishlistCount, orderCount, cartCount } = useAuth();
+
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
@@ -149,11 +150,11 @@ export const Navbar = () => {
                   buttons: ["Cancel", "Yes"],
                 }).then((willNavigate) => {
                   if (willNavigate) {
-                    navigate("/orders");
+                    navigate("/order");
                   }
                 });
               } else {
-                navigate("/orders");
+                navigate("/order");
               }
             }}
             src={require("../../imgs/orders.png")}
@@ -161,7 +162,7 @@ export const Navbar = () => {
           />
 
           <p style={{ opacity: 1 }} className="order-count">
-            {wishlistCount}
+            {orderCount}
           </p>
 
           <img

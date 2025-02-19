@@ -79,10 +79,12 @@ public class CartController {
     }
 
     @PostMapping("/add/cart/{userId}/{productId}")
-    public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId) {
+    public ResponseEntity<?> addCart(@PathVariable Long userId,@PathVariable Long productId,
+                                     @RequestParam String size,
+                                     @RequestParam String color) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findById(productId) ;
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color) ;
         if(productVariant.getStock() <= 0) {
             return ResponseEntity.ok("out of stock");
         }
@@ -105,10 +107,12 @@ public class CartController {
         return ResponseEntity.ok("add item success");
     }
     @PostMapping("/decrease/cart/{userId}/{productId}")
-    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId) {
+    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId,
+                                          @RequestParam String size,
+                                          @RequestParam String color) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findById(productId) ;
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color) ;
 
         cart.setTotal(cart.getTotal()-1);
         cartService.saveCart(cart);
@@ -122,10 +126,12 @@ public class CartController {
     }
 
     @DeleteMapping("/delete/cart/{userId}/{productId}")
-    public ResponseEntity<?> deleteCart(@PathVariable Long userId,@PathVariable Long productId) {
+    public ResponseEntity<?> deleteCart(@PathVariable Long userId,@PathVariable Long productId,
+                                        @RequestParam String size,
+                                        @RequestParam String color) {
         Cart cart = cartService.findById(userId);
 
-        ProductVariant productVariant = productVariantService.findById(productId) ;
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color) ;
 
         CartItem cartItem = cartItemService.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
 

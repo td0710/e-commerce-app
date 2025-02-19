@@ -29,6 +29,8 @@ public class Order {
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
 
+    @Column(name="quantity",nullable = false)
+    private int quantity;
 
     @Column(name = "order_status", nullable = false)
     private String orderStatus ;

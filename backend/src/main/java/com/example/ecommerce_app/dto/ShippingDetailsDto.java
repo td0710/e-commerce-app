@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ShippingDetailsDto {
-
     private Long id;
     private Long userId;
     private String country;

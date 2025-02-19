@@ -67,10 +67,12 @@ public class PaymentController {
         CartItem cartItem = cartItemService.findById(cartItemId) ;
         Product product = productService.findProductById(cartItem.getProduct().getId()) ;
         ProductVariant productVariant = productVariantService.findById(cartItem.getProductVariant().getId()) ;
+        System.out.println(productVariant.getId());
         ShippingDetails shippingDetails = shippingDetailsService.findByUserId(userId) ;
 
         order.setUser(user);
         order.setProduct(product);
+        order.setQuantity(cartItem.getQuantity());
         order.setVariant(productVariant);
         order.setTotalPrice(totalPrice);
         order.setOrderStatus("CONFIRMED");

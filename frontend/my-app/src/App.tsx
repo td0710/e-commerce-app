@@ -13,6 +13,7 @@ import { LoadingPage } from "./LoadingPage/loadingPage";
 import { ProductsPage } from "./ProductsPage/ProductsPage";
 import { PaymentPage } from "./PaymentPage/PaymentPage";
 import { LoadingPayment } from "./LoadingPage/loadingPayment";
+import OrderPage from "./OrderPage/OrderPage";
 function App() {
   return (
     <BrowserRouter>
@@ -69,6 +70,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <LoadingPayment></LoadingPayment>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order"
+            element={
+              <ProtectedRoute>
+                <OrderPage></OrderPage>
               </ProtectedRoute>
             }
           />

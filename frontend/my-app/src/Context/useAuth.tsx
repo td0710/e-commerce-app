@@ -25,6 +25,8 @@ type UserContextType = {
   cartCount: number;
   updateCartCount: () => void;
   setlogin: () => void;
+  orderCount: number;
+  updateOrderCount: () => void;
 };
 
 type Props = { children: React.ReactNode };
@@ -39,6 +41,7 @@ export const UserProvider = ({ children }: Props) => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [login, setLogin] = useState(false);
+  const [orderCount, setOrderCount] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -71,7 +74,21 @@ export const UserProvider = ({ children }: Props) => {
   const setlogin = () => {
     setLogin(true);
   };
-
+  const updateOrderCount = async () => {
+    const userId = localStorage.getItem("id");
+    if (!userId || !token) return;
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/orders/secure/total/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setOrderCount(response.data);
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error);
+    }
+  };
   const updateCartCount = async () => {
     const userId = localStorage.getItem("id");
     if (!userId || !token) return;
@@ -174,6 +191,8 @@ export const UserProvider = ({ children }: Props) => {
   return (
     <UserContext.Provider
       value={{
+        orderCount,
+        updateOrderCount,
         loginGoogle,
         login,
         loginUser,

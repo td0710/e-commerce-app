@@ -17,7 +17,8 @@ function Deals() {
 
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
-  const { updateWishlistCount, updateCartCount } = useAuth();
+  const { updateWishlistCount, updateCartCount, updateOrderCount, orderCount } =
+    useAuth();
 
   const productRef = useRef<HTMLParagraphElement | null>(null);
 
@@ -47,6 +48,7 @@ function Deals() {
       setLoading(false);
       updateWishlistCount();
       updateCartCount();
+      updateOrderCount();
       setTimeout(() => {
         productRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -62,7 +64,7 @@ function Deals() {
   return (
     <div className="Deals">
       <p className="deals-head" ref={productRef}>
-        Hot Deals 🔥 {localStorage.getItem("id")}
+        Hot Deals 🔥 {orderCount}
       </p>
       {loading && <Spinner />}
       <div className="deal-items">
