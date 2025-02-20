@@ -47,4 +47,8 @@ public class CartServiceImpl implements CartService {
     public Cart findByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
     }
+
+    public void save(Cart cart) {
+        cartRepository.save(cart);
+    }
 }

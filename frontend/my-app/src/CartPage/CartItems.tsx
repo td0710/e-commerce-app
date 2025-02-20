@@ -32,7 +32,7 @@ export const CartItems: React.FC<{
   const increaseItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${props.cartItem.id}`;
+    const url = `http://localhost:8080/api/carts/secure/add/cartpage/${userId}/${props.cartItem.id}`;
     const response = await axios.post(
       url,
       {},
@@ -43,6 +43,7 @@ export const CartItems: React.FC<{
         },
       }
     );
+    console.log(response);
     setQuantity((prev) => {
       const newQuantity = prev + 1;
       if (newQuantity === 0) {
@@ -57,7 +58,7 @@ export const CartItems: React.FC<{
   const decreaseItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}`;
+    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
     const response = await axios.post(
       url,
       {},
@@ -81,7 +82,7 @@ export const CartItems: React.FC<{
   const deleteItem = async () => {
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}`;
+    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
     const response = await axios.delete(url, {
       headers: {
         Authorization: `Bearer ${token}`,

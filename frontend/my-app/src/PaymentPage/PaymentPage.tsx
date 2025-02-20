@@ -70,11 +70,23 @@ export const PaymentPage = () => {
     updateOrderCount();
     navigate("/order");
   };
+  const handleCardPayment = async () => {
+    const url = `http://localhost:8080/api/payment/secure/vn-pay?amount=${
+      totalPrice * 25500
+    }&bankCode=NCB`;
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    window.location.href = response.data.paymentUrl;
+  };
   const handlePlaceOrder = () => {
     if (paymentMode === "COD") {
       handleCODPayment();
     } else {
-      window.location.href = `/vnpay/payment?amount=${totalPrice}`;
+      handleCardPayment();
     }
   };
   useEffect(() => {

@@ -24,8 +24,8 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public void save(Order order) {
-        orderRepository.save(order);
+    public Order save(Order order) {
+        return orderRepository.save(order);
     }
 
     public OrderPageResponse getAllOrders(Long userId,int page, int size) {
@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
             orderResponse.setShippingAddress(order.getShippingAddress());
             orderResponse.setShippingCountry(order.getShippingCountry());
             orderResponse.setShippingEmail(order.getShippingEmail());
-
+            orderResponse.setStatus(order.getOrderStatus());
 
             orderResponse.setProductName(order.getProduct().getTitle());
             orderResponse.setProductCategory(order.getProduct().getCategory());
@@ -70,5 +70,9 @@ public class OrderServiceImpl implements OrderService {
 
     public Long totalOrders(Long userId) {
         return orderRepository.countByUserId(userId) ;
+    }
+
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).get();
     }
 }

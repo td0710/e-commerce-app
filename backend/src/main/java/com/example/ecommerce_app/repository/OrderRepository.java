@@ -10,4 +10,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByUserId(Long userId, Pageable pageable) ;
     Long countByUserId(Long userId);
+    Order save(Order order);
 }

@@ -8,6 +8,7 @@ public class OrderResponse {
     Long orderId;
     Long totalPrice;
     int quantity ;
+    String status;
     String size ;
     String color;
     String shippingName;

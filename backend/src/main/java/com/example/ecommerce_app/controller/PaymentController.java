@@ -3,10 +3,11 @@ package com.example.ecommerce_app.controller;
 
 import com.example.ecommerce_app.dto.PaymentDto;
 
+import com.example.ecommerce_app.dto.PaymentVNPAYDto;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.service.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.catalina.User;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,16 +48,66 @@ public class PaymentController {
     public ResponseEntity<PaymentDto> pay(HttpServletRequest request) {
         return ResponseEntity.ok(paymentService.createVnPayPayment(request));
     }
-    @GetMapping("/vn-pay-callback")
-    public ResponseEntity<PaymentDto> payCallbackHandler(HttpServletRequest request) {
-        String status = request.getParameter("vnp_ResponseCode");
+    @PostMapping("/vn-pay-callback")
+    public ResponseEntity<?> payCallbackHandler(@RequestBody PaymentVNPAYDto paymentVNPAYDto) {
+
+
+        String status = paymentVNPAYDto.getVnpResponseCode();
+
+        Users user = userService.findById(paymentVNPAYDto.getUserId());
+        CartItem cartItem = cartItemService.findById(paymentVNPAYDto.getCartItemId());
+        Product product = productService.findProductById(cartItem.getProduct().getId());
+        ProductVariant productVariant = productVariantService.findById(cartItem.getProductVariant().getId());
+        ShippingDetails shippingDetails = shippingDetailsService.findByUserId(paymentVNPAYDto.getUserId());
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setProduct(product);
+        order.setQuantity(cartItem.getQuantity());
+        order.setVariant(productVariant);
+        order.setTotalPrice(paymentVNPAYDto.getVnpAmount()/100);
+        order.setShippingAddress(shippingDetails.getHomeAddress());
+        order.setShippingCountry(shippingDetails.getCountry());
+        order.setShippingContact(shippingDetails.getContactNumber());
+        order.setShippingName(shippingDetails.getName());
+        order.setShippingEmail(shippingDetails.getEmail());
+        order.setCreatedAt(LocalDateTime.now());
+
         if ("00".equals(status)) {
-            return ResponseEntity.ok(new PaymentDto("00", "Success", ""));
+            order.setOrderStatus("CONFIRMED");
+            order.setPaymentStatus("PAID");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new PaymentDto("99", "Failed", ""));
+            order.setOrderStatus("CANCELLED");
+            order.setPaymentStatus("UNPAID");
         }
+
+        // ✅ Lưu Order trước và đảm bảo nó được quản lý
+        order = orderService.save(order);
+
+        Payment payment = new Payment();
+        payment.setOrder(order); //
+        payment.setTransactionNo(paymentVNPAYDto.getVnpTransactionNo());
+        payment.setTxnRef(paymentVNPAYDto.getVnpTxnRef());
+        payment.setAmount(order.getTotalPrice() / 100);
+        payment.setBankCode(paymentVNPAYDto.getVnpBankCode());
+        payment.setCardType(paymentVNPAYDto.getVnpCardType());
+        payment.setPayDate(LocalDateTime.now());
+        payment.setResponseCode(paymentVNPAYDto.getVnpResponseCode());
+        payment.setTransactionStatus(paymentVNPAYDto.getVnpTransactionStatus());
+        payment.setCreatedAt(LocalDateTime.now());
+
+        paymentService.save(payment);
+
+        if ("00".equals(status)) {
+            Cart cart = cartService.findByUserId(paymentVNPAYDto.getUserId());
+            cart.setTotal(cart.getTotal() - cartItem.getQuantity());
+            cartService.save(cart);
+            cartItemService.delete(paymentVNPAYDto.getCartItemId());
+        }
+
+        return ResponseEntity.ok("success");
     }
+
     @PostMapping("/cod")
     public ResponseEntity<?> codPayment(@RequestParam Long userId,
                                         @RequestParam Long totalPrice,

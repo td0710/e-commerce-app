@@ -18,7 +18,7 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "transaction_no", unique = true, nullable = false, length = 50)
+    @Column(name = "transaction_no", nullable = false, length = 50)
     private String transactionNo;
 
     @Column(name = "txn_ref", unique = true, nullable = false, length = 50)
