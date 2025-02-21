@@ -14,13 +14,13 @@ import { ProductsPage } from "./ProductsPage/ProductsPage";
 import { PaymentPage } from "./PaymentPage/PaymentPage";
 import { LoadingPayment } from "./LoadingPage/loadingPayment";
 import OrderPage from "./OrderPage/OrderPage";
+import { EditOrderPage } from "./EditOrderPage/EditOrderPage";
 function App() {
   return (
     <BrowserRouter>
       <UserProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/signin" />} />
-
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/homepage" element={<Homepage />} />
@@ -80,7 +80,8 @@ function App() {
                 <OrderPage></OrderPage>
               </ProtectedRoute>
             }
-          />
+          />{" "}
+          <Route path="/edit-order/:orderId" element={<EditOrderPage />} />
         </Routes>
       </UserProvider>
     </BrowserRouter>

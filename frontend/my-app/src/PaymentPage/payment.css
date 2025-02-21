@@ -86,6 +86,29 @@
   transform: scale(1.06);
 }
 
+.cancel-order {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background-color: rgb(255, 69, 58); /* Màu đỏ cảnh báo */
+  padding: 8px 20px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  color: white;
+  transition: all 0.3s ease;
+  font-size: 17px;
+  border-radius: 5px;
+  margin-top: 26px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 18px 50px -10px;
+  transition: all 0.13s;
+}
+
+.cancel-order:hover {
+  background-color: rgb(200, 0, 0);
+  transform: scale(1.06);
+}
+
 .save-address:active {
   transform: scale(1);
 }

@@ -126,7 +126,7 @@ export const Orders = () => {
                 .map((order) => {
                   return (
                     <NavLink
-                      to={`/product/${order.orderId}`}
+                      to={`/edit-order/${order.orderId}`}
                       key={order.orderId}
                       className="nav-link2"
                     >
