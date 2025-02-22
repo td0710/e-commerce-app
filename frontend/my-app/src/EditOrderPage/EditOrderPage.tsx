@@ -1,13 +1,17 @@
 import axios from "axios";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../Context/useAuth";
 import "../PaymentPage/payment.css";
+import "../OrderPage/orders.css";
+import OrderModel from "../models/OrderModel";
 
 export const EditOrderPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
+
+  const [order, setOrderItem] = useState<OrderModel | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,35 +68,103 @@ export const EditOrderPage = () => {
   };
   useEffect(() => {
     const fetchShippingDetails = async () => {
-      const url = `http://localhost:8080/api/orders/secure/get/${orderId}`;
+      try {
+        const url = `http://localhost:8080/api/orders/secure/get/${orderId}`;
 
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      setName(response.data.name);
-      setAddress(response.data.homeAddress);
-      setCountry(response.data.country);
-      setNumber(response.data.contactNumber);
-      setEmail(response.data.email);
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.data) {
+          const loadedOrder = {
+            orderId: response.data.orderId,
+            totalPrice: response.data.totalPrice,
+            quantity: response.data.quantity,
+            size: response.data.size,
+            color: response.data.color,
+            shippingName: response.data.shippingName,
+            shippingAddress: response.data.shippingAddress,
+            shippingCountry: response.data.shippingCountry,
+            shippingEmail: response.data.shippingEmail,
+            productName: response.data.productName,
+            productCategory: response.data.productCategory,
+            productImg: response.data.productImg,
+            status: response.data.status,
+          };
+
+          setOrderItem(loadedOrder);
+
+          setName(response.data.shippingName);
+          setAddress(response.data.shippingAddress);
+          setCountry(response.data.shippingCountry);
+          setNumber(response.data.contactNumber); //
+          setEmail(response.data.shippingEmail);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+      }
     };
+
     fetchShippingDetails();
-  }, []);
+  }, [orderId, token]);
+
   return (
     <>
       <Navbar />
+
       <div className="payment-page">
         <div className="more-data">
           <div
             style={{ display: shippingDisplay }}
             className="shipping-data animate"
           >
-            <div className="shipping-head">Edit Shipping details</div>
+            <div key={order?.orderId} className="nav-link2">
+              <div className="order1">
+                <img src={order?.productImg} className="order-img1" />
+                <div className="order-text1">
+                  <p className="order-head">{order?.productName}</p>
+                  <p className="order-category">{order?.productCategory}</p>
+                  <p className="order-quantity">
+                    Quantity: <b>{order?.quantity}</b>
+                  </p>
+                  <p className="order-total-price">
+                    Total Price: <b>{order?.totalPrice.toLocaleString()} VND</b>
+                  </p>
+                  {order?.size && (
+                    <p className="order-size">
+                      Size: <b>{order.size}</b>
+                    </p>
+                  )}
+                  {order?.color && (
+                    <p className="order-color">
+                      Color: <b>{order.color}</b>
+                    </p>
+                  )}
+                  <div className="order-success">
+                    <img
+                      src={require("../imgs/order-done.png")}
+                      className="order-done"
+                    />
+                    <p
+                      style={{
+                        marginLeft: "5px",
+                        marginTop: 0,
+                        marginBottom: 0,
+                      }}
+                      className="order-dispatch"
+                    >
+                      Ordered successfully! Preparing for dispatch!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="user-data-form">
-              <p className="order-id">Order ID: {orderId}</p>
+              <div className="shipping-head">Edit Shipping details</div>
+
               <div className="all-data-of-user">
                 <div className="user-data1">
                   <div className="country">
@@ -192,7 +264,6 @@ export const EditOrderPage = () => {
               >
                 Save
               </button>
-              <button className="cancel-order">Cancel Order</button>
             </div>
           </div>
         </div>

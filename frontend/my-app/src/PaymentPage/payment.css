@@ -83,6 +83,7 @@
 }
 
 .save-address:hover {
+  background-color: rgb(0, 102, 204); /* Xanh biển đậm hơn */
   transform: scale(1.06);
 }
 

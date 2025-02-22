@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
             orderResponse.setShippingCountry(order.getShippingCountry());
             orderResponse.setShippingEmail(order.getShippingEmail());
             orderResponse.setStatus(order.getOrderStatus());
+            orderResponse.setContactNumber(order.getShippingContact());
 
             orderResponse.setProductName(order.getProduct().getTitle());
             orderResponse.setProductCategory(order.getProduct().getCategory());

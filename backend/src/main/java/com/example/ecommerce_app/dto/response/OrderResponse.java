@@ -16,6 +16,7 @@ public class OrderResponse {
     String shippingCountry;
     String shippingEmail;
     String productName;
+    String contactNumber;
     String productCategory;
     String productImg;
 }

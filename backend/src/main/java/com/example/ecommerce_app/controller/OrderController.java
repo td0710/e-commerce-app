@@ -2,6 +2,7 @@ package com.example.ecommerce_app.controller;
 
 import com.example.ecommerce_app.dto.ShippingDetailsDto;
 import com.example.ecommerce_app.dto.response.OrderPageResponse;
+import com.example.ecommerce_app.dto.response.OrderResponse;
 import com.example.ecommerce_app.entity.Order;
 import com.example.ecommerce_app.entity.ShippingDetails;
 import com.example.ecommerce_app.service.OrderService;
@@ -30,21 +31,30 @@ public class OrderController {
     }
 
     @GetMapping("/get/{orderId}")
-    public ResponseEntity<ShippingDetailsDto> getOrder(@PathVariable Long orderId) {
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId) {
 
         Order order = orderService.getOrderById(orderId);
 
-        ShippingDetailsDto shippingDetailsDto = new ShippingDetailsDto(
-                order.getId(),
-                order.getUser().getId(),
-                order.getShippingCountry(),
-                order.getShippingName(),
-                order.getShippingContact(),
-                order.getShippingEmail(),
-                order.getShippingAddress()
-        );
+        OrderResponse orderResponse = new OrderResponse();
 
-        return ResponseEntity.ok(shippingDetailsDto) ;
+        orderResponse.setOrderId(order.getId());
+        orderResponse.setTotalPrice(order.getTotalPrice());
+        orderResponse.setQuantity(order.getQuantity());
+        orderResponse.setShippingName(order.getShippingName());
+        orderResponse.setShippingAddress(order.getShippingAddress());
+        orderResponse.setShippingCountry(order.getShippingCountry());
+        orderResponse.setShippingEmail(order.getShippingEmail());
+        orderResponse.setStatus(order.getOrderStatus());
+        orderResponse.setContactNumber(order.getShippingContact());
+
+        orderResponse.setProductName(order.getProduct().getTitle());
+        orderResponse.setProductCategory(order.getProduct().getCategory());
+        orderResponse.setProductImg(order.getProduct().getImage());
+
+        orderResponse.setSize(order.getVariant().getSize());
+        orderResponse.setColor(order.getVariant().getColor());
+
+        return ResponseEntity.ok(orderResponse) ;
 
     }
     @PutMapping("/edit/{orderId}")
@@ -64,4 +74,5 @@ public class OrderController {
 
         return ResponseEntity.ok("success");
     }
+
 }
