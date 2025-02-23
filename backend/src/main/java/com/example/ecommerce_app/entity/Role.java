@@ -21,7 +21,7 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-    @JsonBackReference
-    private List<Users> users = new ArrayList<>();
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Users> users;
 }

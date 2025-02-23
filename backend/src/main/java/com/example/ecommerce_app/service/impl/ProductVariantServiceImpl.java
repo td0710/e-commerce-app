@@ -6,6 +6,8 @@ import com.example.ecommerce_app.service.ProductVariantService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 @Service
 public class ProductVariantServiceImpl implements ProductVariantService {
@@ -24,5 +26,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public void saveProductVariant(ProductVariant productVariant) {
         productVariantRepository.save(productVariant);
     }
-
+    public List<ProductVariant> findByProductId(Long productId) {
+        return productVariantRepository.findByProduct_Id(productId);
+    }
 }

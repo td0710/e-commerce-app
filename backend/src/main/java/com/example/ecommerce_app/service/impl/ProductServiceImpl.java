@@ -46,7 +46,6 @@ public class ProductServiceImpl implements ProductService {
             productDto.setPrice(product.getPrice());
             productDto.setImage(product.getImage());
 
-
             content.add(productDto);
         }
 
@@ -102,5 +101,9 @@ public class ProductServiceImpl implements ProductService {
 
     public Product findProductById(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+    public void save(Product product) {
+        productRepository.save(product);
     }
 }

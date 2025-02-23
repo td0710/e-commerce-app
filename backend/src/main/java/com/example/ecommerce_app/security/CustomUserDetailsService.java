@@ -35,11 +35,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             password = "{noop}N/A";
         }
 
-        return new User(user.getUsername(), password, mapRolesToAuthorities(user.getRoles()));
+        return new User(user.getUsername(), password, mapRoleToAuthority(user.getRole()));
     }
 
-    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    private Collection<GrantedAuthority> mapRoleToAuthority(Role role) {
+        return List.of(new SimpleGrantedAuthority(role.getName()));
     }
 
 }

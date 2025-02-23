@@ -15,6 +15,7 @@ import { PaymentPage } from "./PaymentPage/PaymentPage";
 import { LoadingPayment } from "./LoadingPage/loadingPayment";
 import OrderPage from "./OrderPage/OrderPage";
 import { EditOrderPage } from "./EditOrderPage/EditOrderPage";
+import { AdminProductPage } from "./ProductPage/AdminProduct";
 function App() {
   return (
     <BrowserRouter>
@@ -82,6 +83,14 @@ function App() {
             }
           />{" "}
           <Route path="/edit-order/:orderId" element={<EditOrderPage />} />
+          <Route
+            path="admin/product/:id"
+            element={
+              <ProtectedRoute>
+                <AdminProductPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </UserProvider>
     </BrowserRouter>

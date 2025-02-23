@@ -120,6 +120,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           localStorage.setItem("username", res.data?.userName);
           localStorage.setItem("email", res.data?.email);
+          localStorage.setItem("role", res.data?.role);
           setLogin(true);
           setToken(res?.data.token!);
           setUser(userObj!);
@@ -141,6 +142,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           localStorage.setItem("username", res.data?.userName);
           localStorage.setItem("email", res.data?.email);
+          localStorage.setItem("role", res.data?.role);
           setLogin(true);
           setToken(res?.data.token!);
           setUser(userObj!);
@@ -164,6 +166,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           localStorage.setItem("username", res.data?.userName);
           localStorage.setItem("email", res.data?.email);
+          localStorage.setItem("role", res.data?.role);
           setLogin(true);
           setToken(res?.data.token!);
           setUser(userObj!);
@@ -182,6 +185,7 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("id");
+    localStorage.removeItem("role");
     setLogin(false);
     setUser(null);
     setToken("");

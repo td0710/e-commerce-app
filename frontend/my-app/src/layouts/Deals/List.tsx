@@ -14,6 +14,8 @@ export const List: React.FC<{
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("id");
+  const role = localStorage.getItem("role");
+
   const { updateWishlistCount } = useAuth();
   useEffect(() => {
     const checkWishlist = async () => {
@@ -78,7 +80,14 @@ export const List: React.FC<{
           className="add-list"
         />
 
-        <NavLink to={`/product/${props.product.id}`} key={props.product.id}>
+        <NavLink
+          to={
+            role === "ADMIN"
+              ? `/admin/product/${props.product.id}`
+              : `/product/${props.product.id}`
+          }
+          key={props.product.id}
+        >
           <button className="view">View product</button>
         </NavLink>
       </div>

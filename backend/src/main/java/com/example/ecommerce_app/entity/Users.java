@@ -31,13 +31,8 @@ public class Users {
     @Column(name = "user_email")
     private String user_email ;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @JsonManagedReference
-    private List<Role> roles = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
 }

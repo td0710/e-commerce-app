@@ -1,8 +1,11 @@
 package com.example.ecommerce_app.controller;
 
 
+import com.example.ecommerce_app.dto.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
+import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
+import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductServiceImpl productService;
+    private final ProductVariantServiceImpl productVariantService;
 
-    ProductController(ProductServiceImpl productService) {
+    ProductController(ProductServiceImpl productService, ProductVariantServiceImpl productVariantService) {
         this.productService = productService;
+        this.productVariantService = productVariantService;
     }
 
     @GetMapping("/getall")
@@ -27,5 +32,20 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getByCategory(@RequestParam int page, @RequestParam int size,
                                                          @RequestParam String category) {
         return new ResponseEntity<>(productService.findProductsByCategory(page, size,category), HttpStatus.OK);
+    }
+
+    @PutMapping("/update/product/{productId}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long productId,@RequestBody ProductDto productDto) {
+
+        Product product = productService.findProductById(productId);
+
+        product.setCategory(productDto.getCategory());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+        product.setImage(productDto.getImage());
+        product.setTitle(productDto.getTitle());
+
+        productService.save(product) ;
+        return ResponseEntity.ok("success");
     }
 }

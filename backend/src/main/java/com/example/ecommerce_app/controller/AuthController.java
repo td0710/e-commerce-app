@@ -57,13 +57,13 @@ public class AuthController {
         String token = jwtGenerator.generateToken(authentication);
         Optional<Users> user= userRepository.findByUsername(username);
         System.out.println("!"+token);
-        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email()), HttpStatus.OK);
+        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email(),user.get().getRole().getName()), HttpStatus.OK);
     }
 
     @PostMapping("register")
     public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>(new AuthResponseDTO(null, null, null), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponseDTO(null, null, null,null), HttpStatus.BAD_REQUEST);
         }
         Users user = new Users();
         user.setUsername(registerDto.getUsername());
@@ -72,7 +72,8 @@ public class AuthController {
 
         Role roles = roleRepository.findByName("USER").get();
 
-        user.setRoles(Collections.singletonList(roles));
+        user.setRole(roles);
+
         userRepository.save(user);
         cartService.createCart(user.getId());
         Authentication authentication = authenticationManager.authenticate(
@@ -82,7 +83,7 @@ public class AuthController {
         String token = jwtGenerator.generateToken(authentication);
 
 
-        return new ResponseEntity<>(new AuthResponseDTO(token, user.getUsername(), user.getUser_email()), HttpStatus.OK);
+        return new ResponseEntity<>(new AuthResponseDTO(token, user.getUsername(), user.getUser_email(),user.getRole().getName()), HttpStatus.OK);
 
     }
     @PostMapping("login/google")
@@ -99,7 +100,7 @@ public class AuthController {
 
             Role roles = roleRepository.findByName("USER").get();
 
-            user1.setRoles(Collections.singletonList(roles));
+            user1.setRole(roles);
 
             userRepository.save(user1);
 
@@ -116,6 +117,6 @@ public class AuthController {
 
         System.out.println("!"+token);
 
-        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email()), HttpStatus.OK);
+        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email(),user.get().getRole().getName()), HttpStatus.OK);
     }
 }

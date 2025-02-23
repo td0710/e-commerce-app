@@ -268,6 +268,159 @@ export const EditOrderPage = () => {
           </div>
         </div>
       </div>
+      <div className="payment-page">
+        <div className="more-data">
+          <div
+            style={{ display: shippingDisplay }}
+            className="shipping-data animate"
+          >
+            <div key={order?.orderId} className="nav-link2">
+              <div className="order1">
+                <img src={order?.productImg} className="order-img1" />
+                <div className="order-text1">
+                  <p className="order-head">{order?.productName}</p>
+                  <p className="order-category">{order?.productCategory}</p>
+                  <p className="order-quantity">
+                    Quantity: <b>{order?.quantity}</b>
+                  </p>
+                  <p className="order-total-price">
+                    Total Price: <b>{order?.totalPrice.toLocaleString()} VND</b>
+                  </p>
+                  {order?.size && (
+                    <p className="order-size">
+                      Size: <b>{order.size}</b>
+                    </p>
+                  )}
+                  {order?.color && (
+                    <p className="order-color">
+                      Color: <b>{order.color}</b>
+                    </p>
+                  )}
+                  <div className="order-success">
+                    <img
+                      src={require("../imgs/order-done.png")}
+                      className="order-done"
+                    />
+                    <p
+                      style={{
+                        marginLeft: "5px",
+                        marginTop: 0,
+                        marginBottom: 0,
+                      }}
+                      className="order-dispatch"
+                    >
+                      Ordered successfully! Preparing for dispatch!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="user-data-form">
+              <div className="shipping-head">Edit Shipping details</div>
+
+              <div className="all-data-of-user">
+                <div className="user-data1">
+                  <div className="country">
+                    <p className="country-name">Country*</p>
+                    <input
+                      type="text"
+                      placeholder="India"
+                      onChange={handleCountry}
+                      value={Country}
+                      disabled={isDisabled}
+                      required
+                    />
+                    {CountryError && (
+                      <div className="error-message">{CountryError}</div>
+                    )}
+                  </div>
+                  <div className="user-name">
+                    <p className="user-fullname">Name*</p>
+                    <input
+                      type="text"
+                      placeholder="Full name"
+                      onChange={handleName}
+                      value={Name}
+                      disabled={isDisabled}
+                      required
+                    />
+                    {NameError && (
+                      <div className="error-message">{NameError}</div>
+                    )}
+                  </div>
+                  <div className="user-contact">
+                    <p className="user-number">Contact Number*</p>
+                    <input
+                      type="number"
+                      placeholder="Number"
+                      onChange={handleNumber}
+                      value={Number}
+                      disabled={isDisabled}
+                      required
+                    />
+                    {NumberError && (
+                      <div className="error-message">{NumberError}</div>
+                    )}
+                  </div>
+                </div>
+                <div className="user-data2">
+                  <div className="user-email">
+                    <p className="user-fullname">Email address*</p>
+                    <input
+                      type="text"
+                      placeholder="Email"
+                      onChange={handleEmail}
+                      value={Email}
+                      disabled={isDisabled}
+                      required
+                    />
+                    {emailError && (
+                      <div className="error-message">{emailError}</div>
+                    )}
+                  </div>
+                  <div className="user-address">
+                    <p className="user-fulladdress">Home Address*</p>
+                    <input
+                      type="text"
+                      placeholder="Address"
+                      onChange={handleAddress}
+                      value={Address}
+                      disabled={isDisabled}
+                      required
+                    />
+                    {AddressError && (
+                      <div className="error-message">{AddressError}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (
+                    Name.length !== 0 &&
+                    Address.length !== 0 &&
+                    Country.length !== 0 &&
+                    Number.length !== 0 &&
+                    Email.length !== 0 &&
+                    !NameError &&
+                    !AddressError &&
+                    !CountryError &&
+                    !NumberError &&
+                    !emailError
+                  ) {
+                    saveShippingDetails();
+                  } else {
+                    notify1();
+                  }
+                }}
+                className="save-address"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
