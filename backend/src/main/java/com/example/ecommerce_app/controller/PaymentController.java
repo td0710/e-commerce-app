@@ -7,8 +7,6 @@ import com.example.ecommerce_app.dto.PaymentVNPAYDto;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.service.*;
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,7 +79,6 @@ public class PaymentController {
             order.setPaymentStatus("UNPAID");
         }
 
-        // ✅ Lưu Order trước và đảm bảo nó được quản lý
         order = orderService.save(order);
 
         Payment payment = new Payment();

@@ -95,4 +95,31 @@ public class ProductController {
         System.out.println(productVariant);
         return ResponseEntity.ok("delete success");
     }
+
+    @PostMapping("/create/product")
+    public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
+        Product product = new Product();
+        product.setCategory(productDto.getCategory());
+        product.setPrice(productDto.getPrice());
+        product.setDescription(productDto.getDescription());
+        product.setImage(productDto.getImage());
+        product.setTitle(productDto.getTitle());
+
+
+        Product savedProduct = productService.save(product);
+
+        if (productDto.getVariants() != null) {
+            for (ProductVariant variant : productDto.getVariants()) {
+                ProductVariant productVariant = new ProductVariant();
+                productVariant.setProduct(savedProduct);
+                productVariant.setSize(variant.getSize());
+                productVariant.setColor(variant.getColor());
+                productVariant.setStock(variant.getStock());
+
+                productVariantService.save(productVariant);
+            }
+        }
+
+        return ResponseEntity.ok("create success");
+    }
 }

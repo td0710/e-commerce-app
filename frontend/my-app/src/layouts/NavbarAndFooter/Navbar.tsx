@@ -12,6 +12,7 @@ export const Navbar = () => {
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
 
   // useEffect(() => {
   //   const fetchTotalItemsWishList = async () => {
@@ -42,7 +43,7 @@ export const Navbar = () => {
                   buttons: ["Cancel", "Yes"],
                 }).then((willNavigate) => {
                   if (willNavigate) {
-                    navigate({ pathname: "/home" });
+                    navigate({ pathname: "/homepage" });
                   }
                 });
               } else {
@@ -62,11 +63,11 @@ export const Navbar = () => {
                   buttons: ["Cancel", "Yes"],
                 }).then((willNavigate) => {
                   if (willNavigate) {
-                    navigate({ pathname: "/home" });
+                    navigate({ pathname: "/homepage" });
                   }
                 });
               } else {
-                navigate({ pathname: "/home" });
+                navigate({ pathname: "/homepage" });
               }
             }}
             src={require("../../imgs/A-logo.png")}
@@ -90,81 +91,98 @@ export const Navbar = () => {
           </div>
         </div>
         <div className="right-section">
-          <img
-            onClick={() => {
-              if (window.location.href.includes("/payment")) {
-                swal({
-                  title: "Are you sure?",
-                  text: "Your transaction is still pending!",
-                  icon: "warning",
-                  buttons: ["Cancel", "Yes"],
-                }).then((willNavigate) => {
-                  if (willNavigate) {
+          {role === "USER" && (
+            <>
+              <img
+                onClick={() => {
+                  if (window.location.href.includes("/payment")) {
+                    swal({
+                      title: "Are you sure?",
+                      text: "Your transaction is still pending!",
+                      icon: "warning",
+                      buttons: ["Cancel", "Yes"],
+                    }).then((willNavigate) => {
+                      if (willNavigate) {
+                        navigate("/wishlists");
+                      }
+                    });
+                  } else {
                     navigate("/wishlists");
                   }
-                });
-              } else {
-                navigate("/wishlists");
-              }
-            }}
-            src={require("../../imgs/wishlist.png")}
-            className="wishlist"
-          />
+                }}
+                src={require("../../imgs/wishlist.png")}
+                className="wishlist"
+              />
 
-          <p style={{ opacity: 1 }} className="list-count">
-            {wishlistCount}
-          </p>
-
-          <img
-            onClick={() => {
-              if (window.location.href.includes("/payment")) {
-                swal({
-                  title: "Are you sure?",
-                  text: "Your transaction is still pending!",
-                  icon: "warning",
-                  buttons: ["Cancel", "Yes"],
-                }).then((willNavigate) => {
-                  if (willNavigate) {
+              <p style={{ opacity: 1 }} className="list-count">
+                {wishlistCount}
+              </p>
+            </>
+          )}
+          {role === "ADMIN" && (
+            <img
+              onClick={() => navigate("/admin/add/product")}
+              src={require("../../imgs/new-item.png")}
+              className="orders"
+              style={{ marginRight: "150px" }}
+            />
+          )}
+          {role === "USER" && (
+            <>
+              <img
+                onClick={() => {
+                  if (window.location.href.includes("/payment")) {
+                    swal({
+                      title: "Are you sure?",
+                      text: "Your transaction is still pending!",
+                      icon: "warning",
+                      buttons: ["Cancel", "Yes"],
+                    }).then((willNavigate) => {
+                      if (willNavigate) {
+                        navigate("/cart");
+                      }
+                    });
+                  } else {
                     navigate("/cart");
                   }
-                });
-              } else {
-                navigate("/cart");
-              }
-            }}
-            src={require("../../imgs/cart.png")}
-            className="cart"
-          />
+                }}
+                src={require("../../imgs/cart.png")}
+                className="cart"
+              />
 
-          <p style={{ opacity: 1 }} className="cart-count">
-            {cartCount}
-          </p>
-
-          <img
-            onClick={() => {
-              if (window.location.href.includes("/payment")) {
-                swal({
-                  title: "Are you sure?",
-                  text: "Your transaction is still pending!",
-                  icon: "warning",
-                  buttons: ["Cancel", "Yes"],
-                }).then((willNavigate) => {
-                  if (willNavigate) {
+              <p style={{ opacity: 1 }} className="cart-count">
+                {cartCount}
+              </p>
+            </>
+          )}
+          {role === "USER" && (
+            <>
+              <img
+                onClick={() => {
+                  if (window.location.href.includes("/payment")) {
+                    swal({
+                      title: "Are you sure?",
+                      text: "Your transaction is still pending!",
+                      icon: "warning",
+                      buttons: ["Cancel", "Yes"],
+                    }).then((willNavigate) => {
+                      if (willNavigate) {
+                        navigate("/order");
+                      }
+                    });
+                  } else {
                     navigate("/order");
                   }
-                });
-              } else {
-                navigate("/order");
-              }
-            }}
-            src={require("../../imgs/orders.png")}
-            className="orders"
-          />
+                }}
+                src={require("../../imgs/orders.png")}
+                className="orders"
+              />
 
-          <p style={{ opacity: 1 }} className="order-count">
-            {orderCount}
-          </p>
-
+              <p style={{ opacity: 1 }} className="order-count">
+                {orderCount}
+              </p>
+            </>
+          )}
           <img
             onClick={() => navigate("/account")}
             src={require("../../imgs/default.png")}

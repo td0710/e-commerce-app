@@ -8,5 +8,5 @@ public interface ProductService {
     Product findProductById(Long id);
     ProductResponse findProductsByCategory(int pageNo, int pageSize, String category);
 
-    void save(Product product);
+    Product save(Product product);
 }

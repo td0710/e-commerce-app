@@ -7,6 +7,7 @@ import "../ProductPage/productpage.css";
 import ProductModel from "../models/ProductModel";
 import { useAuth } from "../Context/useAuth";
 import ProductVariantModel from "../models/ProductVariantModel";
+import Footer from "../layouts/NavbarAndFooter/Footer";
 
 export const AdminProductPage = () => {
   const token = localStorage.getItem("token");
@@ -23,9 +24,6 @@ export const AdminProductPage = () => {
   const [image, setImage] = useState("");
   const [saveVariant, setSaveVariant] = useState(false);
   const [saveQuantity, setSaveQuantity] = useState("");
-  const [deleteSize, setDeleteSize] = useState("");
-  const [deleteColor, setDeleteColor] = useState("");
-  const userId = localStorage.getItem("id");
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
   const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -190,9 +188,7 @@ export const AdminProductPage = () => {
       <div className="payment-page">
         <div className="more-data">
           <div className="shipping-data animate">
-            <div
-              className={product ? `product-dataa1 animate` : `product-dataa1`}
-            >
+            <div className={`product-dataa1 animate`}>
               <div className="item-image">
                 <img
                   src={product?.image}
@@ -507,6 +503,7 @@ export const AdminProductPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
