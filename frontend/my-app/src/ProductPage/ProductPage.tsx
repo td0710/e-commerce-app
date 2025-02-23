@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { Link, useParams } from "react-router-dom";
 import Footer from "../layouts/NavbarAndFooter/Footer";
@@ -70,6 +70,15 @@ export const ProductPage = () => {
     updateCartCount();
     console.log(response);
   };
+  const sizeOrder = ["S", "M", "L", "XL", "XXL"];
+
+  const sortedSizes = useMemo(() => {
+    return Array.from(
+      new Set(
+        product?.variants.filter((v) => v.color === color).map((v) => v.size)
+      )
+    ).sort((a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b));
+  }, [product?.variants, color]);
   return (
     <>
       <Navbar />
@@ -145,13 +154,7 @@ export const ProductPage = () => {
                   <p className="choose">Choose a size</p>
                   <div className="options">
                     {color &&
-                      Array.from(
-                        new Set(
-                          product?.variants
-                            .filter((v) => v.color === color)
-                            .map((v) => v.size)
-                        )
-                      ).map((s, index) => (
+                      sortedSizes.map((s, index) => (
                         <p
                           key={index}
                           className={`size ${size === s ? "size-clicked" : ""}`}

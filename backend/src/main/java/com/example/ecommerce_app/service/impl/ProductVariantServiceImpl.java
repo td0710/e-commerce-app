@@ -32,4 +32,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public void save(ProductVariant productVariant) {
         productVariantRepository.save(productVariant);
     }
+    public void delete(ProductVariant productVariant) {
+        productVariantRepository.delete(productVariant);
+    }
+    public void deleteById(Long id) {
+        productVariantRepository.deleteById(id);
+    }
 }

@@ -23,6 +23,8 @@ export const AdminProductPage = () => {
   const [image, setImage] = useState("");
   const [saveVariant, setSaveVariant] = useState(false);
   const [saveQuantity, setSaveQuantity] = useState("");
+  const [deleteSize, setDeleteSize] = useState("");
+  const [deleteColor, setDeleteColor] = useState("");
   const userId = localStorage.getItem("id");
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
@@ -43,6 +45,13 @@ export const AdminProductPage = () => {
   };
   const handleSaveQuantity = (e: ChangeEvent<HTMLInputElement>) => {
     setSaveQuantity(e.target.value);
+  };
+
+  const handleDelteSize = (e: ChangeEvent<HTMLInputElement>) => {
+    setSize(e.target.value);
+  };
+  const handleDeleteColor = (e: ChangeEvent<HTMLInputElement>) => {
+    setColor(e.target.value);
   };
 
   const handleQuantity = (
@@ -162,7 +171,19 @@ export const AdminProductPage = () => {
   };
   useEffect(() => {
     fetchProductDetails();
-  }, [id, token]);
+  }, []);
+
+  const deleteVariant = async (size: string, color: string) => {
+    const url = `http://localhost:8080/api/products/secure/delete/variant/${id}?size=${size}&color=${color}`;
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    fetchVariants();
+  };
+
   return (
     <>
       <Navbar />
@@ -472,7 +493,11 @@ export const AdminProductPage = () => {
                     >
                       Save
                     </button>
-                    <button className="cancel-order" style={{ height: "53px" }}>
+                    <button
+                      className="cancel-order"
+                      onClick={() => deleteVariant(variant.size, variant.color)}
+                      style={{ height: "53px" }}
+                    >
                       Delete
                     </button>
                   </div>

@@ -3,12 +3,14 @@ package com.example.ecommerce_app.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Table(name = "product")
 @Data
+@ToString(exclude = "variants") //
 public class Product {
 
     @Id

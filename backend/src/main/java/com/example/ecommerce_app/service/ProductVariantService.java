@@ -11,4 +11,8 @@ public interface ProductVariantService {
     List<ProductVariant> findByProductId(Long productId);
 
     void save(ProductVariant productVariant);
+
+    void delete(ProductVariant productVariant);
+
+    void deleteById(Long id);
 }

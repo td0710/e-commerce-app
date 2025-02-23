@@ -47,7 +47,7 @@ public class ProductController {
         product.setTitle(productDto.getTitle());
 
         productService.save(product) ;
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("update success");
     }
 
     @PutMapping("/update/product/quantity/{productId}")
@@ -61,7 +61,7 @@ public class ProductController {
         productVariant.setStock(quantity);
         productVariantService.save(productVariant) ;
 
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("update quantity success");
     }
 
     @PostMapping("/create/variant/{productId}")
@@ -78,6 +78,21 @@ public class ProductController {
 
         productVariantService.save(productVariant) ;
 
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok("create success");
+    }
+
+    @DeleteMapping("/delete/variant/{productId}")
+    public ResponseEntity<?> deleteProductVariant(@PathVariable Long productId,
+                                                  @RequestParam String size,
+                                                  @RequestParam String color) {
+
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId, size, color);
+
+
+        productVariantService.deleteById(productVariant.getId());
+
+
+        System.out.println(productVariant);
+        return ResponseEntity.ok("delete success");
     }
 }
