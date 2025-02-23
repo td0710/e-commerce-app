@@ -63,4 +63,21 @@ public class ProductController {
 
         return ResponseEntity.ok("success");
     }
+
+    @PostMapping("/create/variant/{productId}")
+    public ResponseEntity<?> createProductVariant(@PathVariable Long productId,
+                                                   @RequestParam String size,
+                                                   @RequestParam String color,
+                                                   @RequestParam int quantity) {
+
+        ProductVariant productVariant = new ProductVariant();
+        productVariant.setProduct(productService.findProductById(productId));
+        productVariant.setSize(size);
+        productVariant.setColor(color);
+        productVariant.setStock(quantity);
+
+        productVariantService.save(productVariant) ;
+
+        return ResponseEntity.ok("success");
+    }
 }

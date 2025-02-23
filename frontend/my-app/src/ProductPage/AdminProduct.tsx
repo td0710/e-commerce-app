@@ -11,8 +11,8 @@ import ProductVariantModel from "../models/ProductVariantModel";
 export const AdminProductPage = () => {
   const token = localStorage.getItem("token");
   const { id } = useParams();
-  const [color, setColor] = useState("none");
-  const [size, setSize] = useState("none");
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [variants, setVariants] = useState<ProductVariantModel[]>([]);
@@ -21,8 +21,8 @@ export const AdminProductPage = () => {
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(0);
   const [image, setImage] = useState("");
-  const { updateCartCount } = useAuth();
-
+  const [saveVariant, setSaveVariant] = useState(false);
+  const [saveQuantity, setSaveQuantity] = useState("");
   const userId = localStorage.getItem("id");
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
@@ -35,26 +35,14 @@ export const AdminProductPage = () => {
   const handleImage = (e: ChangeEvent<HTMLInputElement>) =>
     setImage(e.target.value);
 
-  const handleSize = (e: ChangeEvent<HTMLInputElement>, variantId: number) => {
+  const handleSize = (e: ChangeEvent<HTMLInputElement>) => {
     setSize(e.target.value);
-    setVariants((prevVariants) =>
-      prevVariants.map((variant) =>
-        variant.id === variantId
-          ? { ...variant, size: e.target.value }
-          : variant
-      )
-    );
   };
-
-  const handleColor = (e: ChangeEvent<HTMLInputElement>, variantId: number) => {
+  const handleColor = (e: ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value);
-    setVariants((prevVariants) =>
-      prevVariants.map((variant) =>
-        variant.id === variantId
-          ? { ...variant, color: e.target.value }
-          : variant
-      )
-    );
+  };
+  const handleSaveQuantity = (e: ChangeEvent<HTMLInputElement>) => {
+    setSaveQuantity(e.target.value);
   };
 
   const handleQuantity = (
@@ -93,25 +81,25 @@ export const AdminProductPage = () => {
       console.error(error);
     }
   };
+  const fetchVariants = async () => {
+    const url = `http://localhost:8080/api/products/${id}/variants`;
 
+    const response = await axios.get(url);
+
+    const variantsData: ProductVariantModel[] =
+      response.data._embedded?.productVariants.map((variant: any) => ({
+        id: parseInt(variant._links.self.href.split("/").pop()),
+        color: variant.color,
+        size: variant.size,
+        stock: variant.stock,
+      }));
+    variantsData.sort((a, b) => a.color.localeCompare(b.color));
+    setVariants(variantsData);
+    console.log(1);
+  };
   useEffect(() => {
-    const fetchVariants = async () => {
-      const url = `http://localhost:8080/api/products/${id}/variants`;
-
-      const response = await axios.get(url);
-
-      const variantsData: ProductVariantModel[] =
-        response.data._embedded?.productVariants.map((variant: any) => ({
-          id: parseInt(variant._links.self.href.split("/").pop()),
-          color: variant.color,
-          size: variant.size,
-          stock: variant.stock,
-        }));
-      setVariants(variantsData);
-      console.log(1);
-    };
     fetchVariants();
-  }, [id]);
+  }, []);
 
   const updateProductDetails = async () => {
     const url = `http://localhost:8080/api/products/secure/update/product/${id}`;
@@ -153,6 +141,24 @@ export const AdminProductPage = () => {
         },
       }
     );
+  };
+  const createVariant = async () => {
+    const url = `http://localhost:8080/api/products/secure/create/variant/${id}?size=${size}&color=${color}&quantity=${saveQuantity}`;
+
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    setSaveQuantity("");
+    setSize("");
+    setColor("");
+    fetchVariants();
   };
   useEffect(() => {
     fetchProductDetails();
@@ -329,19 +335,25 @@ export const AdminProductPage = () => {
                       type="text"
                       placeholder="Enter size"
                       required
+                      onChange={handleSize}
                       style={{ width: "80px" }}
+                      value={size}
                     />
                     <input
                       type="text"
                       placeholder="Enter color"
                       required
+                      onChange={handleColor}
                       style={{ width: "80px", marginLeft: "15px" }}
+                      value={color}
                     />
                     <input
                       type="text"
                       placeholder="Enter quantity"
                       required
+                      onChange={handleSaveQuantity}
                       style={{ width: "80px", marginLeft: "15px" }}
+                      value={saveQuantity}
                     />
                     <button
                       className="save-address create"
@@ -350,6 +362,12 @@ export const AdminProductPage = () => {
                         width: "90px",
                         marginLeft: "15px",
                       }}
+                      onClick={() =>
+                        size !== "" &&
+                        color !== "" &&
+                        saveQuantity !== "" &&
+                        createVariant()
+                      }
                     >
                       Create
                     </button>
@@ -421,7 +439,6 @@ export const AdminProductPage = () => {
                         required
                         style={{ width: "35px" }}
                         disabled={true}
-                        onChange={(e) => handleSize(e, variant.id)}
                       />
                     </div>
                     <div className="user-address">
@@ -432,7 +449,6 @@ export const AdminProductPage = () => {
                         required
                         style={{ width: "45px" }}
                         disabled={true}
-                        onChange={(e) => handleColor(e, variant.id)}
                       />
                     </div>
                     <div className="user-address">
@@ -442,12 +458,14 @@ export const AdminProductPage = () => {
                         value={variant.stock}
                         required
                         style={{ width: "45px" }}
+                        onClick={() => setSaveVariant(true)}
                         onChange={(e) => handleQuantity(e, variant.id)}
                       />
                     </div>
                     <button
                       className="save-address"
                       style={{ height: "53px" }}
+                      disabled={!saveVariant && true}
                       onClick={() =>
                         updateQuantity(variant.size, variant.color)
                       }
