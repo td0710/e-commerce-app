@@ -13,6 +13,7 @@ export const AdminProductPage = () => {
   const { id } = useParams();
   const [color, setColor] = useState("none");
   const [size, setSize] = useState("none");
+  const [quantity, setQuantity] = useState(0);
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [variants, setVariants] = useState<ProductVariantModel[]>([]);
   const [title, setTitle] = useState("");
@@ -33,6 +34,43 @@ export const AdminProductPage = () => {
     setPrice(parseFloat(e.target.value));
   const handleImage = (e: ChangeEvent<HTMLInputElement>) =>
     setImage(e.target.value);
+
+  const handleSize = (e: ChangeEvent<HTMLInputElement>, variantId: number) => {
+    setSize(e.target.value);
+    setVariants((prevVariants) =>
+      prevVariants.map((variant) =>
+        variant.id === variantId
+          ? { ...variant, size: e.target.value }
+          : variant
+      )
+    );
+  };
+
+  const handleColor = (e: ChangeEvent<HTMLInputElement>, variantId: number) => {
+    setColor(e.target.value);
+    setVariants((prevVariants) =>
+      prevVariants.map((variant) =>
+        variant.id === variantId
+          ? { ...variant, color: e.target.value }
+          : variant
+      )
+    );
+  };
+
+  const handleQuantity = (
+    e: ChangeEvent<HTMLInputElement>,
+    variantId: number
+  ) => {
+    const value = e.target.value;
+    setQuantity(parseInt(value, 10));
+    setVariants((prevVariants) =>
+      prevVariants.map((variant) =>
+        variant.id === variantId
+          ? { ...variant, stock: value === "" ? 0 : parseInt(value, 10) }
+          : variant
+      )
+    );
+  };
 
   const fetchProductDetails = async () => {
     try {
@@ -96,6 +134,25 @@ export const AdminProductPage = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+  const updateQuantity = async (size: string, color: string) => {
+    const url = `http://localhost:8080/api/products/secure/update/product/quantity/${id}?size=${size}&color=${color}&quantity=${quantity}`;
+
+    console.log(size);
+    console.log(color);
+
+    console.log(quantity);
+
+    const response = await axios.put(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
   useEffect(() => {
     fetchProductDetails();
@@ -255,6 +312,48 @@ export const AdminProductPage = () => {
                       required
                     />
                   </div>
+                  <button
+                    onClick={updateProductDetails}
+                    className="save-address"
+                  >
+                    Save
+                  </button>
+                  <div className="shipping-head" style={{ marginTop: "20px" }}>
+                    Create
+                  </div>
+                  <div
+                    className="user-address"
+                    style={{ display: "flex", alignItems: "self-end" }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Enter size"
+                      required
+                      style={{ width: "80px" }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Enter color"
+                      required
+                      style={{ width: "80px", marginLeft: "15px" }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Enter quantity"
+                      required
+                      style={{ width: "80px", marginLeft: "15px" }}
+                    />
+                    <button
+                      className="save-address create"
+                      style={{
+                        height: "53px",
+                        width: "90px",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      Create
+                    </button>
+                  </div>
                 </div>
                 <div className="user-data2">
                   <div className="user-email">
@@ -291,9 +390,7 @@ export const AdminProductPage = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={updateProductDetails} className="save-address">
-                Save
-              </button>
+
               <div className="shipping-head" style={{ marginTop: "20px" }}>
                 Edit Size And Color
               </div>
@@ -313,7 +410,7 @@ export const AdminProductPage = () => {
                       display: "flex",
                       alignItems: "self-end",
                       gap: "15px",
-                      width: "calc(50% - 7.5px)", // Chia thành 2 cột, trừ đi khoảng cách giữa
+                      width: "calc(50% - 7.5px)",
                     }}
                   >
                     <div className="user-address">
@@ -323,6 +420,8 @@ export const AdminProductPage = () => {
                         value={variant.size}
                         required
                         style={{ width: "35px" }}
+                        disabled={true}
+                        onChange={(e) => handleSize(e, variant.id)}
                       />
                     </div>
                     <div className="user-address">
@@ -332,6 +431,8 @@ export const AdminProductPage = () => {
                         value={variant.color}
                         required
                         style={{ width: "45px" }}
+                        disabled={true}
+                        onChange={(e) => handleColor(e, variant.id)}
                       />
                     </div>
                     <div className="user-address">
@@ -341,9 +442,16 @@ export const AdminProductPage = () => {
                         value={variant.stock}
                         required
                         style={{ width: "45px" }}
+                        onChange={(e) => handleQuantity(e, variant.id)}
                       />
                     </div>
-                    <button className="save-address" style={{ height: "53px" }}>
+                    <button
+                      className="save-address"
+                      style={{ height: "53px" }}
+                      onClick={() =>
+                        updateQuantity(variant.size, variant.color)
+                      }
+                    >
                       Save
                     </button>
                     <button className="cancel-order" style={{ height: "53px" }}>

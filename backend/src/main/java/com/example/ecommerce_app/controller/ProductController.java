@@ -4,6 +4,7 @@ package com.example.ecommerce_app.controller;
 import com.example.ecommerce_app.dto.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
 import com.example.ecommerce_app.entity.Product;
+import com.example.ecommerce_app.entity.ProductVariant;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,20 @@ public class ProductController {
         product.setTitle(productDto.getTitle());
 
         productService.save(product) ;
+        return ResponseEntity.ok("success");
+    }
+
+    @PutMapping("/update/product/quantity/{productId}")
+    public ResponseEntity<?> updateProductQuantity(@PathVariable Long productId,
+                                                  @RequestParam String size,
+                                                  @RequestParam String color,
+                                                  @RequestParam int quantity) {
+
+        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId, size, color);
+
+        productVariant.setStock(quantity);
+        productVariantService.save(productVariant) ;
+
         return ResponseEntity.ok("success");
     }
 }

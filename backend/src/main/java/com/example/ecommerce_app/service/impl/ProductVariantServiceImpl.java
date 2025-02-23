@@ -29,4 +29,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public List<ProductVariant> findByProductId(Long productId) {
         return productVariantRepository.findByProduct_Id(productId);
     }
+    public void save(ProductVariant productVariant) {
+        productVariantRepository.save(productVariant);
+    }
 }
