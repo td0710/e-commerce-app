@@ -93,10 +93,13 @@ export const AddProductPage = () => {
 
     if (response.status === 200) {
       Swal.fire({
+        toast: true,
+        position: "top",
         icon: "success",
-        title: "Success!",
-        text: "The product has been created.",
-        confirmButtonColor: "#3085d6",
+        title: "Save product successfully",
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
       }).then(() => {
         navigate("/homepage");
       });
@@ -147,12 +150,6 @@ export const AddProductPage = () => {
                     <div
                       className="shipping-head"
                       style={{ marginTop: "20px" }}
-                      onClick={() =>
-                        size === "" &&
-                        color === "" &&
-                        saveQuantity === "" &&
-                        createVariant
-                      }
                     >
                       Create
                     </div>
@@ -191,12 +188,22 @@ export const AddProductPage = () => {
                           width: "90px",
                           marginLeft: "15px",
                         }}
-                        onClick={() =>
-                          size !== "" &&
-                          color !== "" &&
-                          saveQuantity !== "" &&
-                          createVariant()
-                        }
+                        onClick={() => {
+                          if (!size || !color || !saveQuantity) {
+                            Swal.fire({
+                              toast: true,
+                              position: "top",
+                              icon: "warning",
+                              title:
+                                "Please fill in all required fields before creating.",
+                              showConfirmButton: false,
+                              timer: 1500,
+                              timerProgressBar: true,
+                            });
+                            return;
+                          }
+                          createVariant();
+                        }}
                       >
                         Create
                       </button>
@@ -314,19 +321,15 @@ export const AddProductPage = () => {
                       !image ||
                       variants.length === 0
                     ) {
-                      swal({
-                        title: "Incomplete Information",
-                        text: "Please fill in all required fields before saving.",
+                      Swal.fire({
+                        toast: true,
+                        position: "top",
                         icon: "warning",
-                        buttons: {
-                          confirm: {
-                            text: "OK",
-                            value: true,
-                            visible: true,
-                            className: "custom-confirm-button",
-                            closeModal: true,
-                          },
-                        },
+                        title:
+                          "Please fill in all required fields before creating.",
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
                       });
                       return;
                     }

@@ -8,6 +8,7 @@ import "./cart.css";
 import { useAuth } from "../Context/useAuth";
 import { CartItems } from "./CartItems";
 import { Pagination } from "../utils/Pagination";
+import Spinner from "../utils/Spinner";
 export const CartSection = () => {
   const navigate = useNavigate();
 
@@ -23,6 +24,7 @@ export const CartSection = () => {
   const [productPerPage] = useState(2);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, isLoading] = useState(true);
 
   const handlePayment = () => {
     let total1;
@@ -114,7 +116,7 @@ export const CartSection = () => {
         quantity: item.quantity,
       }));
       setCartItems(loadedProducts);
-
+      isLoading(false);
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
@@ -139,6 +141,7 @@ export const CartSection = () => {
         >
           Your Cart
         </p>
+        {loading && <Spinner />}
         <div
           style={
             cartItems && cartItems.length === 0
@@ -148,19 +151,21 @@ export const CartSection = () => {
           className={cartItems ? `cart-section animate` : `cart-section`}
         >
           <div className="cart-details">
-            <div
-              style={
-                cartItems && cartItems.length === 0
-                  ? { display: "block" }
-                  : { display: "none" }
-              }
-              className="empty-cart"
-            >
-              <img
-                src={require("../imgs/cart-empty.png")}
-                className="empty-cart-img"
-              />
-            </div>
+            {!loading && (
+              <div
+                style={
+                  cartItems && cartItems.length === 0
+                    ? { display: "block" }
+                    : { display: "none" }
+                }
+                className="empty-cart"
+              >
+                <img
+                  src={require("../imgs/cart-empty.png")}
+                  className="empty-cart-img"
+                />
+              </div>
+            )}
             <div className="cart-item">
               {cartItems.map((item) => {
                 return (
@@ -267,13 +272,15 @@ export const CartSection = () => {
             </div>
           </div>
         </div>
-        <div style={{ marginBottom: "100px" }}>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            paginate={paginate}
-          ></Pagination>
-        </div>
+        {cartCount > 0 && (
+          <div style={{ marginBottom: "100px" }}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              paginate={paginate}
+            ></Pagination>
+          </div>
+        )}
       </div>
       <Footer />
     </>

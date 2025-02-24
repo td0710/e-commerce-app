@@ -8,6 +8,7 @@ import axios from "axios";
 import "../layouts/Deals/lists.css";
 import { List } from "../layouts/Deals/List";
 import { WhishlistList } from "./WishlistList";
+import Spinner from "../utils/Spinner";
 
 export const WishlistPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -37,7 +38,7 @@ export const WishlistPage = () => {
           price: item.price,
           image: item.image,
         }));
-
+        setLoading(false);
         console.log("Processed products:", loadedProducts);
         setProducts(loadedProducts);
         window.scrollTo(0, 0);
@@ -56,25 +57,30 @@ export const WishlistPage = () => {
       <div style={{ height: "100%" }} className="content">
         <div className={products ? `lists animate` : `lists`}>
           <p className="wishlist-head">Wishlist</p>
-          <div
-            style={
-              products.length === 0 ? { display: "flex" } : { display: "none" }
-            }
-            className="empty-list"
-          >
-            <img src={require("../imgs/empty.png")} className="empty-img" />
-            <div className="empty-text">
-              <p className="empty-head">It's empty here!</p>
-              <p className="empty-desc">
-                "Don't let your wishlist collect dust. Add some items that bring
-                joy to your life and watch as they become a reality with just a
-                few clicks."
-              </p>
-              <Link to="/homepage">
-                <button className="shopping">Go Shopping</button>
-              </Link>
+          {loading && <Spinner />}
+          {!loading && (
+            <div
+              style={
+                products.length === 0
+                  ? { display: "flex" }
+                  : { display: "none" }
+              }
+              className="empty-list"
+            >
+              <img src={require("../imgs/empty.png")} className="empty-img" />
+              <div className="empty-text">
+                <p className="empty-head">It's empty here!</p>
+                <p className="empty-desc">
+                  "Don't let your wishlist collect dust. Add some items that
+                  bring joy to your life and watch as they become a reality with
+                  just a few clicks."
+                </p>
+                <Link to="/homepage">
+                  <button className="shopping">Go Shopping</button>
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
           <div className="lists-items">
             {products &&
               products.length > 0 &&

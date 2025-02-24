@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 export const PaymentPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
-  const { orderCount, updateOrderCount } = useAuth();
+  const { updateOrderCount } = useAuth();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,9 +72,12 @@ export const PaymentPage = () => {
     if (response.status === 200) {
       Swal.fire({
         icon: "success",
-        title: "Success!",
+        position: "top",
+        toast: true,
         text: "Ordred successfully",
-        confirmButtonColor: "#3085d6",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
       }).then(() => {
         navigate("/order");
       });
@@ -137,10 +140,13 @@ export const PaymentPage = () => {
     });
     if (response.status === 200) {
       Swal.fire({
+        toast: true,
+        position: "top",
         icon: "success",
-        title: "Success!",
         text: "Saved successfully",
-        confirmButtonColor: "#3085d6",
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
       }).then(() => {
         setShippingDisplay("none");
         setCardDisplay("block");

@@ -73,27 +73,38 @@ export const ProductPage = () => {
       fetchProduct();
       if (response.status === 200) {
         Swal.fire({
+          toast: true,
+          position: "top",
           icon: "success",
-          title: "Success!",
-          text: "The product has been added to your cart.",
-          confirmButtonColor: "#3085d6",
+          title: "Add to cart success",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: "#4CAF50",
         });
       }
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.status === 409) {
         Swal.fire({
+          toast: true,
+          position: "top",
           icon: "error",
-          title: "Conflict!",
-          text: "The product is out of stock.",
-          confirmButtonColor: "#d33",
+          title: "Product out of stock",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
         });
       } else {
         Swal.fire({
+          toast: true,
+          position: "top",
           icon: "error",
-          title: "Error!",
-          text: "Something went wrong. Please try again.",
-          confirmButtonColor: "#d33",
+          title: "Something went wrong!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: "#F44336",
         });
       }
     }

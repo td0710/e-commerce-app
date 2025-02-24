@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 import "./orders.css";
 import { Pagination } from "../utils/Pagination";
+import Spinner from "../utils/Spinner";
 export const Orders = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
@@ -16,6 +17,7 @@ export const Orders = () => {
   const [orderPerPage] = useState(3);
   const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [loading, isLoading] = useState(true);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -51,6 +53,7 @@ export const Orders = () => {
         setOrderItems(loadedOrders);
         setTotalPages(response.data.totalPages);
         window.scrollTo(0, 0);
+        isLoading(false);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -63,6 +66,7 @@ export const Orders = () => {
     <>
       <Navbar />
       <div className="orders-section">
+        {loading && <Spinner />}
         <div
           style={
             orderItems.length === 0
@@ -116,13 +120,15 @@ export const Orders = () => {
             }
             className="order-now-section"
           >
-            <div className="empty-order">
-              <img
-                src={require("../imgs/order-now.png")}
-                className="no-orders"
-              />
-              <div className="no-orders-txt"></div>
-            </div>
+            {!loading && (
+              <div className="empty-order">
+                <img
+                  src={require("../imgs/order-now.png")}
+                  className="no-orders"
+                />
+                <div className="no-orders-txt"></div>
+              </div>
+            )}
           </div>
           <div className="all-orders">
             {orderItems &&
@@ -190,19 +196,21 @@ export const Orders = () => {
                     </NavLink>
                   );
                 })}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "50px",
-              }}
-            >
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                paginate={paginate}
-              />
-            </div>
+            {orderItems.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "50px",
+                }}
+              >
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  paginate={paginate}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

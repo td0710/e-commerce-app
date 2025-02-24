@@ -15,7 +15,7 @@ export const AdminProductPage = () => {
   const { id } = useParams();
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState("");
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [variants, setVariants] = useState<ProductVariantModel[]>([]);
   const [title, setTitle] = useState("");
@@ -56,7 +56,8 @@ export const AdminProductPage = () => {
     variantId: number
   ) => {
     const value = e.target.value;
-    setQuantity(parseInt(value, 10));
+    console.log(e.target.value);
+    setQuantity(value);
     setVariants((prevVariants) =>
       prevVariants.map((variant) =>
         variant.id === variantId
@@ -127,10 +128,13 @@ export const AdminProductPage = () => {
 
       if (response.status === 200) {
         Swal.fire({
+          toast: true,
+          position: "top",
           icon: "success",
-          title: "Success!",
-          text: "The product has been saved successfully.",
-          confirmButtonColor: "#3085d6",
+          title: "Save product successfully",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
         });
         fetchProductDetails();
       }
@@ -139,6 +143,18 @@ export const AdminProductPage = () => {
     }
   };
   const updateQuantity = async (size: string, color: string) => {
+    if (quantity === "") {
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "warning",
+        title: "Please change quantity",
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+      });
+      return;
+    }
     const url = `http://localhost:8080/api/products/secure/update/product/quantity/${id}?size=${size}&color=${color}&quantity=${quantity}`;
 
     console.log(size);
@@ -158,12 +174,16 @@ export const AdminProductPage = () => {
     );
     if (response.status === 200) {
       Swal.fire({
+        toast: true,
+        position: "top",
         icon: "success",
-        title: "Success!",
-        text: "Saved successfully",
-        confirmButtonColor: "#3085d6",
+        title: "Saved successfully",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
       });
     }
+    setQuantity("");
   };
   const createVariant = async () => {
     const url = `http://localhost:8080/api/products/secure/create/variant/${id}?size=${size}&color=${color}&quantity=${saveQuantity}`;
@@ -434,20 +454,17 @@ export const AdminProductPage = () => {
                           color === "" ||
                           saveQuantity === ""
                         ) {
-                          swal({
-                            title: "Incomplete Information",
-                            text: "Please fill in all required fields before creating.",
+                          Swal.fire({
+                            toast: true,
+                            position: "top",
                             icon: "warning",
-                            buttons: {
-                              confirm: {
-                                text: "OK",
-                                value: true,
-                                visible: true,
-                                className: "custom-confirm-button",
-                                closeModal: true,
-                              },
-                            },
+                            title:
+                              "Please fill in all required fields before creating.",
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
                           });
+
                           return;
                         }
                         createVariant();
