@@ -18,38 +18,34 @@ export const ProductPage = () => {
 
   const [color, setColor] = useState("none");
   const [size, setSize] = useState("none");
-  const [choose, setChoose] = useState(false);
 
   const { id } = useParams();
 
+  const fetchProduct = async () => {
+    const url = `http://localhost:8080/api/products/${id}`;
+
+    const response = await axios.get(url);
+    const products = new ProductModel(
+      response.data.id,
+      response.data.title,
+      response.data.description,
+      response.data.category,
+      response.data.price,
+      response.data.image
+    );
+    const url1 = `http://localhost:8080/api/products/${id}/variants`;
+
+    const response1 = await axios.get(url1);
+
+    const variants = response1.data._embedded?.productVariants || [];
+
+    products.variants = variants;
+    setProduct(products);
+  };
   useEffect(() => {
-    const fetchProduct = async () => {
-      const url = `http://localhost:8080/api/products/${id}`;
-
-      const response = await axios.get(url);
-      const products = new ProductModel(
-        response.data.id,
-        response.data.title,
-        response.data.description,
-        response.data.category,
-        response.data.price,
-        response.data.image
-      );
-
-      window.scrollTo(0, 0);
-
-      const url1 = `http://localhost:8080/api/products/${id}/variants`;
-
-      const response1 = await axios.get(url1);
-      const fetchedVariants = response1.data._embedded?.productVariants || [];
-
-      const variants = response1.data._embedded?.productVariants || [];
-
-      products.variants = variants;
-      setProduct(products);
-    };
     fetchProduct();
-  }, [token]);
+  }, []);
+
   const addToCart = async () => {
     if (!product || !size || !color) {
       alert("Please select size and color before adding to cart.");
@@ -71,7 +67,7 @@ export const ProductPage = () => {
         }
       );
       updateCartCount();
-
+      fetchProduct();
       if (response.status === 200) {
         Swal.fire({
           icon: "success",
@@ -86,7 +82,7 @@ export const ProductPage = () => {
         Swal.fire({
           icon: "error",
           title: "Conflict!",
-          text: "The product already exists in the cart or is out of stock.",
+          text: "The product is out of stock.",
           confirmButtonColor: "#d33",
         });
       } else {
@@ -102,6 +98,14 @@ export const ProductPage = () => {
 
   const sizeOrder = ["S", "M", "L", "XL", "XXL"];
 
+  const colors = useMemo(() => {
+    return Array.from(
+      new Set(
+        product?.variants.filter((v) => v.color !== "none").map((v) => v.color)
+      )
+    );
+  }, [product?.variants]);
+
   const sortedSizes = useMemo(() => {
     return Array.from(
       new Set(
@@ -109,6 +113,9 @@ export const ProductPage = () => {
       )
     ).sort((a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b));
   }, [product?.variants, color]);
+
+  const showColorSelection = colors.length > 0;
+  const showSizeSelection = sortedSizes.length > 0;
   return (
     <>
       <Navbar />
@@ -151,51 +158,41 @@ export const ProductPage = () => {
                 <p className="rating-no">20</p>
               </div>
             </div>
-            {Array.isArray(product?.variants) &&
-              product?.variants.some((v) => v.color !== "none") && (
-                <div style={{ display: "block" }} className="cloth-size">
-                  <p className="choose">Choose a color</p>
-                  <div className="options">
-                    {Array.from(
-                      new Set(product?.variants.map((v) => v.color))
-                    ).map((c, index) => (
-                      <p
-                        key={index}
-                        className={`size ${color === c ? `size-clicked` : ""}`}
-                        onClick={() => setColor(c)}
-                      >
-                        {c}
-                      </p>
-                    ))}
-                  </div>
+            {showColorSelection && (
+              <div style={{ display: "block" }} className="cloth-size">
+                <p className="choose">Choose a color</p>
+                <div className="options">
+                  {colors.map((c, index) => (
+                    <p
+                      key={index}
+                      className={`size ${color === c ? `size-clicked` : ""}`}
+                      onClick={() => setColor(c)}
+                    >
+                      {c}
+                    </p>
+                  ))}
                 </div>
-              )}
-            {product ? <hr className="horizontal" /> : ""}
+              </div>
+            )}
 
-            {color &&
-              product?.variants?.some(
-                (v) =>
-                  v.color !== "none" &&
-                  v.color === color &&
-                  v.size !== null &&
-                  v.size !== "none"
-              ) && (
-                <div style={{ display: "block" }} className="cloth-size">
-                  <p className="choose">Choose a size</p>
-                  <div className="options">
-                    {color &&
-                      sortedSizes.map((s, index) => (
-                        <p
-                          key={index}
-                          className={`size ${size === s ? "size-clicked" : ""}`}
-                          onClick={() => setSize(s)}
-                        >
-                          {s}
-                        </p>
-                      ))}
-                  </div>
+            {product && <hr className="horizontal" />}
+
+            {showSizeSelection && (
+              <div style={{ display: "block" }} className="cloth-size">
+                <p className="choose">Choose a size</p>
+                <div className="options">
+                  {sortedSizes.map((s, index) => (
+                    <p
+                      key={index}
+                      className={`size ${size === s ? "size-clicked" : ""}`}
+                      onClick={() => setSize(s)}
+                    >
+                      {s}
+                    </p>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
 
             {(product && product?.category === "men's clothing") ||
             product?.category === "women's clothing" ? (
@@ -220,16 +217,12 @@ export const ProductPage = () => {
               <Link to="/cart">
                 <button className="buy-btn">Buy Now</button>
               </Link>
-              <button className="add-cart-btn">
+              <button className="add-cart-btn" onClick={addToCart}>
                 <img
                   src={require("../imgs/not-added.png")}
                   className="cart-img"
                 />
-                <p
-                  onClick={addToCart}
-                  style={{ marginLeft: "8px" }}
-                  className="cart-text"
-                >
+                <p style={{ marginLeft: "8px" }} className="cart-text">
                   Add
                 </p>
               </button>

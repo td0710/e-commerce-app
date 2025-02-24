@@ -47,7 +47,7 @@
 .cart-data {
   display: flex;
   align-items: center;
-  max-width: 450px;
+  max-width: 500px;
   padding-top: 25px;
   padding-bottom: 25px;
   padding-left: 30px;
@@ -125,6 +125,7 @@
 }
 
 .more-buttons {
+  width: 325px;
   display: flex;
   align-items: center;
 }

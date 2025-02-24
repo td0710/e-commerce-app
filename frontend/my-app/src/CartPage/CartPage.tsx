@@ -47,7 +47,7 @@ export const CartSection = () => {
   };
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  });
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<ProductCartModel | null>(null);
 
@@ -55,8 +55,30 @@ export const CartSection = () => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
 
-  const handleSelectItem = (id: number) => {
+  const handleSelectItem = async (id: number, quantity: number) => {
     const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      setSelectedItemDetails(item);
+    } else {
+      setSelectedItemDetails(null);
+    }
+  };
+  const handleSelectItemIn = async (id: number, quantity: number) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      item.quantity = quantity + 1;
+    }
+    if (item) {
+      setSelectedItemDetails(item);
+    } else {
+      setSelectedItemDetails(null);
+    }
+  };
+  const handleSelectItemDe = async (id: number, quantity: number) => {
+    const item = cartItems.find((item) => item.id === id);
+    if (item) {
+      item.quantity = quantity - 1;
+    }
     if (item) {
       setSelectedItemDetails(item);
     } else {
@@ -141,7 +163,13 @@ export const CartSection = () => {
                     key={item.id}
                     cartItem={item}
                     onDelete={handleDeleteItem}
-                    onSelect={() => handleSelectItem(item.id)}
+                    onSelect={() => handleSelectItem(item.id, item.quantity)}
+                    onSelectIn={() =>
+                      handleSelectItemIn(item.id, item.quantity)
+                    }
+                    onSelectDe={() =>
+                      handleSelectItemDe(item.id, item.quantity)
+                    }
                     isSelected={selectedItemDetails?.id === item.id}
                   />
                 );

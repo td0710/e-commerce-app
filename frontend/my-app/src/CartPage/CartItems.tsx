@@ -7,7 +7,9 @@ import { useEffect, useState } from "react";
 export const CartItems: React.FC<{
   cartItem: ProductCartModel;
   onDelete: (id: number) => void;
-  onSelect: () => void;
+  onSelect: (id: number, quantity: number) => void;
+  onSelectIn: (id: number, quantity: number) => void;
+  onSelectDe: (id: number, quantity: number) => void;
   isSelected: boolean;
 }> = (props) => {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ export const CartItems: React.FC<{
     ) {
       return;
     }
-    props.onSelect();
+    props.onSelect(props.cartItem.cartItemId, quantity);
   };
   const increaseItem = async () => {
     console.log(props.cartItem);
@@ -43,18 +45,21 @@ export const CartItems: React.FC<{
         },
       }
     );
-    console.log(response);
+
     setQuantity((prev) => {
       const newQuantity = prev + 1;
-      if (newQuantity === 0) {
-        props.onDelete(props.cartItem.id);
-      }
-      props.onSelect();
+
       return newQuantity;
     });
+    props.onSelectIn(props.cartItem.cartItemId, quantity);
     updateCartCount();
   };
-
+  const handleDecrease = async () => {
+    await decreaseItem();
+  };
+  const handleIncrease = async () => {
+    await increaseItem();
+  };
   const decreaseItem = async () => {
     console.log(props.cartItem);
 
@@ -71,14 +76,16 @@ export const CartItems: React.FC<{
     );
     setQuantity((prev) => {
       const newQuantity = prev - 1;
+
       if (newQuantity === 0) {
         props.onDelete(props.cartItem.id);
       }
-      props.onSelect();
       return newQuantity;
     });
+    props.onSelectDe(props.cartItem.cartItemId, quantity);
     updateCartCount();
   };
+
   const deleteItem = async () => {
     console.log(props.cartItem);
 
@@ -175,11 +182,11 @@ export const CartItems: React.FC<{
         </div>
         <div className="more-buttons">
           <div className="quantity-section">
-            <button className="increase" onClick={increaseItem}>
+            <button className="increase" onClick={handleIncrease}>
               +
             </button>
             <p className="total-items">{quantity}</p>
-            <button onClick={decreaseItem} className="decrease">
+            <button onClick={handleDecrease} className="decrease">
               -
             </button>
           </div>
