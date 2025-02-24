@@ -6,6 +6,7 @@ import { useAuth } from "../Context/useAuth";
 import "../PaymentPage/payment.css";
 import "../OrderPage/orders.css";
 import OrderModel from "../models/OrderModel";
+import Swal from "sweetalert2";
 
 export const EditOrderPage = () => {
   const userId = localStorage.getItem("id");
@@ -65,6 +66,14 @@ export const EditOrderPage = () => {
         "Content-Type": "application/json",
       },
     });
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Saved successfully",
+        confirmButtonColor: "#3085d6",
+      });
+    }
   };
   useEffect(() => {
     const fetchShippingDetails = async () => {

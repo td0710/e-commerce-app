@@ -25,7 +25,9 @@ export const CartItems: React.FC<{
   const handleItemClick = (e: React.MouseEvent) => {
     if (
       e.target instanceof HTMLElement &&
-      (e.target.closest(".increase") || e.target.closest(".decrease"))
+      (e.target.closest(".increase") ||
+        e.target.closest(".decrease") ||
+        e.target.closest(".save-btn"))
     ) {
       return;
     }
@@ -103,7 +105,7 @@ export const CartItems: React.FC<{
     const checkWishlist = async () => {
       if (!userId || !token) return;
       try {
-        const url = `http://localhost:8080/api/wishlists/secure/check/${userId}?productId=${props.cartItem.id}`;
+        const url = `http://localhost:8080/api/wishlists/secure/check/${userId}?productId=${props.cartItem.productId}`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,7 +125,7 @@ export const CartItems: React.FC<{
 
   const addControll = async () => {
     if (add) {
-      const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.cartItem.id}`;
+      const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.cartItem.productId}`;
       const data = await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,7 +135,7 @@ export const CartItems: React.FC<{
       setAdd(false);
     } else {
       console.log(localStorage.getItem("token"));
-      const url = `http://localhost:8080/api/wishlists/secure/add/${userId}?productId=${props.cartItem.id}`;
+      const url = `http://localhost:8080/api/wishlists/secure/add/${userId}?productId=${props.cartItem.productId}`;
       const data = await axios.post(
         url,
         {},
@@ -147,6 +149,8 @@ export const CartItems: React.FC<{
       setAdd(true);
     }
     updateWishlistCount();
+
+    console.log("kkk");
   };
 
   return (

@@ -58,6 +58,7 @@ public class CartController {
             ProductVariant productVariant = cartItem.getProductVariant();
             ProductCartResponse productCartDto = new ProductCartResponse();
 
+            productCartDto.setProductId(product.getId());
             productCartDto.setId(productVariant.getId());
             productCartDto.setCartItemId(cartItem.getId());
             productCartDto.setCategory(product.getCategory());

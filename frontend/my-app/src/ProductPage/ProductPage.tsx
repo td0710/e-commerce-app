@@ -21,6 +21,9 @@ export const ProductPage = () => {
 
   const { id } = useParams();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
   const fetchProduct = async () => {
     const url = `http://localhost:8080/api/products/${id}`;
 
@@ -177,7 +180,7 @@ export const ProductPage = () => {
 
             {product && <hr className="horizontal" />}
 
-            {showSizeSelection && (
+            {showSizeSelection && sortedSizes[0] !== "none" && (
               <div style={{ display: "block" }} className="cloth-size">
                 <p className="choose">Choose a size</p>
                 <div className="options">

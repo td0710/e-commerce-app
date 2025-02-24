@@ -9,6 +9,9 @@ public class ProductCartResponse {
 
     private Long cartItemId;
 
+    private Long productId;
+
+
     private String title;
 
     private String description;

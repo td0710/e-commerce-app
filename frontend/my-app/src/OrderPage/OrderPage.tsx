@@ -5,6 +5,7 @@ import OrderModel from "../models/OrderModel";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import "./orders.css";
+import { Pagination } from "../utils/Pagination";
 export const Orders = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
@@ -12,7 +13,7 @@ export const Orders = () => {
   const token = localStorage.getItem("token");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [orderPerPage] = useState(15);
+  const [orderPerPage] = useState(3);
   const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
@@ -21,7 +22,7 @@ export const Orders = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const url = `http://localhost:8080/api/orders/secure/getall?userId=42&page=${
+        const url = `http://localhost:8080/api/orders/secure/getall?userId=${userId}&page=${
           currentPage - 1
         }&size=${orderPerPage}`;
         const response = await axios.get(url, {
@@ -46,8 +47,10 @@ export const Orders = () => {
           productImg: item.productImg,
           status: item.status,
         }));
-
+        console.log(response);
         setOrderItems(loadedOrders);
+        setTotalPages(response.data.totalPages);
+        window.scrollTo(0, 0);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -55,7 +58,7 @@ export const Orders = () => {
 
     fetchOrder();
   }, [currentPage]);
-
+  const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <>
       <Navbar />
@@ -187,6 +190,19 @@ export const Orders = () => {
                     </NavLink>
                   );
                 })}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "50px",
+              }}
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                paginate={paginate}
+              />
+            </div>
           </div>
         </div>
       </div>

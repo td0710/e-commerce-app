@@ -7,6 +7,7 @@ import ProductCartModel from "../models/ProductCartModel";
 import "./cart.css";
 import { useAuth } from "../Context/useAuth";
 import { CartItems } from "./CartItems";
+import { Pagination } from "../utils/Pagination";
 export const CartSection = () => {
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ export const CartSection = () => {
   const { cartCount, wishlistCount, updateCartCount } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [productPerPage] = useState(5);
+  const [productPerPage] = useState(2);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -88,7 +89,9 @@ export const CartSection = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=0&size=50`;
+      const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=${
+        currentPage - 1
+      }&size=${productPerPage}`;
       console.log(userId);
       const response = await axios.get(url, {
         headers: {
@@ -100,6 +103,7 @@ export const CartSection = () => {
       const loadedProducts = response.data.products.map((item: any) => ({
         id: item.id,
         cartItemId: item.cartItemId,
+        productId: item.productId,
         title: item.title,
         description: item.description,
         category: item.category,
@@ -110,10 +114,11 @@ export const CartSection = () => {
         quantity: item.quantity,
       }));
       setCartItems(loadedProducts);
+
       setTotalPages(response.data.totalPages);
     };
     fetchCart();
-  }, [cartCount, wishlistCount]);
+  }, [cartCount, wishlistCount, currentPage]);
   useEffect(() => {
     const totalPrice = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -261,6 +266,13 @@ export const CartSection = () => {
               </button>
             </div>
           </div>
+        </div>
+        <div style={{ marginBottom: "100px" }}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            paginate={paginate}
+          ></Pagination>
         </div>
       </div>
       <Footer />
