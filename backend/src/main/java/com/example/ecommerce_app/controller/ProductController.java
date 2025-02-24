@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/products/secure")
@@ -121,5 +123,12 @@ public class ProductController {
         }
 
         return ResponseEntity.ok("create success");
+    }
+
+    @DeleteMapping("/delete/product/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
+
+        productService.deleteById(productId) ;
+        return ResponseEntity.ok("delete success");
     }
 }

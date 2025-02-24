@@ -1,13 +1,14 @@
 import axios from "axios";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { ChangeEvent, useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "../PaymentPage/payment.css";
 import "../ProductPage/productpage.css";
 import ProductModel from "../models/ProductModel";
-import { useAuth } from "../Context/useAuth";
 import ProductVariantModel from "../models/ProductVariantModel";
 import Footer from "../layouts/NavbarAndFooter/Footer";
+import swal from "sweetalert";
+import Swal from "sweetalert2";
 
 export const AdminProductPage = () => {
   const token = localStorage.getItem("token");
@@ -24,6 +25,7 @@ export const AdminProductPage = () => {
   const [image, setImage] = useState("");
   const [saveVariant, setSaveVariant] = useState(false);
   const [saveQuantity, setSaveQuantity] = useState("");
+  const navigate = useNavigate();
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
   const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -45,12 +47,9 @@ export const AdminProductPage = () => {
     setSaveQuantity(e.target.value);
   };
 
-  const handleDelteSize = (e: ChangeEvent<HTMLInputElement>) => {
-    setSize(e.target.value);
-  };
-  const handleDeleteColor = (e: ChangeEvent<HTMLInputElement>) => {
-    setColor(e.target.value);
-  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleQuantity = (
     e: ChangeEvent<HTMLInputElement>,
@@ -119,13 +118,22 @@ export const AdminProductPage = () => {
     };
 
     try {
-      await axios.put(url, updatedProduct, {
+      const response = await axios.put(url, updatedProduct, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      fetchProductDetails();
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "The product has been saved successfully.",
+          confirmButtonColor: "#3085d6",
+        });
+        fetchProductDetails();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -148,6 +156,14 @@ export const AdminProductPage = () => {
         },
       }
     );
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Saved successfully",
+        confirmButtonColor: "#3085d6",
+      });
+    }
   };
   const createVariant = async () => {
     const url = `http://localhost:8080/api/products/secure/create/variant/${id}?size=${size}&color=${color}&quantity=${saveQuantity}`;
@@ -182,6 +198,17 @@ export const AdminProductPage = () => {
     fetchVariants();
   };
 
+  const deleteProduct = async () => {
+    const url = `http://localhost:8080/api/products/secure/delete/product/${id}`;
+
+    const response = await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    navigate("/homepage");
+  };
   return (
     <>
       <Navbar />
@@ -335,12 +362,34 @@ export const AdminProductPage = () => {
                       required
                     />
                   </div>
-                  <button
-                    onClick={updateProductDetails}
-                    className="save-address"
-                  >
-                    Save
-                  </button>
+                  <div style={{ display: "flex", gap: "15px" }}>
+                    <button
+                      onClick={updateProductDetails}
+                      className="save-address"
+                    >
+                      Save Product
+                    </button>
+                    <button
+                      className="cancel-order"
+                      style={{ height: "53px" }}
+                      onClick={() => {
+                        swal({
+                          title: "Are you sure?",
+                          text: "Once deleted, you will not be able to recover this item!",
+                          icon: "warning",
+                          buttons: ["Cancel", "Yes, delete it!"],
+                          dangerMode: true,
+                        }).then((willDelete) => {
+                          if (willDelete) {
+                            deleteProduct();
+                          }
+                        });
+                      }}
+                    >
+                      Delete Product
+                    </button>
+                  </div>
+
                   <div className="shipping-head" style={{ marginTop: "20px" }}>
                     Create
                   </div>
@@ -379,12 +428,30 @@ export const AdminProductPage = () => {
                         width: "90px",
                         marginLeft: "15px",
                       }}
-                      onClick={() =>
-                        size !== "" &&
-                        color !== "" &&
-                        saveQuantity !== "" &&
-                        createVariant()
-                      }
+                      onClick={() => {
+                        if (
+                          size === "" ||
+                          color === "" ||
+                          saveQuantity === ""
+                        ) {
+                          swal({
+                            title: "Incomplete Information",
+                            text: "Please fill in all required fields before creating.",
+                            icon: "warning",
+                            buttons: {
+                              confirm: {
+                                text: "OK",
+                                value: true,
+                                visible: true,
+                                className: "custom-confirm-button",
+                                closeModal: true,
+                              },
+                            },
+                          });
+                          return;
+                        }
+                        createVariant();
+                      }}
                     >
                       Create
                     </button>

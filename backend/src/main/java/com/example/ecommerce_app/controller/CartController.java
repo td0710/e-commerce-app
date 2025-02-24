@@ -12,6 +12,7 @@ import com.example.ecommerce_app.service.impl.CartServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,8 +86,9 @@ public class CartController {
         Cart cart = cartService.findById(userId);
 
         ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId,size,color) ;
-        if(productVariant.getStock() <= 0) {
-            return ResponseEntity.ok("out of stock");
+
+        if (productVariant.getStock() <= 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Out of stock");
         }
         cart.setTotal(cart.getTotal()+1);
         cartService.saveCart(cart);
@@ -111,8 +113,8 @@ public class CartController {
         Cart cart = cartService.findById(userId);
 
         ProductVariant productVariant = productVariantService.findById(productId) ;
-        if(productVariant.getStock() <= 0) {
-            return ResponseEntity.ok("out of stock");
+        if (productVariant.getStock() <= 0) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Out of stock");
         }
         cart.setTotal(cart.getTotal()+1);
         cartService.saveCart(cart);

@@ -45,7 +45,9 @@ export const CartSection = () => {
       },
     });
   };
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<ProductCartModel | null>(null);
 

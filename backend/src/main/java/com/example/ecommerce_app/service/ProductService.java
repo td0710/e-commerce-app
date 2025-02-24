@@ -9,4 +9,6 @@ public interface ProductService {
     ProductResponse findProductsByCategory(int pageNo, int pageSize, String category);
 
     Product save(Product product);
+
+    void deleteById(Long productId);
 }

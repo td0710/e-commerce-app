@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import ProductVariantModel from "../models/ProductVariantModel";
 import ProductModel from "../models/ProductModel";
 import "../PaymentPage/payment.css";
@@ -8,6 +8,9 @@ import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import axios from "axios";
 import { useAuth } from "../Context/useAuth";
+import { useNavigate } from "react-router-dom";
+import swal from "sweetalert";
+import Swal from "sweetalert2";
 
 export const AddProductPage = () => {
   const [color, setColor] = useState("");
@@ -20,6 +23,8 @@ export const AddProductPage = () => {
   const [image, setImage] = useState("");
   const [saveQuantity, setSaveQuantity] = useState("");
   const { token } = useAuth();
+
+  const navigate = useNavigate();
   const handleTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
   const handleDescription = (e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -40,6 +45,10 @@ export const AddProductPage = () => {
   const handleSaveQuantity = (e: ChangeEvent<HTMLInputElement>) => {
     setSaveQuantity(e.target.value);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const createVariant = () => {
     const newVariant: ProductVariantModel = {
       size: size,
@@ -75,12 +84,23 @@ export const AddProductPage = () => {
     );
     const url = `http://localhost:8080/api/products/secure/create/product`;
     console.log(newProduct);
-    const response = axios.post(url, newProduct, {
+    const response = await axios.post(url, newProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "The product has been created.",
+        confirmButtonColor: "#3085d6",
+      }).then(() => {
+        navigate("/homepage");
+      });
+    }
   };
 
   return (
@@ -285,15 +305,33 @@ export const AddProductPage = () => {
                 <button
                   className="save-address"
                   style={{ height: "53px" }}
-                  onClick={saveProduct}
-                  disabled={
-                    !title ||
-                    !description ||
-                    !category ||
-                    !price ||
-                    !image ||
-                    variants.length === 0
-                  }
+                  onClick={() => {
+                    if (
+                      !title ||
+                      !description ||
+                      !category ||
+                      !price ||
+                      !image ||
+                      variants.length === 0
+                    ) {
+                      swal({
+                        title: "Incomplete Information",
+                        text: "Please fill in all required fields before saving.",
+                        icon: "warning",
+                        buttons: {
+                          confirm: {
+                            text: "OK",
+                            value: true,
+                            visible: true,
+                            className: "custom-confirm-button",
+                            closeModal: true,
+                          },
+                        },
+                      });
+                      return;
+                    }
+                    saveProduct();
+                  }}
                 >
                   Save Product
                 </button>

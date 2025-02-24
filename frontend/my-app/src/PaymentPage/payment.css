@@ -386,7 +386,9 @@ input[type="radio"] {
   animation: FadeIn 0.35s ease;
   transition: all 0.35s ease;
 }
-
+.custom-confirm-button {
+  margin-right: 184px;
+}
 @keyframes FadeIn {
   0% {
     opacity: 0;

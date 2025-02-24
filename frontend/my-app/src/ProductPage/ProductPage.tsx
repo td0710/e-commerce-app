@@ -3,9 +3,10 @@ import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { Link, useParams } from "react-router-dom";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import ProductModel from "../models/ProductModel";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import "./productpage.css";
 import { useAuth } from "../Context/useAuth";
+import Swal from "sweetalert2";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
   const [variants, setVariants] = useState([]);
@@ -57,19 +58,48 @@ export const ProductPage = () => {
     console.log(product);
 
     const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
-    const response = await axios.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+
+    try {
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      updateCartCount();
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "The product has been added to your cart.",
+          confirmButtonColor: "#3085d6",
+        });
       }
-    );
-    updateCartCount();
-    console.log(response);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 409) {
+        Swal.fire({
+          icon: "error",
+          title: "Conflict!",
+          text: "The product already exists in the cart or is out of stock.",
+          confirmButtonColor: "#d33",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Something went wrong. Please try again.",
+          confirmButtonColor: "#d33",
+        });
+      }
+    }
   };
+
   const sizeOrder = ["S", "M", "L", "XL", "XXL"];
 
   const sortedSizes = useMemo(() => {

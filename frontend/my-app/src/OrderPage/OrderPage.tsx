@@ -15,7 +15,9 @@ export const Orders = () => {
   const [orderPerPage] = useState(15);
   const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   useEffect(() => {
     const fetchOrder = async () => {
       try {

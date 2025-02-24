@@ -5,6 +5,7 @@ import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/useAuth";
+import Swal from "sweetalert2";
 
 export const PaymentPage = () => {
   const userId = localStorage.getItem("id");
@@ -68,7 +69,16 @@ export const PaymentPage = () => {
       }
     );
     updateOrderCount();
-    navigate("/order");
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Ordred successfully",
+        confirmButtonColor: "#3085d6",
+      }).then(() => {
+        navigate("/order");
+      });
+    }
   };
   const handleCardPayment = async () => {
     const url = `http://localhost:8080/api/payment/secure/vn-pay?amount=${
@@ -125,6 +135,17 @@ export const PaymentPage = () => {
         "Content-Type": "application/json",
       },
     });
+    if (response.status === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Saved successfully",
+        confirmButtonColor: "#3085d6",
+      }).then(() => {
+        setShippingDisplay("none");
+        setCardDisplay("block");
+      });
+    }
   };
   return (
     <>
@@ -229,8 +250,6 @@ export const PaymentPage = () => {
                     !emailError
                   ) {
                     setDisabled(true);
-                    setShippingDisplay("none");
-                    setCardDisplay("block");
                     saveShippingDetails();
                   } else {
                     notify1();
