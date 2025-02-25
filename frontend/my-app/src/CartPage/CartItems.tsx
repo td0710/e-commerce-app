@@ -1,9 +1,10 @@
 import ProductCartModel from "../models/ProductCartModel";
 import { useNavigate } from "react-router-dom";
 import "./cart.css";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAuth } from "../Context/useAuth";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 export const CartItems: React.FC<{
   cartItem: ProductCartModel;
   onDelete: (id: number) => void;
@@ -34,28 +35,62 @@ export const CartItems: React.FC<{
     props.onSelect(props.cartItem.cartItemId, quantity);
   };
   const increaseItem = async () => {
-    console.log(props.cartItem);
-
     const url = `http://localhost:8080/api/carts/secure/add/cartpage/${userId}/${props.cartItem.id}`;
-    const response = await axios.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+
+    try {
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setQuantity((prev) => prev + 1);
+      props.onSelectIn(props.cartItem.cartItemId, quantity);
+      updateCartCount();
+
+      if (response.status === 200) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "success",
+          title: "Increased quantity successfully",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
       }
-    );
-
-    setQuantity((prev) => {
-      const newQuantity = prev + 1;
-
-      return newQuantity;
-    });
-    props.onSelectIn(props.cartItem.cartItemId, quantity);
-    updateCartCount();
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 409) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Product out of stock",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Something went wrong!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: "#F44336",
+        });
+      }
+    }
   };
+
   const handleDecrease = async () => {
     await decreaseItem();
   };
@@ -63,44 +98,128 @@ export const CartItems: React.FC<{
     await increaseItem();
   };
   const decreaseItem = async () => {
+    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+
+    try {
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setQuantity((prev) => {
+        const newQuantity = prev - 1;
+
+        if (newQuantity === 0) {
+          props.onDelete(props.cartItem.id);
+        }
+        return newQuantity;
+      });
+
+      props.onSelectDe(props.cartItem.cartItemId, quantity);
+      updateCartCount();
+
+      if (response.status === 200) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "success",
+          title: "Decreased quantity successfully",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 404) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Product not found",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Something went wrong!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          background: "#F44336",
+        });
+      }
+    }
+  };
+
+  const deleteItem = async () => {
+    if (!props.cartItem) {
+      alert("Product information is missing.");
+      return;
+    }
+
     console.log(props.cartItem);
 
-    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
-    const response = await axios.post(
-      url,
-      {},
-      {
+    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+
+    try {
+      const response = await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      }
-    );
-    setQuantity((prev) => {
-      const newQuantity = prev - 1;
+      });
 
-      if (newQuantity === 0) {
-        props.onDelete(props.cartItem.id);
+      props.onDelete(props.cartItem.id);
+      updateCartCount();
+
+      if (response.status === 200) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "success",
+          title: "Item removed from cart",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
       }
-      return newQuantity;
-    });
-    props.onSelectDe(props.cartItem.cartItemId, quantity);
-    updateCartCount();
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 404) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Item not found",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "error",
+          title: "Something went wrong!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
+    }
   };
 
-  const deleteItem = async () => {
-    console.log(props.cartItem);
-
-    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
-    const response = await axios.delete(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    props.onDelete(props.cartItem.id);
-    updateCartCount();
-  };
   useEffect(() => {
     const checkWishlist = async () => {
       if (!userId || !token) return;
@@ -166,23 +285,30 @@ export const CartItems: React.FC<{
         className="cart-item-img"
       />
       <div className="cart-all-data">
-        <p className="cart-title">{props.cartItem.title}</p>
+        <p className="cart-title">
+          {" "}
+          {props.cartItem.title.length > 30
+            ? props.cartItem.title.substring(0, 30) + "..."
+            : props.cartItem.title}
+        </p>
         <div className="cart-price">
           <p className="cart-discount">
             ${(props.cartItem.price * props.cartItem.quantity).toFixed(1)}
           </p>
+
           <p style={{ display: "block" }} className="cart-size">
-            Size:{" "}
-            {props.cartItem.size && props.cartItem.size != "none"
-              ? props.cartItem.size
-              : "Not choosen"}
+            {props.cartItem.color !== "none"
+              ? `Size :  ${props.cartItem.size}`
+              : "\u00A0"}
           </p>
-          <p style={{ display: "block" }} className="cart-size">
-            Color:{" "}
-            {props.cartItem.color && props.cartItem.color != "none"
-              ? props.cartItem.color
-              : "Not choosen"}
-          </p>
+
+          {
+            <p style={{ display: "block" }} className="cart-size">
+              {props.cartItem.color !== "none"
+                ? `Color :  ${props.cartItem.color}`
+                : "\u00A0"}
+            </p>
+          }
         </div>
         <div className="more-buttons">
           <div className="quantity-section">

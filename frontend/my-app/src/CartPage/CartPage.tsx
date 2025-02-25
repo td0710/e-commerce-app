@@ -20,6 +20,8 @@ export const CartSection = () => {
 
   const { cartCount, wishlistCount, updateCartCount } = useAuth();
 
+  const [error, setError] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [productPerPage] = useState(2);
   const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
@@ -91,36 +93,48 @@ export const CartSection = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=${
-        currentPage - 1
-      }&size=${productPerPage}`;
-      console.log(userId);
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      console.log(response);
-      const loadedProducts = response.data.products.map((item: any) => ({
-        id: item.id,
-        cartItemId: item.cartItemId,
-        productId: item.productId,
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        price: item.price,
-        image: item.image,
-        size: item.size,
-        color: item.color,
-        quantity: item.quantity,
-      }));
-      setCartItems(loadedProducts);
-      isLoading(false);
-      setTotalPages(response.data.totalPages);
+      try {
+        setError("");
+        const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=${
+          currentPage - 1
+        }&size=${productPerPage}`;
+
+        console.log("Fetching cart for user:", userId);
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const loadedProducts = response.data.products.map((item: any) => ({
+          id: item.id,
+          cartItemId: item.cartItemId,
+          productId: item.productId,
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          price: item.price,
+          image: item.image,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+        }));
+
+        setCartItems(loadedProducts);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+        setError(`${error}`);
+      } finally {
+        isLoading(false);
+      }
     };
+
     fetchCart();
   }, [cartCount, wishlistCount, currentPage]);
+
   useEffect(() => {
     const totalPrice = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -135,6 +149,8 @@ export const CartSection = () => {
       <Navbar />
 
       <div className="entire-section">
+        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+
         <p
           style={{ margin: 0 }}
           className={cartItems ? `cart-head animate` : `cart-head`}
@@ -272,7 +288,7 @@ export const CartSection = () => {
             </div>
           </div>
         </div>
-        {cartCount > 0 && (
+        {cartCount > 0 && cartItems.length > 0 && (
           <div style={{ marginBottom: "100px" }}>
             <Pagination
               currentPage={currentPage}

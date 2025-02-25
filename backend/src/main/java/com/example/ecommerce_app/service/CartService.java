@@ -1,8 +1,8 @@
 package com.example.ecommerce_app.service;
 
+import com.example.ecommerce_app.dto.response.CartResponse;
 import com.example.ecommerce_app.entity.Cart;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 public interface CartService {
     Cart findById(Long id);
@@ -13,4 +13,14 @@ public interface CartService {
 
     Cart findByUserId(Long userId);
     void save(Cart cart);
+
+    CartResponse getCart(Long userId,int page,int size);
+
+    String addCart( Long userId, Long productId, String size, String color) ;
+
+    String addCartPage(Long userId, Long productId) ;
+
+    String decreaseCart(Long userId, Long productId);
+
+    String deleteCart(Long userId, Long productId);
 }

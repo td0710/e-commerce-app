@@ -20,7 +20,7 @@ export const AddProductPage = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<any>(null);
   const [saveQuantity, setSaveQuantity] = useState("");
   const { token } = useAuth();
 
@@ -33,8 +33,6 @@ export const AddProductPage = () => {
     setCategory(e.target.value);
   const handlePrice = (e: ChangeEvent<HTMLInputElement>) =>
     setPrice(parseFloat(e.target.value));
-  const handleImage = (e: ChangeEvent<HTMLInputElement>) =>
-    setImage(e.target.value);
 
   const handleSize = (e: ChangeEvent<HTMLInputElement>) => {
     setSize(e.target.value);
@@ -79,7 +77,7 @@ export const AddProductPage = () => {
       description,
       category,
       price,
-      image,
+      selectedImage,
       variants
     );
     const url = `http://localhost:8080/api/products/secure/create/product`;
@@ -105,7 +103,22 @@ export const AddProductPage = () => {
       });
     }
   };
+  async function base64ConversionForImages(e: any) {
+    if (e.target.files[0]) {
+      getBase64(e.target.files[0]);
+    }
+  }
 
+  function getBase64(file: any) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      setSelectedImage(reader.result);
+    };
+    reader.onerror = function (error) {
+      console.log("Error", error);
+    };
+  }
   return (
     <>
       <Navbar />
@@ -233,12 +246,11 @@ export const AddProductPage = () => {
                       />
                     </div>
                     <div className="user-address">
-                      <p className="user-fulladdress">Image URL*</p>
+                      <p className="user-fulladdress">Image*</p>
                       <input
-                        type="text"
+                        type="file"
                         placeholder="Image URL"
-                        onChange={handleImage}
-                        value={image}
+                        onChange={(e) => base64ConversionForImages(e)}
                         required
                       />
                     </div>
@@ -318,7 +330,7 @@ export const AddProductPage = () => {
                       !description ||
                       !category ||
                       !price ||
-                      !image ||
+                      !selectedImage ||
                       variants.length === 0
                     ) {
                       Swal.fire({

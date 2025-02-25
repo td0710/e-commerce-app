@@ -22,7 +22,7 @@ export const AdminProductPage = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<any>(null);
   const [saveVariant, setSaveVariant] = useState(false);
   const [saveQuantity, setSaveQuantity] = useState("");
   const navigate = useNavigate();
@@ -34,8 +34,6 @@ export const AdminProductPage = () => {
     setCategory(e.target.value);
   const handlePrice = (e: ChangeEvent<HTMLInputElement>) =>
     setPrice(parseFloat(e.target.value));
-  const handleImage = (e: ChangeEvent<HTMLInputElement>) =>
-    setImage(e.target.value);
 
   const handleSize = (e: ChangeEvent<HTMLInputElement>) => {
     setSize(e.target.value);
@@ -82,7 +80,7 @@ export const AdminProductPage = () => {
         setDescription(response.data.description);
         setCategory(response.data.category);
         setPrice(response.data.price);
-        setImage(response.data.image);
+        setSelectedImage(response.data.image);
       }
     } catch (error) {
       console.error(error);
@@ -115,7 +113,7 @@ export const AdminProductPage = () => {
       description,
       category,
       price: price,
-      image: image,
+      image: selectedImage,
     };
 
     try {
@@ -229,6 +227,22 @@ export const AdminProductPage = () => {
     });
     navigate("/homepage");
   };
+  async function base64ConversionForImages(e: any) {
+    if (e.target.files[0]) {
+      getBase64(e.target.files[0]);
+    }
+  }
+
+  function getBase64(file: any) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      setSelectedImage(reader.result);
+    };
+    reader.onerror = function (error) {
+      console.log("Error", error);
+    };
+  }
   return (
     <>
       <Navbar />
@@ -500,10 +514,8 @@ export const AdminProductPage = () => {
                   <div className="user-address">
                     <p className="user-fulladdress">Image URL*</p>
                     <input
-                      type="text"
-                      placeholder="Image URL"
-                      onChange={handleImage}
-                      value={image}
+                      type="file"
+                      onChange={(e) => base64ConversionForImages(e)}
                       required
                     />
                   </div>

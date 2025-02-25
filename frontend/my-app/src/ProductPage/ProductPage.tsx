@@ -80,7 +80,6 @@ export const ProductPage = () => {
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
-          background: "#4CAF50",
         });
       }
     } catch (error) {
@@ -104,7 +103,6 @@ export const ProductPage = () => {
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
-          background: "#F44336",
         });
       }
     }
