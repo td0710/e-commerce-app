@@ -93,7 +93,8 @@ export const PaymentPage = () => {
         "Content-Type": "application/json",
       },
     });
-    window.location.href = response.data.paymentUrl;
+    console.log(response.data.paymentUrl);
+    // window.location.href = response.data.paymentUrl;
   };
   const handlePlaceOrder = () => {
     if (paymentMode === "COD") {

@@ -1,5 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
+import com.example.ecommerce_app.dto.ShippingDetailsDto;
 import com.example.ecommerce_app.dto.response.OrderPageResponse;
 import com.example.ecommerce_app.dto.response.OrderResponse;
 import com.example.ecommerce_app.entity.Order;
@@ -8,8 +9,10 @@ import com.example.ecommerce_app.service.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,11 +72,49 @@ public class OrderServiceImpl implements OrderService {
         return orderPageResponse;
     }
 
-    public Long totalOrders(Long userId) {
-        return orderRepository.countByUserId(userId) ;
+    public OrderResponse getOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Cart not found order: "));
+
+        OrderResponse orderResponse = new OrderResponse();
+
+        orderResponse.setOrderId(order.getId());
+        orderResponse.setTotalPrice(order.getTotalPrice());
+        orderResponse.setQuantity(order.getQuantity());
+        orderResponse.setShippingName(order.getShippingName());
+        orderResponse.setShippingAddress(order.getShippingAddress());
+        orderResponse.setShippingCountry(order.getShippingCountry());
+        orderResponse.setShippingEmail(order.getShippingEmail());
+        orderResponse.setStatus(order.getOrderStatus());
+        orderResponse.setContactNumber(order.getShippingContact());
+
+        orderResponse.setProductName(order.getProduct().getTitle());
+        orderResponse.setProductCategory(order.getProduct().getCategory());
+        orderResponse.setProductImg(order.getProduct().getImage());
+
+        orderResponse.setSize(order.getVariant().getSize());
+        orderResponse.setColor(order.getVariant().getColor());
+
+        return orderResponse ;
     }
 
-    public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).get();
+    public String setShippingDetails(Long orderId, ShippingDetailsDto shippingDetailsDto) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Not found order: "));
+
+        order.setShippingAddress(shippingDetailsDto.getHomeAddress());
+        order.setShippingEmail(shippingDetailsDto.getEmail());
+        order.setShippingContact(shippingDetailsDto.getContactNumber());
+        order.setShippingName(shippingDetailsDto.getName());
+        order.setShippingEmail(shippingDetailsDto.getEmail());
+        order.setShippingCountry(shippingDetailsDto.getCountry());
+
+        orderRepository.save(order);
+
+        return "Saved shipping details successfully" ;
+    }
+
+    public Long totalOrders(Long userId) {
+        return orderRepository.countByUserId(userId) ;
     }
 }

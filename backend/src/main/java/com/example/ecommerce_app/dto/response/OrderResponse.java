@@ -1,9 +1,13 @@
 package com.example.ecommerce_app.dto.response;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderResponse {
     Long orderId;
     Long totalPrice;
@@ -19,4 +23,6 @@ public class OrderResponse {
     String contactNumber;
     String productCategory;
     String productImg;
+
+
 }

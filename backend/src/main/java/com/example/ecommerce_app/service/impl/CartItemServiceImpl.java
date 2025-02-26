@@ -21,23 +21,6 @@ public class CartItemServiceImpl implements CartItemService {
         this.cartItemRepository = cartItemRepository;
     }
 
-    public Page<CartItem> findByCart(Cart cart, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return cartItemRepository.findByCart(cart,pageable);
-    }
-
-
-    public CartItem findByCartIdAndProductVariantId(Long cartId,Long variantId) {
-        return cartItemRepository.findByCartIdAndProductVariantId(cartId,variantId) ;
-    }
-
-    public void addCartItem(CartItem cartItem) {
-        cartItemRepository.save(cartItem);
-    }
-
-    public void removeCartItem(CartItem cartItem) {
-        cartItemRepository.delete(cartItem);
-    }
 
     public CartItem findById(Long id) {
         return cartItemRepository.findById(id).orElse(null);

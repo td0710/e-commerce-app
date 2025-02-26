@@ -21,11 +21,10 @@ import java.util.stream.Collectors;
 public class WishlistServiceImpl implements WishlistService {
 
     private WishlistRepository wishlistRepository;
-    private ProductRepository productRepository;
 
-    public WishlistServiceImpl(WishlistRepository wishlistRepository, ProductRepository productRepository) {
+    public WishlistServiceImpl(WishlistRepository wishlistRepository) {
         this.wishlistRepository = wishlistRepository;
-        this.productRepository = productRepository;
+
     }
 
     public Page<ProductWishlistResponse> getProductsInWishListByUserId(Long userId, Pageable pageable) {

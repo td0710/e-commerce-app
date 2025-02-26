@@ -3,9 +3,8 @@ package com.example.ecommerce_app.controller;
 import com.example.ecommerce_app.dto.ShippingDetailsDto;
 import com.example.ecommerce_app.dto.response.OrderPageResponse;
 import com.example.ecommerce_app.dto.response.OrderResponse;
-import com.example.ecommerce_app.entity.Order;
-import com.example.ecommerce_app.entity.ShippingDetails;
 import com.example.ecommerce_app.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,48 +30,28 @@ public class OrderController {
     }
 
     @GetMapping("/get/{orderId}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId) {
-
-        Order order = orderService.getOrderById(orderId);
-
-        OrderResponse orderResponse = new OrderResponse();
-
-        orderResponse.setOrderId(order.getId());
-        orderResponse.setTotalPrice(order.getTotalPrice());
-        orderResponse.setQuantity(order.getQuantity());
-        orderResponse.setShippingName(order.getShippingName());
-        orderResponse.setShippingAddress(order.getShippingAddress());
-        orderResponse.setShippingCountry(order.getShippingCountry());
-        orderResponse.setShippingEmail(order.getShippingEmail());
-        orderResponse.setStatus(order.getOrderStatus());
-        orderResponse.setContactNumber(order.getShippingContact());
-
-        orderResponse.setProductName(order.getProduct().getTitle());
-        orderResponse.setProductCategory(order.getProduct().getCategory());
-        orderResponse.setProductImg(order.getProduct().getImage());
-
-        orderResponse.setSize(order.getVariant().getSize());
-        orderResponse.setColor(order.getVariant().getColor());
-
-        return ResponseEntity.ok(orderResponse) ;
-
+    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
+        try {
+            OrderResponse orderResponse = orderService.getOrder(orderId);
+            return ResponseEntity.ok(orderResponse);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error get orders");
+        }
     }
+
     @PutMapping("/edit/{orderId}")
     public ResponseEntity<?> setShippingDetails(@PathVariable Long orderId,
                                                 @RequestBody ShippingDetailsDto shippingDetailsDto) {
 
-        Order order = orderService.getOrderById(orderId);
+        try {
+            String message = orderService.setShippingDetails(orderId, shippingDetailsDto);
 
-        order.setShippingAddress(shippingDetailsDto.getHomeAddress());
-        order.setShippingEmail(shippingDetailsDto.getEmail());
-        order.setShippingContact(shippingDetailsDto.getContactNumber());
-        order.setShippingName(shippingDetailsDto.getName());
-        order.setShippingEmail(shippingDetailsDto.getEmail());
-        order.setShippingCountry(shippingDetailsDto.getCountry());
+            return ResponseEntity.ok(message);
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error editing shipping details");
 
-        orderService.save(order);
-
-        return ResponseEntity.ok("success");
+        }
     }
 
 }

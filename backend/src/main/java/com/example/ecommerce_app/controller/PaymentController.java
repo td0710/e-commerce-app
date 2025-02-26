@@ -5,13 +5,14 @@ import com.example.ecommerce_app.dto.PaymentDto;
 
 import com.example.ecommerce_app.dto.PaymentVNPAYDto;
 import com.example.ecommerce_app.entity.*;
+import com.example.ecommerce_app.repository.CartRepository;
+import com.example.ecommerce_app.repository.ShippingDetailsRepository;
 import com.example.ecommerce_app.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -23,8 +24,11 @@ public class PaymentController {
     private final ProductVariantService productVariantService;
     private final CartItemService cartItemService;
     private final CartService cartService;
+    private final CartRepository cartRepository;
     private final ShippingDetailsService shippingDetailsService;
     private final OrderService orderService;
+    private final ShippingDetailsRepository shippingDetailsRepository;
+
     public PaymentController(PaymentService paymentService,
                              ProductService productService,
                              UserService userService,
@@ -32,7 +36,9 @@ public class PaymentController {
                              CartItemService cartItemService,
                              CartService cartService,
                              ShippingDetailsService shippingDetailsService,
-                             OrderService orderService) {
+                             OrderService orderService,
+                             CartRepository cartRepository,
+                             ShippingDetailsRepository shippingDetailsRepository) {
         this.paymentService = paymentService;
         this.productService = productService;
         this.userService = userService;
@@ -41,14 +47,16 @@ public class PaymentController {
         this.cartService=cartService;
         this.shippingDetailsService=shippingDetailsService;
         this.orderService=orderService;
+        this.cartRepository=cartRepository;
+        this.shippingDetailsRepository = shippingDetailsRepository;
     }
     @GetMapping("/vn-pay")
     public ResponseEntity<PaymentDto> pay(HttpServletRequest request) {
         return ResponseEntity.ok(paymentService.createVnPayPayment(request));
     }
+
     @PostMapping("/vn-pay-callback")
     public ResponseEntity<?> payCallbackHandler(@RequestBody PaymentVNPAYDto paymentVNPAYDto) {
-
 
         String status = paymentVNPAYDto.getVnpResponseCode();
 
@@ -82,7 +90,7 @@ public class PaymentController {
         order = orderService.save(order);
 
         Payment payment = new Payment();
-        payment.setOrder(order); //
+        payment.setOrder(order); 
         payment.setTransactionNo(paymentVNPAYDto.getVnpTransactionNo());
         payment.setTxnRef(paymentVNPAYDto.getVnpTxnRef());
         payment.setAmount(order.getTotalPrice() / 100);
@@ -103,6 +111,7 @@ public class PaymentController {
         }
 
         return ResponseEntity.ok("success");
+
     }
 
     @PostMapping("/cod")
@@ -110,49 +119,13 @@ public class PaymentController {
                                         @RequestParam Long totalPrice,
                                         @RequestParam Long cartItemId
                                         ) {
-        Order order = new Order();
-        Users user = userService.findById(userId);
-        CartItem cartItem = cartItemService.findById(cartItemId) ;
-        Product product = productService.findProductById(cartItem.getProduct().getId()) ;
-        ProductVariant productVariant = productVariantService.findById(cartItem.getProductVariant().getId()) ;
-        System.out.println(productVariant.getId());
-        ShippingDetails shippingDetails = shippingDetailsService.findByUserId(userId) ;
+        try {
+            String message = paymentService.codPayment(userId, totalPrice, cartItemId);
 
-        order.setUser(user);
-        order.setProduct(product);
-        order.setQuantity(cartItem.getQuantity());
-        order.setVariant(productVariant);
-        order.setTotalPrice(totalPrice);
-        order.setOrderStatus("CONFIRMED");
-        order.setShippingAddress(shippingDetails.getHomeAddress());
-        order.setShippingCountry(shippingDetails.getCountry());
-        order.setShippingContact(shippingDetails.getContactNumber());
-        order.setShippingName(shippingDetails.getName());
-        order.setShippingEmail(shippingDetails.getEmail());
-        order.setPaymentStatus("PAID");
-        order.setCreatedAt(LocalDateTime.now());
-
-        orderService.save(order);
-
-        Payment payment = new Payment();
-
-        payment.setOrder(order);
-        payment.setTransactionNo("COD-" + UUID.randomUUID());
-        payment.setTxnRef("COD-" + order.getId());
-        payment.setAmount(order.getTotalPrice());
-        payment.setBankCode(null);
-        payment.setCardType("COD");
-        payment.setPayDate(LocalDateTime.now());
-        payment.setResponseCode("00");
-        payment.setTransactionStatus("SUCCESS");
-        payment.setCreatedAt(LocalDateTime.now());
-
-        paymentService.save(payment) ;
-
-        Cart cart = cartService.findByUserId(userId) ;
-        cart.setTotal(cart.getTotal() - cartItem.getQuantity());
-        cartItemService.delete(cartItemId) ;
-
-        return ResponseEntity.ok("Success");
+            return ResponseEntity.ok(message);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

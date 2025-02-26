@@ -17,9 +17,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public void saveUser(String username) {
-        userRepository.save(username);
-    }
     public Users findById(Long id) {
         return userRepository.findById(id).get();
     }

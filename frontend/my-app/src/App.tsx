@@ -17,6 +17,8 @@ import OrderPage from "./OrderPage/OrderPage";
 import { EditOrderPage } from "./EditOrderPage/EditOrderPage";
 import { AdminProductPage } from "./ProductPage/AdminProduct";
 import { AddProductPage } from "./ProductPage/AddProductPage";
+import AdminProtectedRoute from "./Routes/AdminProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
@@ -25,78 +27,42 @@ function App() {
           <Route path="/" element={<Navigate to="/signin" />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/homepage" element={<Homepage />} />
           <Route path="/auth/google/callback" element={<LoadingPage />} />
+
           <Route
-            path="/wishlists"
+            path="/*"
             element={
               <ProtectedRoute>
-                <WishlistPage></WishlistPage>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/product/:id"
-            element={
-              <ProtectedRoute>
-                <ProductPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/products"
-            element={
-              <ProtectedRoute>
-                <ProductsPage></ProductsPage>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/payment"
-            element={
-              <ProtectedRoute>
-                <PaymentPage></PaymentPage>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/vnpay"
-            element={
-              <ProtectedRoute>
-                <LoadingPayment></LoadingPayment>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/order"
-            element={
-              <ProtectedRoute>
-                <OrderPage></OrderPage>
-              </ProtectedRoute>
-            }
-          />{" "}
-          <Route path="/edit-order/:orderId" element={<EditOrderPage />} />
-          <Route
-            path="admin/product/:id"
-            element={
-              <ProtectedRoute>
-                <AdminProductPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="admin/add/product"
-            element={
-              <ProtectedRoute>
-                <AddProductPage />
+                <Routes>
+                  <Route path="homepage" element={<Homepage />} />
+                  <Route path="wishlists" element={<WishlistPage />} />
+                  <Route path="product/:id" element={<ProductPage />} />
+                  <Route path="cart" element={<CartPage />} />
+                  <Route path="products" element={<ProductsPage />} />
+                  <Route path="payment" element={<PaymentPage />} />
+                  <Route path="vnpay" element={<LoadingPayment />} />
+                  <Route path="order" element={<OrderPage />} />
+                  <Route
+                    path="edit-order/:orderId"
+                    element={<EditOrderPage />}
+                  />
+                  <Route
+                    path="admin/product/:id"
+                    element={
+                      <AdminProtectedRoute>
+                        <AdminProductPage />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/add/product"
+                    element={
+                      <AdminProtectedRoute>
+                        <AddProductPage />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                </Routes>
               </ProtectedRoute>
             }
           />

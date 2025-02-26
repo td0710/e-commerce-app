@@ -133,7 +133,7 @@ export const Orders = () => {
           <div className="all-orders">
             {orderItems &&
               orderItems
-                .filter((order) => order.status === "CONFIRMED") // Lọc chỉ lấy đơn hàng đã xác nhận
+                .filter((order) => order.status === "CONFIRMED")
                 .map((order) => {
                   return (
                     <NavLink

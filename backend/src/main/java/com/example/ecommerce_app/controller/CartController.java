@@ -1,7 +1,6 @@
 package com.example.ecommerce_app.controller;
 
 
-
 import com.example.ecommerce_app.dto.response.CartResponse;
 import com.example.ecommerce_app.service.impl.CartServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -15,39 +14,52 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
 
     private final CartServiceImpl cartService;
+
     public CartController(CartServiceImpl cartService) {
         this.cartService = cartService;
     }
 
     @GetMapping("/get/cart/{userId}")
-    public ResponseEntity<CartResponse> getCart(@PathVariable Long userId,
-                                                @RequestParam int page,
-                                                @RequestParam int size) {
+    public ResponseEntity<?> getCart(@PathVariable Long userId,
+                                     @RequestParam int page,
+                                     @RequestParam int size) {
+        try {
+            CartResponse cartResponse = cartService.getCart(userId, page, size);
 
-        CartResponse cartResponse = cartService.getCart(userId, page, size);
+            if (cartResponse.getProducts() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No products found in cart");
+            }
 
-        if (cartResponse.getProducts() == null) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(cartResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error retrieving cart");
         }
-
-        return ResponseEntity.ok(cartResponse);
     }
 
     @PostMapping("/add/cart/{userId}/{productId}")
-    public ResponseEntity<String> addCart(@PathVariable Long userId,
-                                          @PathVariable Long productId,
-                                          @RequestParam String size,
-                                          @RequestParam String color) {
-        String message = cartService.addCart(userId, productId, size, color);
+    public ResponseEntity<?> addCart(@PathVariable Long userId,
+                                     @PathVariable Long productId,
+                                     @RequestParam String size,
+                                     @RequestParam String color) {
+        try {
+            String message = cartService.addCart(userId, productId, size, color);
 
-        if (!message.equals("Added item to the cart")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+            if (message.equals("Product out of stock")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+            } else if (!message.equals("Added item to the cart")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+            }
+
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error adding product to cart");
         }
-
-        return ResponseEntity.ok(message);
     }
+
     @PostMapping("/add/cartpage/{userId}/{productId}")
     public ResponseEntity<?> addCartPage(@PathVariable Long userId,@PathVariable Long productId) {
+
+        try {
         String message = cartService.addCartPage(userId, productId);
 
         if (!message.equals("Added item to the cart")) {
@@ -55,38 +67,47 @@ public class CartController {
         }
 
         return ResponseEntity.ok(message);
-    }
-    @PostMapping("/decrease/cart/{userId}/{productId}")
-    public ResponseEntity<?> decreaseCart(@PathVariable Long userId,@PathVariable Long productId) {
-
-        String message = cartService.decreaseCart(userId, productId);
-
-        if (!message.equals("Removed item successfully")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error adding product to cart");
         }
+    }
 
-        return ResponseEntity.ok(message);
+    @PostMapping("/decrease/cart/{userId}/{productId}")
+    public ResponseEntity<?> decreaseCart(@PathVariable Long userId, @PathVariable Long productId) {
+        try {
+            String message = cartService.decreaseCart(userId, productId);
+
+            if (!message.equals("Removed item successfully")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+            }
+
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error decreasing product quantity");
+        }
     }
 
     @DeleteMapping("/delete/cart/{userId}/{productId}")
-    public ResponseEntity<?> deleteCart(@PathVariable Long userId,
-                                        @PathVariable Long productId) {
+    public ResponseEntity<?> deleteCart(@PathVariable Long userId, @PathVariable Long productId) {
+        try {
+            String message = cartService.deleteCart(userId, productId);
 
+            if (!message.equals("Delete item success")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+            }
 
-        String message = cartService.deleteCart(userId, productId);
-
-        if (!message.equals("Delete item success")) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error deleting item from cart");
         }
-
-        return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/" +
-            "total/{userId}")
-    public ResponseEntity<Long> getTotalWishlist(@PathVariable Long userId) {
-
-        return ResponseEntity.ok(cartService.totalProductsInCart(userId));
+    @GetMapping("/total/{userId}")
+    public ResponseEntity<?> getTotalWishlist(@PathVariable Long userId) {
+        try {
+            return ResponseEntity.ok(cartService.totalProductsInCart(userId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error retrieving cart total");
+        }
     }
 }
-

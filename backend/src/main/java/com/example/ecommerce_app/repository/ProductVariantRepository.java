@@ -15,7 +15,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     @Query("SELECT pv FROM ProductVariant pv WHERE pv.product.id = :productId AND pv.size = :size AND pv.color = :color")
     ProductVariant findByProduct_IdSizeAndColor(Long productId,String size, String color);
     List<ProductVariant> findByProduct_Id(Long productId);
-    void delete(ProductVariant productVariant);
     @Modifying
     @Query("DELETE FROM ProductVariant pv WHERE pv.id = :id")
     void deleteById(@Param("id") Long id);

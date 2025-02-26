@@ -6,6 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 public interface UserService {
-    void saveUser(String username);
     Users findById(Long id);
 }

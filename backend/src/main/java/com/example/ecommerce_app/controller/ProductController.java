@@ -40,16 +40,13 @@ public class ProductController {
     @PutMapping("/update/product/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable Long productId,@RequestBody ProductDto productDto) {
 
-        Product product = productService.findProductById(productId);
-
-        product.setCategory(productDto.getCategory());
-        product.setPrice(productDto.getPrice());
-        product.setDescription(productDto.getDescription());
-        product.setImage(productDto.getImage());
-        product.setTitle(productDto.getTitle());
-
-        productService.save(product) ;
-        return ResponseEntity.ok("update success");
+        try {
+            String message = productService.updateProduct(productId, productDto);
+            return ResponseEntity.ok(message);
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
+        }
     }
 
     @PutMapping("/update/product/quantity/{productId}")
@@ -58,12 +55,13 @@ public class ProductController {
                                                   @RequestParam String color,
                                                   @RequestParam int quantity) {
 
-        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId, size, color);
-
-        productVariant.setStock(quantity);
-        productVariantService.save(productVariant) ;
-
-        return ResponseEntity.ok("update quantity success");
+       try {
+           String message = productService.updateProductQuantity(productId, size, color, quantity);
+           return ResponseEntity.ok(message);
+       }
+       catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
+       }
     }
 
     @PostMapping("/create/variant/{productId}")
@@ -72,15 +70,13 @@ public class ProductController {
                                                    @RequestParam String color,
                                                    @RequestParam int quantity) {
 
-        ProductVariant productVariant = new ProductVariant();
-        productVariant.setProduct(productService.findProductById(productId));
-        productVariant.setSize(size);
-        productVariant.setColor(color);
-        productVariant.setStock(quantity);
-
-        productVariantService.save(productVariant) ;
-
-        return ResponseEntity.ok("create success");
+        try {
+            String message = productService.createVariant(productId, size, color, quantity);
+            return ResponseEntity.ok(message);
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
+        }
     }
 
     @DeleteMapping("/delete/variant/{productId}")
@@ -88,47 +84,34 @@ public class ProductController {
                                                   @RequestParam String size,
                                                   @RequestParam String color) {
 
-        ProductVariant productVariant = productVariantService.findByProductIdAndSizeAndColor(productId, size, color);
+        try {
+            String message = productService.deleteVariant(productId, size, color);
 
+            return ResponseEntity.ok(message);
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
 
-        productVariantService.deleteById(productVariant.getId());
-
-
-        System.out.println(productVariant);
-        return ResponseEntity.ok("delete success");
+        }
     }
 
     @PostMapping("/create/product")
     public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
-        Product product = new Product();
-        product.setCategory(productDto.getCategory());
-        product.setPrice(productDto.getPrice());
-        product.setDescription(productDto.getDescription());
-        product.setImage(productDto.getImage());
-        product.setTitle(productDto.getTitle());
 
-
-        Product savedProduct = productService.save(product);
-
-        if (productDto.getVariants() != null) {
-            for (ProductVariant variant : productDto.getVariants()) {
-                ProductVariant productVariant = new ProductVariant();
-                productVariant.setProduct(savedProduct);
-                productVariant.setSize(variant.getSize());
-                productVariant.setColor(variant.getColor());
-                productVariant.setStock(variant.getStock());
-
-                productVariantService.save(productVariant);
-            }
+        try {
+            String message = productService.createProduct(productDto);
+            return ResponseEntity.ok(message);
         }
-
-        return ResponseEntity.ok("create success");
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()) ;
+        }
     }
 
     @DeleteMapping("/delete/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
 
         productService.deleteById(productId) ;
+
         return ResponseEntity.ok("delete success");
     }
 }

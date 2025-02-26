@@ -31,9 +31,7 @@ public class WishlistController {
         this.productRepository = productRepository;
     }
     @GetMapping("/{userId}")
-    public Page<ProductWishlistResponse> getProductsInWishlistByUserId(
-            @PathVariable Long userId,
-            Pageable pageable) {
+    public Page<ProductWishlistResponse> getProductsInWishlistByUserId(@PathVariable Long userId, Pageable pageable) {
         return wishlistService.getProductsInWishListByUserId(userId, pageable);
     }
         @PostMapping("/add/{userId}")
