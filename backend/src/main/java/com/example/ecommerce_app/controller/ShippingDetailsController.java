@@ -25,27 +25,16 @@ public class ShippingDetailsController {
     @GetMapping("/get")
     public ResponseEntity<?> getShippingDetails(@RequestParam Long id) {
 
-        try {
-            ShippingDetailsDto shippingDetailsDto = shippingDetailsService.getShippingDetails(id);
+        ShippingDetailsDto shippingDetailsDto = shippingDetailsService.getShippingDetails(id);
 
-            return ResponseEntity.ok(shippingDetailsDto);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found");
-        }
+        return ResponseEntity.ok(shippingDetailsDto);
     }
 
     @PutMapping("/save")
     public ResponseEntity<?> saveShippingDetails(@RequestParam Long id, @RequestBody ShippingDetailsDto shippingDetailsDto) {
 
-        try {
+        String message = shippingDetailsService.saveShippingDetails(id, shippingDetailsDto);
 
-            String message = shippingDetailsService.saveShippingDetails(id, shippingDetailsDto);
-
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User not found");
-        }
+        return ResponseEntity.ok(message);
     }
 }

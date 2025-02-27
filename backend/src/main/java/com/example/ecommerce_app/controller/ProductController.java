@@ -43,13 +43,9 @@ public class ProductController {
     @PutMapping("/update/product/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable Long productId,@RequestBody ProductDto productDto) {
 
-        try {
-            String message = productService.updateProduct(productId, productDto);
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
-        }
+        String message = productService.updateProduct(productId, productDto);
+
+        return ResponseEntity.ok(message);
     }
 
     @PutMapping("/update/product/quantity/{productId}")
@@ -57,14 +53,9 @@ public class ProductController {
                                                   @RequestParam String size,
                                                   @RequestParam String color,
                                                   @RequestParam int quantity) {
+        String message = productService.updateProductQuantity(productId, size, color, quantity);
 
-       try {
-           String message = productService.updateProductQuantity(productId, size, color, quantity);
-           return ResponseEntity.ok(message);
-       }
-       catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
-       }
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/create/variant/{productId}")
@@ -72,42 +63,26 @@ public class ProductController {
                                                    @RequestParam String size,
                                                    @RequestParam String color,
                                                    @RequestParam int quantity) {
+        String message = productService.createVariant(productId, size, color, quantity);
 
-        try {
-            String message = productService.createVariant(productId, size, color, quantity);
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
-        }
+        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete/variant/{productId}")
     public ResponseEntity<?> deleteProductVariant(@PathVariable Long productId,
                                                   @RequestParam String size,
                                                   @RequestParam String color) {
+        String message = productService.deleteVariant(productId, size, color);
 
-        try {
-            String message = productService.deleteVariant(productId, size, color);
-
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage()) ;
-
-        }
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/create/product")
     public ResponseEntity<?> createProduct(@RequestBody ProductDto productDto) {
 
-        try {
-            String message = productService.createProduct(productDto);
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage()) ;
-        }
+        String message = productService.createProduct(productDto);
+
+        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete/product/{productId}")

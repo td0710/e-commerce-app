@@ -5,6 +5,8 @@ import com.example.ecommerce_app.dto.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
+import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.repository.ProductVariantRepository;
 import com.example.ecommerce_app.service.ProductService;
@@ -37,32 +39,31 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findAll(pageable);
         List<Product> productList = products.getContent();
 
-
-        ProductResponse productResponse = new ProductResponse();
-
-
         List<ProductDto> content = new ArrayList<>();
         for (Product product : productList) {
-            ProductDto productDto = new ProductDto();
 
-
-            productDto.setId(product.getId());
-            productDto.setTitle(product.getTitle());
-            productDto.setDescription(product.getDescription());
-            productDto.setCategory(product.getCategory());
-            productDto.setPrice(product.getPrice());
-            productDto.setImage(product.getImage());
+            ProductDto productDto = new ProductDto(
+                    product.getId(),
+                    product.getTitle(),
+                    product.getDescription(),
+                    product.getCategory(),
+                    product.getPrice(),
+                    product.getImage(),
+                    null
+            );
 
             content.add(productDto);
         }
 
 
-        productResponse.setContent(content);
-        productResponse.setPageNo(products.getNumber());
-        productResponse.setPageSize(products.getSize());
-        productResponse.setTotalPages(products.getTotalPages());
-        productResponse.setTotalElements(products.getTotalElements());
-        productResponse.setLast(products.isLast());
+        ProductResponse productResponse = new ProductResponse(
+                content,
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalPages(),
+                (int) products.getTotalElements(),
+                products.isLast()
+        );
 
         return productResponse;
     }
@@ -73,41 +74,40 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> productList = products.getContent();
 
-
-        ProductResponse productResponse = new ProductResponse();
-
-
         List<ProductDto> content = new ArrayList<>();
         for (Product product : productList) {
-            ProductDto productDto = new ProductDto();
 
-
-            productDto.setId(product.getId());
-            productDto.setTitle(product.getTitle());
-            productDto.setDescription(product.getDescription());
-            productDto.setCategory(product.getCategory());
-            productDto.setPrice(product.getPrice());
-            productDto.setImage(product.getImage());
+            ProductDto productDto = new ProductDto(
+                    product.getId(),
+                    product.getTitle(),
+                    product.getDescription(),
+                    product.getCategory(),
+                    product.getPrice(),
+                    product.getImage(),
+                    null
+            );
 
 
             content.add(productDto);
         }
 
 
-        productResponse.setContent(content);
-        productResponse.setPageNo(products.getNumber());
-        productResponse.setPageSize(products.getSize());
-        productResponse.setTotalPages(products.getTotalPages());
-        productResponse.setTotalElements(products.getTotalElements());
-        productResponse.setLast(products.isLast());
+        ProductResponse productResponse = new ProductResponse(
+                content,
+                products.getNumber(),
+                products.getSize(),
+                products.getTotalPages(),
+                (int) products.getTotalElements(),
+                products.isLast()
+        );
 
         return productResponse;
     }
 
     public String updateProduct(Long id, ProductDto productDto) {
 
-        Product product = productRepository.findById(id).
-                orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found")) ;;
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.PRODUCT_NOT_FOUND)) ;
 
         product.setCategory(productDto.getCategory());
         product.setPrice(productDto.getPrice());
@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
         ProductVariant productVariant = productVariantRepository.findByProduct_IdSizeAndColor(productId, size, color);
 
         if(productVariant == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Product variant not found");
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND);
         }
         productVariant.setStock(quantity);
         productVariantRepository.save(productVariant) ;
@@ -135,8 +135,8 @@ public class ProductServiceImpl implements ProductService {
     public String createVariant(Long productId, String size, String color, int quantity) {
 
         ProductVariant productVariant = new ProductVariant();
-        productVariant.setProduct(productRepository.findById(productId).
-                orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found")));
+        productVariant.setProduct(productRepository.findById(productId)
+                .orElseThrow(()-> new AppException(ErrorCode.PRODUCT_NOT_FOUND))) ;
         productVariant.setSize(size);
         productVariant.setColor(color);
         productVariant.setStock(quantity);
@@ -180,7 +180,7 @@ public class ProductServiceImpl implements ProductService {
         productVariantRepository.deleteById(productVariant.getId());
 
         if(productVariant == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Product variant not found");
+            throw new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND);
         }
 
         return "delete success";

@@ -134,7 +134,7 @@ public class PaymentServiceImpl implements PaymentService {
         order = orderRepository.save(order);
 
         Payment payment = new Payment();
-        payment.setOrder(order); //
+        payment.setOrder(order);
         payment.setTransactionNo(paymentVNPAYDto.getVnpTransactionNo());
         payment.setTxnRef(paymentVNPAYDto.getVnpTxnRef());
         payment.setAmount(order.getTotalPrice() / 100);

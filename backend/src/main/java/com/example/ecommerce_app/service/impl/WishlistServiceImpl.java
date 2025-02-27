@@ -49,7 +49,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     public boolean isProductInWishlist(Long userId, Long productId) {
         Wishlist wishlist = wishlistRepository.findByUserIdAndProductId(userId, productId);
-        if(wishlist!=null) {
+        if(wishlist != null) {
             return true;
         }
         return false ;

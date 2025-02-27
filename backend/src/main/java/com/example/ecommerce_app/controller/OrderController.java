@@ -31,27 +31,19 @@ public class OrderController {
 
     @GetMapping("/get/{orderId}")
     public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
-        try {
-            OrderResponse orderResponse = orderService.getOrder(orderId);
-            return ResponseEntity.ok(orderResponse);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error get orders");
-        }
+
+        OrderResponse orderResponse = orderService.getOrder(orderId);
+
+        return ResponseEntity.ok(orderResponse);
     }
 
     @PutMapping("/edit/{orderId}")
     public ResponseEntity<?> setShippingDetails(@PathVariable Long orderId,
                                                 @RequestBody ShippingDetailsDto shippingDetailsDto) {
 
-        try {
-            String message = orderService.setShippingDetails(orderId, shippingDetailsDto);
+        String message = orderService.setShippingDetails(orderId, shippingDetailsDto);
 
-            return ResponseEntity.ok(message);
-        }
-        catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error editing shipping details");
-
-        }
+        return ResponseEntity.ok(message);
     }
 
 }

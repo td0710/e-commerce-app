@@ -3,6 +3,8 @@ package com.example.ecommerce_app.service.impl;
 import com.example.ecommerce_app.dto.ShippingDetailsDto;
 import com.example.ecommerce_app.entity.ShippingDetails;
 import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.ShippingDetailsRepository;
 import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.service.ShippingDetailsService;
@@ -31,8 +33,7 @@ public class ShippingDetailsServiceImpl implements ShippingDetailsService {
         ShippingDetails shippingDetails = shippingDetailsRepository.findByUserId(id) ;
 
         if(shippingDetails == null){
-            Users user = userRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "User Not Found")) ;
+            Users user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)) ;
             shippingDetails = new ShippingDetails() ;
             shippingDetails.setUser(user);
             shippingDetailsRepository.save(shippingDetails) ;
@@ -57,7 +58,7 @@ public class ShippingDetailsServiceImpl implements ShippingDetailsService {
         ShippingDetails shippingDetails = shippingDetailsRepository.findByUserId(id);
 
         if(shippingDetails == null){
-            Users user = userRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"User Not Found")) ;
+            Users user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)) ;
             shippingDetails = new ShippingDetails() ;
             shippingDetails.setUser(user);
             shippingDetailsRepository.save(shippingDetails) ;

@@ -7,6 +7,8 @@ import com.example.ecommerce_app.entity.Cart;
 import com.example.ecommerce_app.entity.CartItem;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
+import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.*;
 import com.example.ecommerce_app.service.CartService;
 import org.springframework.data.domain.Page;
@@ -54,8 +56,7 @@ public class CartServiceImpl implements CartService {
 
     public CartResponse getCart(Long userId, int page, int size) {
         Cart cart = cartRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Cart not found for user ID: " + userId));
+                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
 
         Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "id"));
 
@@ -101,13 +102,12 @@ public class CartServiceImpl implements CartService {
                         String size,
                         String color) {
         Cart cart = cartRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Cart not found for user ID: " + userId));
+                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
 
         ProductVariant productVariant = productVariantRepository.findByProduct_IdSizeAndColor(productId,size,color) ;
 
         if (productVariant.getStock() <= 0) {
-            return "Product out of stock";
+            throw new AppException(ErrorCode.PRODUCT_OUT_OF_STOCK) ;
         }
         cart.setTotal(cart.getTotal()+1);
         cartRepository.save(cart);
@@ -122,8 +122,8 @@ public class CartServiceImpl implements CartService {
         CartItem newCartItem = new CartItem();
         newCartItem.setProductVariant(productVariant);
         newCartItem.setQuantity(1);
-        newCartItem.setProduct(productRepository.findById(productId).orElse(null));
-        newCartItem.setCart(cartRepository.findById(userId).orElse(null));
+        newCartItem.setProduct(productRepository.findById(productId).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
+        newCartItem.setCart(cartRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND)));
         cartItemRepository.save(newCartItem);
 
         return "Added item to the cart";
@@ -133,10 +133,10 @@ public class CartServiceImpl implements CartService {
 
 
         Cart cart = cartRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cart not found for user ID: " + userId));
+                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found"));
+                .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;
         if (productVariant.getStock() <= 0) {
             return "Product out of stock";
         }
@@ -153,8 +153,8 @@ public class CartServiceImpl implements CartService {
         CartItem newCartItem = new CartItem();
         newCartItem.setProductVariant(productVariant);
         newCartItem.setQuantity(1);
-        newCartItem.setProduct(productRepository.findById(productId).orElse(null));
-        newCartItem.setCart(cartRepository.findById(userId).orElse(null));
+        newCartItem.setProduct(productRepository.findById(productId).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
+        newCartItem.setCart(cartRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)));
         cartItemRepository.save(newCartItem);
 
         return "Added item to the cart";
@@ -163,11 +163,10 @@ public class CartServiceImpl implements CartService {
     public String decreaseCart(Long userId, Long productId) {
 
         Cart cart = cartRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cart not found for user ID: " + userId));
+                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found"));
-
+                .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;
         cart.setTotal(cart.getTotal()-1);
         cartRepository.save(cart);
         productVariant.setStock(productVariant.getStock()+1);
@@ -177,6 +176,7 @@ public class CartServiceImpl implements CartService {
 
 
         if (cartItem.getQuantity()!=0) cartItemRepository.save(cartItem);
+
         else cartItemRepository.delete(cartItem);
 
         return "Removed item successfully";
@@ -185,10 +185,10 @@ public class CartServiceImpl implements CartService {
     public String deleteCart(Long userId, Long productId) {
 
         Cart cart = cartRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cart not found for user ID: " + userId));
+                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found"));
+                .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;
 
         CartItem cartItem = cartItemRepository.findByCartIdAndProductVariantId(cart.getId(),productVariant.getId());
 

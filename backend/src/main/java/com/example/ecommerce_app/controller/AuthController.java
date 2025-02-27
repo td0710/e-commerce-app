@@ -8,6 +8,7 @@ import com.example.ecommerce_app.dto.LoginDto;
 import com.example.ecommerce_app.dto.RegisterDto;
 import com.example.ecommerce_app.entity.Role;
 import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.service.AuthService;
 import com.example.ecommerce_app.service.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,96 +28,32 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private CartService cartService;
-    private PasswordEncoder passwordEncoder;
-    private JWTGenerator jwtGenerator;
+    private final AuthService authService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator,
-                          CartService cartService) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtGenerator = jwtGenerator;
-        this.cartService = cartService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto) {
-        String username = loginDto.getUsername();
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()
-                ));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-        Optional<Users> user= userRepository.findByUsername(username);
-        System.out.println("!"+token);
-        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email(),user.get().getRole().getName()), HttpStatus.OK);
+        AuthResponseDTO authResponseDTO = authService.login(loginDto);
+
+        return ResponseEntity.ok(authResponseDTO);
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterDto registerDto) {
-        if(userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>(new AuthResponseDTO(null, null, null,null), HttpStatus.BAD_REQUEST);
-        }
-        Users user = new Users();
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        user.setUser_email(registerDto.getEmail());
+        AuthResponseDTO authResponseDTO = authService.register(registerDto);
 
-        Role roles = roleRepository.findByName("USER").get();
-
-        user.setRole(roles);
-
-        userRepository.save(user);
-        cartService.createCart(user.getId());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(registerDto.getUsername(), registerDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-
-
-        return new ResponseEntity<>(new AuthResponseDTO(token, user.getUsername(), user.getUser_email(),user.getRole().getName()), HttpStatus.OK);
-
+        return ResponseEntity.ok(authResponseDTO);
     }
-    @PostMapping("login/google")
+    @PostMapping("/login/google")
     public ResponseEntity<AuthResponseDTO> loginGoogle(@RequestBody LoginDto loginDto) {
 
-        String username = loginDto.getUsername();
+        AuthResponseDTO authResponseDTO = authService.loginGoogle(loginDto);
 
-        Optional<Users> user= userRepository.findByUsername(username);
-
-        if(!user.isPresent()) {
-            Users user1 = new Users();
-            user1.setUsername(username);
-            user1.setUser_email(username);
-
-            Role roles = roleRepository.findByName("USER").get();
-
-            user1.setRole(roles);
-
-            userRepository.save(user1);
-
-            cartService.createCart(user1.getId());
-        }
-
-        user = userRepository.findByUsername(username);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.get().getUsername(), null, Collections.singletonList(new SimpleGrantedAuthority("USER"))
-        );;
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-
-        System.out.println("!"+token);
-
-        return new ResponseEntity<>(new AuthResponseDTO(token,user.get().getUsername(),user.get().getUser_email(),user.get().getRole().getName()), HttpStatus.OK);
+        return ResponseEntity.ok(authResponseDTO);
     }
 }
