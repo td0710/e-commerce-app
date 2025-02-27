@@ -58,59 +58,9 @@ public class PaymentController {
     @PostMapping("/vn-pay-callback")
     public ResponseEntity<?> payCallbackHandler(@RequestBody PaymentVNPAYDto paymentVNPAYDto) {
 
-        String status = paymentVNPAYDto.getVnpResponseCode();
+        String message = paymentService.VNPAYPayment(paymentVNPAYDto);
 
-        Users user = userService.findById(paymentVNPAYDto.getUserId());
-        CartItem cartItem = cartItemService.findById(paymentVNPAYDto.getCartItemId());
-        Product product = productService.findProductById(cartItem.getProduct().getId());
-        ProductVariant productVariant = productVariantService.findById(cartItem.getProductVariant().getId());
-        ShippingDetails shippingDetails = shippingDetailsService.findByUserId(paymentVNPAYDto.getUserId());
-
-        Order order = new Order();
-        order.setUser(user);
-        order.setProduct(product);
-        order.setQuantity(cartItem.getQuantity());
-        order.setVariant(productVariant);
-        order.setTotalPrice(paymentVNPAYDto.getVnpAmount()/100);
-        order.setShippingAddress(shippingDetails.getHomeAddress());
-        order.setShippingCountry(shippingDetails.getCountry());
-        order.setShippingContact(shippingDetails.getContactNumber());
-        order.setShippingName(shippingDetails.getName());
-        order.setShippingEmail(shippingDetails.getEmail());
-        order.setCreatedAt(LocalDateTime.now());
-
-        if ("00".equals(status)) {
-            order.setOrderStatus("CONFIRMED");
-            order.setPaymentStatus("PAID");
-        } else {
-            order.setOrderStatus("CANCELLED");
-            order.setPaymentStatus("UNPAID");
-        }
-
-        order = orderService.save(order);
-
-        Payment payment = new Payment();
-        payment.setOrder(order); 
-        payment.setTransactionNo(paymentVNPAYDto.getVnpTransactionNo());
-        payment.setTxnRef(paymentVNPAYDto.getVnpTxnRef());
-        payment.setAmount(order.getTotalPrice() / 100);
-        payment.setBankCode(paymentVNPAYDto.getVnpBankCode());
-        payment.setCardType(paymentVNPAYDto.getVnpCardType());
-        payment.setPayDate(LocalDateTime.now());
-        payment.setResponseCode(paymentVNPAYDto.getVnpResponseCode());
-        payment.setTransactionStatus(paymentVNPAYDto.getVnpTransactionStatus());
-        payment.setCreatedAt(LocalDateTime.now());
-
-        paymentService.save(payment);
-
-        if ("00".equals(status)) {
-            Cart cart = cartService.findByUserId(paymentVNPAYDto.getUserId());
-            cart.setTotal(cart.getTotal() - cartItem.getQuantity());
-            cartService.save(cart);
-            cartItemService.delete(paymentVNPAYDto.getCartItemId());
-        }
-
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok(message);
 
     }
 
@@ -119,13 +69,9 @@ public class PaymentController {
                                         @RequestParam Long totalPrice,
                                         @RequestParam Long cartItemId
                                         ) {
-        try {
-            String message = paymentService.codPayment(userId, totalPrice, cartItemId);
 
-            return ResponseEntity.ok(message);
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String message = paymentService.codPayment(userId, totalPrice, cartItemId);
+
+        return ResponseEntity.ok(message);
     }
 }

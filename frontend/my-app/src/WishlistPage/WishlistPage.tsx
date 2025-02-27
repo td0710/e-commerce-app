@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import ProductModel from "../models/ProductModel";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import "../layouts/Deals/lists.css";
 import { List } from "../layouts/Deals/List";
 import { WhishlistList } from "./WishlistList";
@@ -13,8 +13,12 @@ import Spinner from "../utils/Spinner";
 export const WishlistPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  document.title = "Wishlist section";
+  document.title = "Wishlist section";
 
   document.title = "Wishlist section";
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -43,11 +47,25 @@ export const WishlistPage = () => {
         setProducts(loadedProducts);
         window.scrollTo(0, 0);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        const axiosError = error as AxiosError;
+        console.error("Error fetching products:", axiosError);
+
+        if (axiosError.response && axiosError.response.data) {
+          const backendMessage =
+            (axiosError.response.data as any).message || "Unknown error";
+          setErrorMessage(backendMessage);
+        } else {
+          setErrorMessage(
+            "Failed to load products. Please check your internet connection."
+          );
+        }
+
+        setLoading(false);
       }
     };
     fetchProducts();
   }, []);
+
   const handleDelete = (id: number) => {
     setProducts((prevItems) => prevItems.filter((item) => item.id !== id));
   };
@@ -57,8 +75,11 @@ export const WishlistPage = () => {
       <div style={{ height: "100%" }} className="content">
         <div className={products ? `lists animate` : `lists`}>
           <p className="wishlist-head">Wishlist</p>
+          {errorMessage && (
+            <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
+          )}
           {loading && <Spinner />}
-          {!loading && (
+          {!loading && !errorMessage && (
             <div
               style={
                 products.length === 0

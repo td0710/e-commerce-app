@@ -21,30 +21,47 @@ export const ProductPage = () => {
 
   const { id } = useParams();
 
+  const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     window.scrollTo(0, 0);
   });
+
+  window.scrollTo(0, 0);
+
   const fetchProduct = async () => {
-    const url = `http://localhost:8080/api/products/${id}`;
+    try {
+      const url = `http://localhost:8080/api/products/${id}`;
+      const url1 = `http://localhost:8080/api/products/${id}/variants`;
 
-    const response = await axios.get(url);
-    const products = new ProductModel(
-      response.data.id,
-      response.data.title,
-      response.data.description,
-      response.data.category,
-      response.data.price,
-      response.data.image
-    );
-    const url1 = `http://localhost:8080/api/products/${id}/variants`;
+      const [response, response1] = await Promise.all([
+        axios.get(url),
+        axios.get(url1),
+      ]);
 
-    const response1 = await axios.get(url1);
+      const product = new ProductModel(
+        response.data.id,
+        response.data.title,
+        response.data.description,
+        response.data.category,
+        response.data.price,
+        response.data.image
+      );
 
-    const variants = response1.data._embedded?.productVariants || [];
+      product.variants = response1.data._embedded?.productVariants || [];
 
-    products.variants = variants;
-    setProduct(products);
+      setProduct(product);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error("Error fetching orders:", axiosError);
+
+      if (axiosError.response && axiosError.response.data) {
+        const errorMessage =
+          (axiosError.response.data as any).message || "Unknown error occurred";
+        setErrorMessage(errorMessage);
+      }
+    }
   };
+
   useEffect(() => {
     fetchProduct();
   }, []);
@@ -136,6 +153,9 @@ export const ProductPage = () => {
         className="product-page"
       >
         <div className={product ? `product-dataa animate` : `product-dataa`}>
+          {errorMessage && (
+            <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
+          )}
           <div className="item-image">
             <img
               src={product?.image}

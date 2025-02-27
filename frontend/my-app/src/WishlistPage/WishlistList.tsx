@@ -5,6 +5,7 @@ import "../layouts/Deals/deals.css";
 import axios from "axios";
 import { useAuth } from "../Context/useAuth";
 import { NavLink } from "react-router-dom";
+import Swal from "sweetalert2";
 export const WhishlistList: React.FC<{
   product: ProductModel;
   onDelete: (id: number) => void;
@@ -15,16 +16,29 @@ export const WhishlistList: React.FC<{
   const { updateWishlistCount } = useAuth();
 
   const deleteItem = async () => {
-    const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
-    const data = await axios.delete(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    setAdd(false);
-    updateWishlistCount();
-    props.onDelete(props.product.id);
+    try {
+      const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
+      const data = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setAdd(false);
+      updateWishlistCount();
+      props.onDelete(props.product.id);
+    } catch (error: any) {
+      Swal.fire({
+        icon: "error",
+        text: error.response?.data?.message || "Could not delete item!",
+        toast: true,
+        position: "top",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      console.error("Error deleting item:", error);
+    }
   };
 
   return (

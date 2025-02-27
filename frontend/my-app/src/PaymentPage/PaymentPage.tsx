@@ -55,57 +55,52 @@ export const PaymentPage = () => {
     setPaymentMode(event.target.value);
   };
   const handleCODPayment = async () => {
-    const url = `http://localhost:8080/api/payment/secure/cod?userId=${userId}&totalPrice=${
-      totalPrice * 25500
-    }&cartItemId=${cartItems}`;
-    const response = await axios.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    try {
+      const url = `http://localhost:8080/api/payment/secure/cod?userId=${userId}&totalPrice=${
+        totalPrice * 25500
+      }&cartItemId=${cartItems}`;
+
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      updateOrderCount();
+
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          position: "top",
+          toast: true,
+          text: "Ordered successfully",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate("/order");
+        });
       }
-    );
-    updateOrderCount();
-    if (response.status === 200) {
+    } catch (error: any) {
+      console.error("Payment failed:", error);
       Swal.fire({
-        icon: "success",
-        position: "top",
-        toast: true,
-        text: "Ordred successfully",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      }).then(() => {
-        navigate("/order");
+        icon: "error",
+        text:
+          error.response?.data?.message || "Payment failed. Please try again!",
       });
     }
   };
+
   const handleCardPayment = async () => {
-    const url = `http://localhost:8080/api/payment/secure/vn-pay?amount=${
-      totalPrice * 25500
-    }&bankCode=NCB`;
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response.data.paymentUrl);
-    // window.location.href = response.data.paymentUrl;
-  };
-  const handlePlaceOrder = () => {
-    if (paymentMode === "COD") {
-      handleCODPayment();
-    } else {
-      handleCardPayment();
-    }
-  };
-  useEffect(() => {
-    const fetchShippingDetails = async () => {
-      const url = `http://localhost:8080/api/shippingdetails/secure/get?id=${userId}`;
+    try {
+      const url = `http://localhost:8080/api/payment/secure/vn-pay?amount=${
+        totalPrice * 25500
+      }&bankCode=NCB`;
 
       const response = await axios.get(url, {
         headers: {
@@ -113,47 +108,113 @@ export const PaymentPage = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log(response);
-      setName(response.data.name);
-      setAddress(response.data.homeAddress);
-      setCountry(response.data.country);
-      setNumber(response.data.contactNumber);
-      setEmail(response.data.email);
+
+      console.log(response.data.paymentUrl);
+      window.location.href = response.data.paymentUrl;
+    } catch (error: any) {
+      console.error("VNPay payment failed:", error);
+      Swal.fire({
+        toast: true,
+        icon: "error",
+        text:
+          error.response?.data?.message ||
+          "VNPay payment failed. Please try again!",
+        position: "top",
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: true,
+      });
+    }
+  };
+
+  const handlePlaceOrder = () => {
+    if (paymentMode === "COD") {
+      handleCODPayment();
+    } else {
+      handleCardPayment();
+    }
+  };
+
+  useEffect(() => {
+    const fetchShippingDetails = async () => {
+      try {
+        const url = `http://localhost:8080/api/shippingdetails/secure/get?id=${userId}`;
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log(response);
+        setName(response.data.name);
+        setAddress(response.data.homeAddress);
+        setCountry(response.data.country);
+        setNumber(response.data.contactNumber);
+        setEmail(response.data.email);
+      } catch (error: any) {
+        console.error("Failed to fetch shipping details:", error);
+        Swal.fire({
+          icon: "error",
+          text:
+            error.response?.data?.message ||
+            "Could not fetch shipping details!",
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        });
+      }
     };
+
     fetchShippingDetails();
   }, []);
 
   const saveShippingDetails = async () => {
-    const url = `http://localhost:8080/api/shippingdetails/secure/save?id=${userId}`;
-    const shippingDetails = {
-      userId: userId,
-      country: Country,
-      name: Name,
-      contactNumber: Number,
-      email: Email,
-      homeAddress: Address,
-    };
-    const response = await axios.put(url, shippingDetails, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.status === 200) {
+    try {
+      const url = `http://localhost:8080/api/shippingdetails/secure/save?id=${userId}`;
+      const shippingDetails = {
+        userId: userId,
+        country: Country,
+        name: Name,
+        contactNumber: Number,
+        email: Email,
+        homeAddress: Address,
+      };
+
+      const response = await axios.put(url, shippingDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "success",
+          text: "Saved successfully",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        }).then(() => {
+          setShippingDisplay("none");
+          setCardDisplay("block");
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to save shipping details:", error);
       Swal.fire({
-        toast: true,
-        position: "top",
-        icon: "success",
-        text: "Saved successfully",
-        showConfirmButton: false,
-        timer: 1000,
-        timerProgressBar: true,
-      }).then(() => {
-        setShippingDisplay("none");
-        setCardDisplay("block");
+        icon: "error",
+        text:
+          error.response?.data?.message || "Could not save shipping details!",
       });
     }
   };
+
   return (
     <>
       <Navbar></Navbar>

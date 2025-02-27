@@ -66,28 +66,24 @@ export const CartItems: React.FC<{
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 409) {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Product out of stock",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      } else {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Something went wrong!",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: "#F44336",
-        });
+
+      let errorMessage = "Something went wrong!";
+
+      if (axiosError.response) {
+        const responseData = axiosError.response?.data as { message?: string };
+        errorMessage = responseData.message || errorMessage;
       }
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: errorMessage,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#F44336",
+      });
     }
   };
 
@@ -97,6 +93,7 @@ export const CartItems: React.FC<{
   const handleIncrease = async () => {
     await increaseItem();
   };
+
   const decreaseItem = async () => {
     const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
 
@@ -114,7 +111,6 @@ export const CartItems: React.FC<{
 
       setQuantity((prev) => {
         const newQuantity = prev - 1;
-
         if (newQuantity === 0) {
           props.onDelete(props.cartItem.id);
         }
@@ -137,33 +133,29 @@ export const CartItems: React.FC<{
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 404) {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Product not found",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      } else {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Something went wrong!",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          background: "#F44336",
-        });
+
+      let errorMessage = "Something went wrong!";
+
+      if (axiosError.response && typeof axiosError.response.data === "object") {
+        const responseData = axiosError.response.data as { message?: string };
+        errorMessage = responseData.message || errorMessage;
       }
+
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: errorMessage,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: "#F44336",
+      });
     }
   };
 
   const deleteItem = async () => {
-    if (!props.cartItem) {
+    if (!props.cartItem || !props.cartItem.id) {
       alert("Product information is missing.");
       return;
     }
@@ -196,27 +188,21 @@ export const CartItems: React.FC<{
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 404) {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Item not found",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      } else {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Something went wrong!",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
+      let errorMessage = "Something went wrong!";
+
+      if (axiosError.response && typeof axiosError.response.data === "object") {
+        const responseData = axiosError.response.data as { message?: string };
+        errorMessage = responseData.message || errorMessage;
       }
+      Swal.fire({
+        toast: true,
+        position: "top",
+        icon: "error",
+        title: errorMessage,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
     }
   };
 

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { ChangeEvent, useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -36,6 +36,7 @@ export const EditOrderPage = () => {
   const [NumberError, setNumberError] = useState("");
   const [emailError, setEmailError] = useState("");
 
+  const [error, setError] = useState("");
   const { orderId } = useParams();
 
   const handleName = (e: ChangeEvent<HTMLInputElement>) =>
@@ -60,24 +61,48 @@ export const EditOrderPage = () => {
       email: Email,
       homeAddress: Address,
     };
-    const response = await axios.put(url, shippingDetails, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.status === 200) {
+
+    try {
+      const response = await axios.put(url, shippingDetails, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 200) {
+        Swal.fire({
+          toast: true,
+          position: "top",
+          icon: "success",
+          title: "Saved successfully",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      let errorMessage = "Something went wrong!";
+
+      if (axiosError.response && typeof axiosError.response.data === "object") {
+        const responseData = axiosError.response.data as { message?: string };
+        errorMessage = responseData.message || errorMessage;
+      }
+
       Swal.fire({
         toast: true,
         position: "top",
-        icon: "success",
-        title: "Saved successfully",
+        icon: "error",
+        title: errorMessage,
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
+        background: "#F44336",
       });
     }
   };
+
   useEffect(() => {
     const fetchShippingDetails = async () => {
       try {
@@ -112,11 +137,16 @@ export const EditOrderPage = () => {
           setName(response.data.shippingName);
           setAddress(response.data.shippingAddress);
           setCountry(response.data.shippingCountry);
-          setNumber(response.data.contactNumber); //
+          setNumber(response.data.contactNumber);
           setEmail(response.data.shippingEmail);
         }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message || "Could not fetch cart!");
+        } else {
+          setError("Unexpected error!");
+        }
+        console.error("Error fetching cart:", error);
       }
     };
 
@@ -133,6 +163,9 @@ export const EditOrderPage = () => {
             style={{ display: shippingDisplay }}
             className="shipping-data animate"
           >
+            {error && (
+              <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            )}
             <div key={order?.orderId} className="nav-link2">
               <div className="order1">
                 <img src={order?.productImg} className="order-img1" />

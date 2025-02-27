@@ -3,7 +3,7 @@ import Footer from "../layouts/NavbarAndFooter/Footer";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import OrderModel from "../models/OrderModel";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import "./orders.css";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
@@ -18,6 +18,7 @@ export const Orders = () => {
   const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, isLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -49,18 +50,31 @@ export const Orders = () => {
           productImg: item.productImg,
           status: item.status,
         }));
-        console.log(response);
+
         setOrderItems(loadedOrders);
         setTotalPages(response.data.totalPages);
         window.scrollTo(0, 0);
         isLoading(false);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        const axiosError = error as AxiosError;
+        console.error("Error fetching orders:", axiosError);
+
+        if (axiosError.response && axiosError.response.data) {
+          const errorMessage =
+            (axiosError.response.data as any).message ||
+            "Unknown error occurred";
+          setErrorMessage(errorMessage);
+        } else {
+          setErrorMessage("Failed to load orders. Please try again.");
+        }
+
+        isLoading(false);
       }
     };
 
     fetchOrder();
   }, [currentPage]);
+
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <>
@@ -93,6 +107,7 @@ export const Orders = () => {
             >
               Your Orders
             </p>
+
             <button
               style={
                 orderItems.length !== 0
@@ -112,6 +127,9 @@ export const Orders = () => {
               <p style={{ margin: 0 }}>Clear Data</p>
             </button>
           </div>
+          {errorMessage && (
+            <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
+          )}
           <div
             style={
               orderItems.length === 0
@@ -120,7 +138,7 @@ export const Orders = () => {
             }
             className="order-now-section"
           >
-            {!loading && (
+            {!loading && !errorMessage && (
               <div className="empty-order">
                 <img
                   src={require("../imgs/order-now.png")}

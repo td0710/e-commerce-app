@@ -15,6 +15,7 @@ function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const token = localStorage.getItem("token");
 
+  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [add, isAdd] = useState(false);
   const { updateWishlistCount, updateCartCount, updateOrderCount, orderCount } =
@@ -24,41 +25,41 @@ function Deals() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      console.log(123);
-      const url = `http://localhost:8080/api/products/secure/getall?page=0
-      &size=12`;
+      try {
+        console.log("Fetching products...");
+        const url = `http://localhost:8080/api/products/secure/getall?page=0&size=12`;
 
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const loadedProducts = response.data.content.map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        price: item.price,
-        image: item.image,
-      }));
-
-      setProducts(loadedProducts);
-
-      setLoading(false);
-      updateWishlistCount();
-      updateCartCount();
-      updateOrderCount();
-      setTimeout(() => {
-        productRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-      }, 300);
+
+        const loadedProducts = response.data.content.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          price: item.price,
+          image: item.image,
+        }));
+
+        setProducts(loadedProducts);
+        setLoading(false);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setErrorMessage(
+            error.response?.data?.message || "Could not fetch cart!"
+          );
+        } else {
+          setErrorMessage("Unexpected error!");
+        }
+        setLoading(false);
+      }
     };
-    fetchProducts().catch((error: any) => {
-      console.log(error.messages);
-    });
+
+    fetchProducts();
   }, []);
 
   return (
@@ -67,6 +68,10 @@ function Deals() {
         Hot Deals 🔥 {orderCount}
       </p>
       {loading && <Spinner />}
+      {errorMessage && (
+        <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
+      )}
+
       <div className="deal-items">
         {products &&
           products.map((items) => {

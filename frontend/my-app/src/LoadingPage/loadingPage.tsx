@@ -39,7 +39,6 @@ export const LoadingPage = () => {
         const idToken = response.data.id_token;
         const decodedUser = jwtDecode<CustomJwtPayload>(idToken);
         const username = decodedUser.email;
-        const url1 = `http://localhost:8080/api/auth/login/google`;
 
         loginGoogle(username, "");
       }

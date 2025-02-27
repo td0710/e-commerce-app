@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ export const ProductsPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCatergory] = useState("all");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -32,48 +33,68 @@ export const ProductsPage = () => {
   };
   useEffect(() => {
     const fetchProducts = async () => {
-      let url = "";
-      if (category == "all") {
-        url = `http://localhost:8080/api/products/secure/getall?page=${
-          currentPage - 1
-        }&size=${productPerPage}`;
-      } else {
-        url = `http://localhost:8080/api/products/secure/category?page=${
-          currentPage - 1
-        }&size=${productPerPage}&category=${category}`;
-      }
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const loadedProducts = response.data.content.map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        category: item.category,
-        price: item.price,
-        image: item.image,
-      }));
+      try {
+        let url = "";
+        if (category === "all") {
+          url = `http://localhost:8080/api/products/secure/getall?page=${
+            currentPage - 1
+          }&size=${productPerPage}`;
+        } else {
+          url = `http://localhost:8080/api/products/secure/category?page=${
+            currentPage - 1
+          }&size=${productPerPage}&category=${category}`;
+        }
 
-      setProducts(loadedProducts);
-
-      setTotalPages(response.data.totalPages);
-      setLoading(false);
-      updateWishlistCount();
-      updateCartCount();
-      setTimeout(() => {
-        productRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-      }, 300);
+
+        const loadedProducts = response.data.content.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          price: item.price,
+          image: item.image,
+        }));
+
+        setProducts(loadedProducts);
+        setTotalPages(response.data.totalPages);
+        setLoading(false);
+
+        updateWishlistCount();
+        updateCartCount();
+
+        setTimeout(() => {
+          productRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }, 300);
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        console.error("Error fetching products:", axiosError);
+
+        if (axiosError.response && axiosError.response.data) {
+          const backendMessage =
+            (axiosError.response.data as any).error || "Unknown error";
+          setErrorMessage(backendMessage);
+        } else {
+          setErrorMessage(
+            "Failed to load products. Please check your internet connection."
+          );
+        }
+
+        setLoading(false);
+      }
     };
-    fetchProducts().catch((error: any) => {
-      console.log(error.messages);
-    });
+
+    fetchProducts();
   }, [currentPage, category]);
+
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
 
   return (
@@ -89,25 +110,32 @@ export const ProductsPage = () => {
             findCategory={category}
             setCategory={setCatergory}
           ></Category>
-          <div
-            style={
-              products.length === 0 ? { display: "flex" } : { display: "none" }
-            }
-            className="empty-list"
-          >
-            <img src={require("../imgs/empty.png")} className="empty-img" />
-            <div className="empty-text">
-              <p className="empty-head">It's empty here!</p>
-              <p className="empty-desc">
-                "Don't let your wishlist collect dust. Add some items that bring
-                joy to your life and watch as they become a reality with just a
-                few clicks."
-              </p>
-              <Link to="/homepage">
-                <button className="shopping">Go Shopping</button>
-              </Link>
+          {errorMessage && (
+            <p style={{ color: "red", textAlign: "center" }}>{errorMessage}</p>
+          )}
+          {!errorMessage && (
+            <div
+              style={
+                products.length === 0
+                  ? { display: "flex" }
+                  : { display: "none" }
+              }
+              className="empty-list"
+            >
+              <img src={require("../imgs/empty.png")} className="empty-img" />
+              <div className="empty-text">
+                <p className="empty-head">It's empty here!</p>
+                <p className="empty-desc">
+                  "Don't let your wishlist collect dust. Add some items that
+                  bring joy to your life and watch as they become a reality with
+                  just a few clicks."
+                </p>
+                <Link to="/homepage">
+                  <button className="shopping">Go Shopping</button>
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
           <div className="lists-items">
             {products &&
               products.length > 0 &&

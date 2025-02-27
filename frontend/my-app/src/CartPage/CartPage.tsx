@@ -126,7 +126,11 @@ export const CartSection = () => {
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching cart:", error);
-        setError(`${error}`);
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message || "Could not fetch cart!");
+        } else {
+          setError("Unexpected error!");
+        }
       } finally {
         isLoading(false);
       }
