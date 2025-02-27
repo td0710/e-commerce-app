@@ -6,6 +6,4 @@ import com.example.ecommerce_app.entity.ShippingDetails;
 public interface ShippingDetailsService {
     ShippingDetailsDto getShippingDetails(Long id);
     String saveShippingDetails(Long id,ShippingDetailsDto shippingDetailsDto);
-
-    ShippingDetails findByUserId(Long userId);
 }

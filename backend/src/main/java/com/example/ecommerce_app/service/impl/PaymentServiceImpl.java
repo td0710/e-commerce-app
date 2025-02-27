@@ -32,7 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final CartRepository cartRepository;
 
     public PaymentDto createVnPayPayment(HttpServletRequest request) {
-        long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
+        long amount = (long) (Double.parseDouble(request.getParameter("amount")) * 100L);
         String bankCode = request.getParameter("bankCode");
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
@@ -155,14 +155,5 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         return "success";
-    }
-
-    public void save(Payment payment) {
-        paymentRepository.save(payment);
-    }
-
-
-    public Product findProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
     }
 }

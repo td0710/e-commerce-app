@@ -186,11 +186,5 @@ public class ProductServiceImpl implements ProductService {
         return "delete success";
     }
 
-    public void deleteById(Long id) {
-        productRepository.deleteById(id);
-    }
 
-    public Product findProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
-    }
 }

@@ -47,6 +47,9 @@ function Deals() {
 
         setProducts(loadedProducts);
         setLoading(false);
+        updateCartCount();
+        updateOrderCount();
+        updateWishlistCount();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           setErrorMessage(

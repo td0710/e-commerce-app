@@ -20,7 +20,4 @@ public interface CartService {
 
     String deleteCart(Long userId, Long productId);
 
-    Cart findByUserId(Long userId);
-    void save(Cart cart);
-
 }

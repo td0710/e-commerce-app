@@ -12,15 +12,14 @@ import com.example.ecommerce_app.service.CartService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Transactional
 @Service
@@ -58,7 +57,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Cart not found for user ID: " + userId));
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "id"));
 
         Page<CartItem> cartItems1 = cartItemRepository.findByCart(cart, pageable);
 
@@ -203,11 +202,5 @@ public class CartServiceImpl implements CartService {
 
         return "Delete item success";
     }
-    public Cart findByUserId(Long userId) {
-        return cartRepository.findByUserId(userId);
-    }
 
-    public void save(Cart cart) {
-        cartRepository.save(cart);
-    }
 }

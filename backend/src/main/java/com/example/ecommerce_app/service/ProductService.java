@@ -12,8 +12,6 @@ public interface ProductService {
 
     ProductResponse findProductsByCategory(int pageNo, int pageSize, String category);
 
-    void deleteById(Long productId);
-
     String updateProduct(Long id, ProductDto productDto);
 
     String updateProductQuantity(Long productId, String size, String color, int quantity);
@@ -24,5 +22,4 @@ public interface ProductService {
 
     String deleteVariant(Long productId,String size, String color);
 
-    Product findProductById(Long id);
 }

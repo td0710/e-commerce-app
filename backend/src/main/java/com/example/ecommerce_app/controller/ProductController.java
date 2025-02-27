@@ -5,6 +5,7 @@ import com.example.ecommerce_app.dto.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
+import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,12 @@ public class ProductController {
 
     private final ProductServiceImpl productService;
     private final ProductVariantServiceImpl productVariantService;
+    private final ProductRepository productRepository;
 
-    ProductController(ProductServiceImpl productService, ProductVariantServiceImpl productVariantService) {
+    ProductController(ProductServiceImpl productService, ProductVariantServiceImpl productVariantService, ProductRepository productRepository) {
         this.productService = productService;
         this.productVariantService = productVariantService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping("/getall")
@@ -110,7 +113,7 @@ public class ProductController {
     @DeleteMapping("/delete/product/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
 
-        productService.deleteById(productId) ;
+        productRepository.deleteById(productId) ;
 
         return ResponseEntity.ok("delete success");
     }

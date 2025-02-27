@@ -7,8 +7,6 @@ import com.example.ecommerce_app.repository.ShippingDetailsRepository;
 import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.service.ShippingDetailsService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -73,19 +71,8 @@ public class ShippingDetailsServiceImpl implements ShippingDetailsService {
 
         shippingDetailsRepository.save(shippingDetails);
 
-        ShippingDetailsDto responseDto = new ShippingDetailsDto(
-                shippingDetails.getId(),
-                shippingDetails.getUser().getId(),
-                shippingDetails.getCountry(),
-                shippingDetails.getName(),
-                shippingDetails.getContactNumber(),
-                shippingDetails.getEmail(),
-                shippingDetails.getHomeAddress()
-        );
 
         return "Shipping details saved successfully";
     }
-    public ShippingDetails findByUserId(Long userId) {
-        return shippingDetailsRepository.findByUserId(userId);
-    }
+
 }
