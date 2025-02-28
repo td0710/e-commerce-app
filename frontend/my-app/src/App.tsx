@@ -18,6 +18,7 @@ import { EditOrderPage } from "./EditOrderPage/EditOrderPage";
 import { AdminProductPage } from "./ProductPage/AdminProduct";
 import { AddProductPage } from "./ProductPage/AddProductPage";
 import AdminProtectedRoute from "./Routes/AdminProtectedRoute";
+import { AdminOrdersPage } from "./OrderPage/AdminOrderPage";
 
 function App() {
   return (
@@ -59,6 +60,14 @@ function App() {
                     element={
                       <AdminProtectedRoute>
                         <AddProductPage />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/orders"
+                    element={
+                      <AdminProtectedRoute>
+                        <AdminOrdersPage />
                       </AdminProtectedRoute>
                     }
                   />

@@ -12,6 +12,8 @@ class OrderModel {
   productCategory: string;
   productImg: string;
   status: string;
+  paymentStatus: string;
+
   constructor(
     orderId: number,
     totalPrice: number,
@@ -25,7 +27,8 @@ class OrderModel {
     productName: string,
     productCategory: string,
     productImg: string,
-    status: string
+    status: string,
+    paymentStatus: string
   ) {
     this.orderId = orderId;
     this.totalPrice = totalPrice;
@@ -40,6 +43,7 @@ class OrderModel {
     this.productCategory = productCategory;
     this.productImg = productImg;
     this.status = status;
+    this.paymentStatus = paymentStatus;
   }
 }
 

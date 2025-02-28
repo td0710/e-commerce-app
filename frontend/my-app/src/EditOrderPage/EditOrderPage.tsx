@@ -130,6 +130,7 @@ export const EditOrderPage = () => {
             productCategory: response.data.productCategory,
             productImg: response.data.productImg,
             status: response.data.status,
+            paymentStatus: response.data.paymentStatus,
           };
 
           setOrderItem(loadedOrder);

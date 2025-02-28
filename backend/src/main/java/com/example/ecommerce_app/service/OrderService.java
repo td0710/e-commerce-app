@@ -10,5 +10,6 @@ public interface OrderService {
     Long totalOrders(Long userId);
     OrderResponse getOrder(Long orderId);
     String setShippingDetails(Long orderId, ShippingDetailsDto shippingDetailsDto);
-    Order save(Order order) ;
+    OrderPageResponse getAllOrders(int page, int size);
+    String updateStatus(Long orderId, String status) ;
 }

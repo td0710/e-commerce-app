@@ -3,7 +3,10 @@ package com.example.ecommerce_app.service.impl;
 
 import com.example.ecommerce_app.dto.PaymentDto;
 import com.example.ecommerce_app.dto.PaymentVNPAYDto;
+import com.example.ecommerce_app.dto.RefundDto;
 import com.example.ecommerce_app.entity.*;
+import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.*;
 import com.example.ecommerce_app.security.VNPayConfig;
 import com.example.ecommerce_app.service.PaymentService;
@@ -13,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,13 +71,13 @@ public class PaymentServiceImpl implements PaymentService {
         order.setQuantity(cartItem.getQuantity());
         order.setVariant(productVariant);
         order.setTotalPrice(totalPrice);
-        order.setOrderStatus("CONFIRMED");
+        order.setOrderStatus("PENDING");
         order.setShippingAddress(shippingDetails.getHomeAddress());
         order.setShippingCountry(shippingDetails.getCountry());
         order.setShippingContact(shippingDetails.getContactNumber());
         order.setShippingName(shippingDetails.getName());
         order.setShippingEmail(shippingDetails.getEmail());
-        order.setPaymentStatus("PAID");
+        order.setPaymentStatus("UNPAID");
         order.setCreatedAt(LocalDateTime.now());
 
         orderRepository.save(order);
@@ -83,11 +88,11 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setTransactionNo("COD-" + UUID.randomUUID());
         payment.setTxnRef("COD-" + order.getId());
         payment.setAmount(order.getTotalPrice());
-        payment.setBankCode(null);
+        payment.setBankCode("COD");
         payment.setCardType("COD");
-        payment.setPayDate(LocalDateTime.now());
-        payment.setResponseCode("00");
-        payment.setTransactionStatus("SUCCESS");
+        payment.setPayDate(null);
+        payment.setResponseCode("01");
+        payment.setTransactionStatus("PENDING");
         payment.setCreatedAt(LocalDateTime.now());
 
         paymentRepository.save(payment) ;
@@ -124,7 +129,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setCreatedAt(LocalDateTime.now());
 
         if ("00".equals(status)) {
-            order.setOrderStatus("CONFIRMED");
+            order.setOrderStatus("PENDING");
             order.setPaymentStatus("PAID");
         } else {
             order.setOrderStatus("CANCELLED");
@@ -142,7 +147,12 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setCardType(paymentVNPAYDto.getVnpCardType());
         payment.setPayDate(LocalDateTime.now());
         payment.setResponseCode(paymentVNPAYDto.getVnpResponseCode());
-        payment.setTransactionStatus(paymentVNPAYDto.getVnpTransactionStatus());
+        if(paymentVNPAYDto.getVnpResponseCode().equals("00")) {
+            payment.setTransactionStatus("SUCCESS");
+        }
+        else {
+            payment.setTransactionStatus("FAILED");
+        }
         payment.setCreatedAt(LocalDateTime.now());
 
         paymentRepository.save(payment);
@@ -156,4 +166,50 @@ public class PaymentServiceImpl implements PaymentService {
 
         return "success";
     }
+        public RefundDto refundVnPayPayment(HttpServletRequest request) {
+        String orderId = request.getParameter("orderId");
+        String transactionNo = request.getParameter("transactionNo");
+        long refundAmount = (long) (Double.parseDouble(request.getParameter("refundAmount")) * 100L);
+        String refundType = request.getParameter("refundType");
+        String adminUser = "admin";
+
+        if (refundAmount <= 0) {
+            throw new IllegalArgumentException("Số tiền hoàn không hợp lệ!");
+        }
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+
+        String requestId = String.valueOf(System.currentTimeMillis());
+
+        String ipAddress = VNPayUtil.getIpAddress(request);
+
+        vnpParamsMap.put("vnp_RequestId", requestId);
+        vnpParamsMap.put("vnp_Version", "2.1.0");
+        vnpParamsMap.put("vnp_Command", "refund");
+        vnpParamsMap.put("vnp_TmnCode", "3VV7C2JY");
+        vnpParamsMap.put("vnp_TransactionType", refundType);
+        vnpParamsMap.put("vnp_TxnRef", orderId);
+        vnpParamsMap.put("vnp_TransactionNo", transactionNo);
+        vnpParamsMap.put("vnp_Amount", String.valueOf(refundAmount));
+        vnpParamsMap.put("vnp_OrderInfo", "Hoàn tiền đơn hàng " + orderId);
+        vnpParamsMap.put("vnp_TransactionDate", request.getParameter("transactionDate")); // Ngày giao dịch gốc
+        vnpParamsMap.put("vnp_CreateBy", adminUser);
+        vnpParamsMap.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        vnpParamsMap.put("vnp_IpAddr", ipAddress);
+
+        String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
+        String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
+        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
+        queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
+
+        String refundUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction" + "?" + queryUrl;
+
+        return RefundDto.builder()
+                .code("ok")
+                .message("Refund request generated")
+                .refundUrl(refundUrl)
+                .build();
+    }
+
+
+
 }

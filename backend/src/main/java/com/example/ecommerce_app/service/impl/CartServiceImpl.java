@@ -55,8 +55,11 @@ public class CartServiceImpl implements CartService {
     }
 
     public CartResponse getCart(Long userId, int page, int size) {
-        Cart cart = cartRepository.findById(userId)
-                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
+        Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            throw new AppException(ErrorCode.CART_NOT_FOUND);
+        }
 
         Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "id"));
 
@@ -101,8 +104,11 @@ public class CartServiceImpl implements CartService {
                         Long productId,
                         String size,
                         String color) {
-        Cart cart = cartRepository.findById(userId)
-                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
+        Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            throw new AppException(ErrorCode.CART_NOT_FOUND);
+        }
 
         ProductVariant productVariant = productVariantRepository.findByProduct_IdSizeAndColor(productId,size,color) ;
 
@@ -132,8 +138,11 @@ public class CartServiceImpl implements CartService {
     public String addCartPage(Long userId, Long productId) {
 
 
-        Cart cart = cartRepository.findById(userId)
-                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
+        Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            throw new AppException(ErrorCode.CART_NOT_FOUND);
+        }
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
                 .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;
@@ -162,8 +171,11 @@ public class CartServiceImpl implements CartService {
 
     public String decreaseCart(Long userId, Long productId) {
 
-        Cart cart = cartRepository.findById(userId)
-                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
+        Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            throw new AppException(ErrorCode.CART_NOT_FOUND);
+        }
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
                 .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;
@@ -184,8 +196,11 @@ public class CartServiceImpl implements CartService {
 
     public String deleteCart(Long userId, Long productId) {
 
-        Cart cart = cartRepository.findById(userId)
-                .orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)) ;
+        Cart cart = cartRepository.findByUserId(userId);
+
+        if (cart == null) {
+            throw new AppException(ErrorCode.CART_NOT_FOUND);
+        }
 
         ProductVariant productVariant = productVariantRepository.findById(productId)
                 .orElseThrow(()->new AppException(ErrorCode.PRODUCT_VARIANT_NOT_FOUND)) ;

@@ -14,7 +14,7 @@ export const Orders = () => {
   const token = localStorage.getItem("token");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [orderPerPage] = useState(3);
+  const [orderPerPage] = useState(5);
   const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, isLoading] = useState(true);
@@ -49,12 +49,14 @@ export const Orders = () => {
           productCategory: item.productCategory,
           productImg: item.productImg,
           status: item.status,
+          payment_status: item.payment_status,
         }));
 
         setOrderItems(loadedOrders);
         setTotalPages(response.data.totalPages);
         window.scrollTo(0, 0);
         isLoading(false);
+        console.log(loadedOrders);
       } catch (error) {
         const axiosError = error as AxiosError;
         console.error("Error fetching orders:", axiosError);
@@ -150,70 +152,68 @@ export const Orders = () => {
           </div>
           <div className="all-orders">
             {orderItems &&
-              orderItems
-                .filter((order) => order.status === "CONFIRMED")
-                .map((order) => {
-                  return (
-                    <NavLink
-                      to={`/edit-order/${order.orderId}`}
-                      key={order.orderId}
-                      className="nav-link2"
-                    >
-                      <div className="order">
-                        <img src={order.productImg} className="order-img" />
-                        <div className="order-text">
-                          <p className="order-head">{order.productName}</p>
-                          <p className="order-category">
-                            {order.productCategory}
+              orderItems.map((order) => {
+                return (
+                  <NavLink
+                    to={`/edit-order/${order.orderId}`}
+                    key={order.orderId}
+                    className="nav-link2"
+                  >
+                    <div className="order">
+                      <img src={order.productImg} className="order-img" />
+                      <div className="order-text">
+                        <p className="order-head">{order.productName}</p>
+                        <p className="order-category">
+                          {order.productCategory}
+                        </p>
+                        <p className="order-quantity">
+                          Quantity: <b>{order.quantity}</b>
+                        </p>
+                        <p className="order-total-price">
+                          Total Price:{" "}
+                          <b>{order.totalPrice.toLocaleString()} VND</b>
+                        </p>
+                        {order.size && (
+                          <p className="order-size">
+                            Size: <b>{order.size}</b>
                           </p>
-                          <p className="order-quantity">
-                            Quantity: <b>{order.quantity}</b>
+                        )}
+                        {order.color && (
+                          <p className="order-color">
+                            Color: <b>{order.color}</b>
                           </p>
-                          <p className="order-total-price">
-                            Total Price:{" "}
-                            <b>{order.totalPrice.toLocaleString()} VND</b>
+                        )}
+                        <p className="order-shipping">
+                          Shipping to:{" "}
+                          <b>
+                            {order.shippingAddress}, {order.shippingCountry}
+                          </b>
+                        </p>
+                        <p className="order-recipient">
+                          Recipient: <b>{order.shippingName}</b> (
+                          {order.shippingEmail})
+                        </p>
+                        <div className="order-success">
+                          <img
+                            src={require("../imgs/order-done.png")}
+                            className="order-done"
+                          />
+                          <p
+                            style={{
+                              marginLeft: "5px",
+                              marginTop: 0,
+                              marginBottom: 0,
+                            }}
+                            className="order-dispatch"
+                          >
+                            Ordered successfully! Preparing for dispatch!
                           </p>
-                          {order.size && (
-                            <p className="order-size">
-                              Size: <b>{order.size}</b>
-                            </p>
-                          )}
-                          {order.color && (
-                            <p className="order-color">
-                              Color: <b>{order.color}</b>
-                            </p>
-                          )}
-                          <p className="order-shipping">
-                            Shipping to:{" "}
-                            <b>
-                              {order.shippingAddress}, {order.shippingCountry}
-                            </b>
-                          </p>
-                          <p className="order-recipient">
-                            Recipient: <b>{order.shippingName}</b> (
-                            {order.shippingEmail})
-                          </p>
-                          <div className="order-success">
-                            <img
-                              src={require("../imgs/order-done.png")}
-                              className="order-done"
-                            />
-                            <p
-                              style={{
-                                marginLeft: "5px",
-                                marginTop: 0,
-                                marginBottom: 0,
-                              }}
-                              className="order-dispatch"
-                            >
-                              Ordered successfully! Preparing for dispatch!
-                            </p>
-                          </div>
                         </div>
                       </div>
-                    </NavLink>
-                  );
-                })}
+                    </div>
+                  </NavLink>
+                );
+              })}
             {orderItems.length > 0 && (
               <div
                 style={{

@@ -13,6 +13,7 @@ public class OrderResponse {
     Long totalPrice;
     int quantity ;
     String status;
+    String paymentStatus;
     String size ;
     String color;
     String shippingName;

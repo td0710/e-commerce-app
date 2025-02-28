@@ -147,7 +147,27 @@
 .delete-orders:active {
   transform: scale(0.92);
 }
+.styled-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  height: 85%;
+}
 
+.styled-select:hover {
+  border-color: #888;
+}
+
+.styled-select:focus {
+  outline: none;
+  border-color: #5c9ded;
+  box-shadow: 0 0 5px rgba(92, 157, 237, 0.5);
+}
 /* MEDIA QUERIES */
 
 @media (max-width: 720px) {

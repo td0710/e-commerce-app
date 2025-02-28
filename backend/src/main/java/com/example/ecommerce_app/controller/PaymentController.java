@@ -74,4 +74,8 @@ public class PaymentController {
 
         return ResponseEntity.ok(message);
     }
+    @PostMapping("/create")
+    public ResponseEntity<?> createPayment1(HttpServletRequest request) {
+        return ResponseEntity.ok(paymentService.refundVnPayPayment(request));
+    }
 }

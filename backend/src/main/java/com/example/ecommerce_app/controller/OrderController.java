@@ -46,4 +46,20 @@ public class OrderController {
         return ResponseEntity.ok(message);
     }
 
+    @GetMapping("/admin/getall")
+    public ResponseEntity<OrderPageResponse> getAllOrdersAdmin(@RequestParam int page,
+                                                               @RequestParam int size) {
+
+        OrderPageResponse orderPageResponse = orderService.getAllOrders(page , size);
+
+        return ResponseEntity.ok(orderPageResponse);
+    }
+
+    @PutMapping("/admin/update/status/{orderId}")
+    public ResponseEntity<?> updateStatus (@PathVariable Long orderId,@RequestParam String status) {
+
+        String message = orderService.updateStatus(orderId, status);
+
+        return ResponseEntity.ok(message) ;
+    }
 }
