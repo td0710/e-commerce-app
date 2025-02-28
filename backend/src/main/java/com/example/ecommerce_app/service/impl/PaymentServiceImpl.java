@@ -3,7 +3,7 @@ package com.example.ecommerce_app.service.impl;
 
 import com.example.ecommerce_app.dto.PaymentDto;
 import com.example.ecommerce_app.dto.PaymentVNPAYDto;
-import com.example.ecommerce_app.dto.RefundDto;
+import com.example.ecommerce_app.dto.response.RefundResponse;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.exception.AppException;
 import com.example.ecommerce_app.exception.ErrorCode;
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @Transactional
@@ -57,6 +57,71 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentUrl(paymentUrl).build();
     }
 
+    public RefundResponse refundVnPayPayment(Long orderId, HttpServletRequest request) {
+
+        Order order = orderRepository.findById(orderId).get();
+
+        Payment payment = paymentRepository.findByOrder(order) ;
+
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+
+        List<String> params  = new ArrayList<>();
+
+        String vnp_RequestId = String.valueOf(System.currentTimeMillis());
+        String vnp_Version = vnPayConfig.getVnp_Version() ;
+        String vnp_Command = "refund" ;
+        String vnp_TmnCode = vnPayConfig.getVnp_TmnCode() ;
+        String vnp_TransactionType = "03" ;
+        String vnp_TxnRef = payment.getTxnRef() ;
+        String vnp_Amount = payment.getAmount().toString() ;
+        String vnp_OrderInfo = "Refund order id: " + order.getId() ;
+        String vnp_TransactionNo = payment.getTransactionNo() ;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String vnp_TransactionDate = payment.getPayDate().format(formatter);
+        String vnp_CreateBy = "USER" ;
+        String vnp_CreateDate = LocalDateTime.now().format(formatter);
+        String vnp_IpAddr = request.getHeader("X-Forwarded-For");
+        if (vnp_IpAddr == null || vnp_IpAddr.isEmpty()) {
+            vnp_IpAddr = request.getRemoteAddr();
+        }
+
+
+        params.add(vnp_RequestId);
+        params.add(vnp_Version);
+        params.add(vnp_Command);
+        params.add(vnp_TmnCode);
+        params.add(vnp_TransactionType);
+        params.add(vnp_TxnRef);
+        params.add(vnp_Amount);
+        params.add(vnp_TransactionNo);
+        params.add(vnp_TransactionDate);
+        params.add(vnp_CreateBy);
+        params.add(vnp_CreateDate);
+        params.add(vnp_IpAddr);
+        params.add(vnp_OrderInfo);
+
+        String queryUrl = VNPayUtil.getRefundData(params);
+
+        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), queryUrl);
+
+        RefundResponse refundResponse = new RefundResponse(
+                vnp_RequestId,
+                vnp_Version,
+                vnp_Command,
+                vnp_TmnCode,
+                vnp_TransactionType,
+                vnp_TxnRef,
+                vnp_Amount,
+                vnp_TransactionNo,
+                vnp_TransactionDate,
+                vnp_CreateBy,
+                vnp_CreateDate,
+                vnp_IpAddr,
+                vnp_OrderInfo,
+                vnpSecureHash)  ;
+
+        return refundResponse ;
+    }
     public String codPayment(Long userId, Long totalPrice, Long cartItemId) {
         Order order = new Order();
         Users user = userRepository.findById(userId).get();
@@ -166,49 +231,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         return "success";
     }
-        public RefundDto refundVnPayPayment(HttpServletRequest request) {
-        String orderId = request.getParameter("orderId");
-        String transactionNo = request.getParameter("transactionNo");
-        long refundAmount = (long) (Double.parseDouble(request.getParameter("refundAmount")) * 100L);
-        String refundType = request.getParameter("refundType");
-        String adminUser = "admin";
 
-        if (refundAmount <= 0) {
-            throw new IllegalArgumentException("Số tiền hoàn không hợp lệ!");
-        }
-        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
-
-        String requestId = String.valueOf(System.currentTimeMillis());
-
-        String ipAddress = VNPayUtil.getIpAddress(request);
-
-        vnpParamsMap.put("vnp_RequestId", requestId);
-        vnpParamsMap.put("vnp_Version", "2.1.0");
-        vnpParamsMap.put("vnp_Command", "refund");
-        vnpParamsMap.put("vnp_TmnCode", "3VV7C2JY");
-        vnpParamsMap.put("vnp_TransactionType", refundType);
-        vnpParamsMap.put("vnp_TxnRef", orderId);
-        vnpParamsMap.put("vnp_TransactionNo", transactionNo);
-        vnpParamsMap.put("vnp_Amount", String.valueOf(refundAmount));
-        vnpParamsMap.put("vnp_OrderInfo", "Hoàn tiền đơn hàng " + orderId);
-        vnpParamsMap.put("vnp_TransactionDate", request.getParameter("transactionDate")); // Ngày giao dịch gốc
-        vnpParamsMap.put("vnp_CreateBy", adminUser);
-        vnpParamsMap.put("vnp_CreateDate", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-        vnpParamsMap.put("vnp_IpAddr", ipAddress);
-
-        String queryUrl = VNPayUtil.getPaymentURL(vnpParamsMap, true);
-        String hashData = VNPayUtil.getPaymentURL(vnpParamsMap, false);
-        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
-        queryUrl += "&vnp_SecureHash=" + vnpSecureHash;
-
-        String refundUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction" + "?" + queryUrl;
-
-        return RefundDto.builder()
-                .code("ok")
-                .message("Refund request generated")
-                .refundUrl(refundUrl)
-                .build();
-    }
 
 
 

@@ -18,11 +18,13 @@ public class VNPayConfig {
     private String vnp_PayUrl;
     @Value("${payment.vnPay.returnUrl}")
     private String vnp_ReturnUrl;
+    @Getter
     @Value("${payment.vnPay.tmnCode}")
     private String vnp_TmnCode ;
     @Getter
     @Value("${payment.vnPay.secretKey}")
     private String secretKey;
+    @Getter
     @Value("${payment.vnPay.version}")
     private String vnp_Version;
     @Value("${payment.vnPay.command}")

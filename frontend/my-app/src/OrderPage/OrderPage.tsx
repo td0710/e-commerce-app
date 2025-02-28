@@ -152,68 +152,70 @@ export const Orders = () => {
           </div>
           <div className="all-orders">
             {orderItems &&
-              orderItems.map((order) => {
-                return (
-                  <NavLink
-                    to={`/edit-order/${order.orderId}`}
-                    key={order.orderId}
-                    className="nav-link2"
-                  >
-                    <div className="order">
-                      <img src={order.productImg} className="order-img" />
-                      <div className="order-text">
-                        <p className="order-head">{order.productName}</p>
-                        <p className="order-category">
-                          {order.productCategory}
-                        </p>
-                        <p className="order-quantity">
-                          Quantity: <b>{order.quantity}</b>
-                        </p>
-                        <p className="order-total-price">
-                          Total Price:{" "}
-                          <b>{order.totalPrice.toLocaleString()} VND</b>
-                        </p>
-                        {order.size && (
-                          <p className="order-size">
-                            Size: <b>{order.size}</b>
+              orderItems
+                .filter((order) => order.status !== "CANCELLED")
+                .map((order) => {
+                  return (
+                    <NavLink
+                      to={`/edit-order/${order.orderId}`}
+                      key={order.orderId}
+                      className="nav-link2"
+                    >
+                      <div className="order">
+                        <img src={order.productImg} className="order-img" />
+                        <div className="order-text">
+                          <p className="order-head">{order.productName}</p>
+                          <p className="order-category">
+                            {order.productCategory}
                           </p>
-                        )}
-                        {order.color && (
-                          <p className="order-color">
-                            Color: <b>{order.color}</b>
+                          <p className="order-quantity">
+                            Quantity: <b>{order.quantity}</b>
                           </p>
-                        )}
-                        <p className="order-shipping">
-                          Shipping to:{" "}
-                          <b>
-                            {order.shippingAddress}, {order.shippingCountry}
-                          </b>
-                        </p>
-                        <p className="order-recipient">
-                          Recipient: <b>{order.shippingName}</b> (
-                          {order.shippingEmail})
-                        </p>
-                        <div className="order-success">
-                          <img
-                            src={require("../imgs/order-done.png")}
-                            className="order-done"
-                          />
-                          <p
-                            style={{
-                              marginLeft: "5px",
-                              marginTop: 0,
-                              marginBottom: 0,
-                            }}
-                            className="order-dispatch"
-                          >
-                            Ordered successfully! Preparing for dispatch!
+                          <p className="order-total-price">
+                            Total Price:{" "}
+                            <b>{order.totalPrice.toLocaleString()} VND</b>
                           </p>
+                          {order.size && (
+                            <p className="order-size">
+                              Size: <b>{order.size}</b>
+                            </p>
+                          )}
+                          {order.color && (
+                            <p className="order-color">
+                              Color: <b>{order.color}</b>
+                            </p>
+                          )}
+                          <p className="order-shipping">
+                            Shipping to:{" "}
+                            <b>
+                              {order.shippingAddress}, {order.shippingCountry}
+                            </b>
+                          </p>
+                          <p className="order-recipient">
+                            Recipient: <b>{order.shippingName}</b> (
+                            {order.shippingEmail})
+                          </p>
+                          <div className="order-success">
+                            <img
+                              src={require("../imgs/order-done.png")}
+                              className="order-done"
+                            />
+                            <p
+                              style={{
+                                marginLeft: "5px",
+                                marginTop: 0,
+                                marginBottom: 0,
+                              }}
+                              className="order-dispatch"
+                            >
+                              Ordered successfully! Preparing for dispatch!
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </NavLink>
-                );
-              })}
+                    </NavLink>
+                  );
+                })}
             {orderItems.length > 0 && (
               <div
                 style={{
