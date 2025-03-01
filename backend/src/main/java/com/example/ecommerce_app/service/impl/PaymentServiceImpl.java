@@ -4,6 +4,7 @@ package com.example.ecommerce_app.service.impl;
 import com.example.ecommerce_app.dto.PaymentDto;
 import com.example.ecommerce_app.dto.PaymentVNPAYDto;
 import com.example.ecommerce_app.dto.response.RefundResponse;
+import com.example.ecommerce_app.dto.response.VNPayRefundResponse;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.exception.AppException;
 import com.example.ecommerce_app.exception.ErrorCode;
@@ -11,10 +12,13 @@ import com.example.ecommerce_app.repository.*;
 import com.example.ecommerce_app.security.VNPayConfig;
 import com.example.ecommerce_app.service.PaymentService;
 import com.example.ecommerce_app.util.VNPayUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -35,7 +39,12 @@ public class PaymentServiceImpl implements PaymentService {
     private final ShippingDetailsRepository shippingDetailsRepository;
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
+    private WebClient webClient;
 
+    @Autowired
+    public void setWebClient(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
+    }
     public PaymentDto createVnPayPayment(HttpServletRequest request) {
         long amount = (long) (Double.parseDouble(request.getParameter("amount")) * 100L);
         String bankCode = request.getParameter("bankCode");
@@ -57,70 +66,102 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentUrl(paymentUrl).build();
     }
 
-    public RefundResponse refundVnPayPayment(Long orderId, HttpServletRequest request) {
-
+    public String refundVnPayPayment(Long orderId, HttpServletRequest request) {
         Order order = orderRepository.findById(orderId).get();
-
         Payment payment = paymentRepository.findByOrder(order) ;
 
-        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+        if(order.getPaymentStatus() == "PAID") {
 
-        List<String> params  = new ArrayList<>();
 
-        String vnp_RequestId = String.valueOf(System.currentTimeMillis());
-        String vnp_Version = vnPayConfig.getVnp_Version() ;
-        String vnp_Command = "refund" ;
-        String vnp_TmnCode = vnPayConfig.getVnp_TmnCode() ;
-        String vnp_TransactionType = "03" ;
-        String vnp_TxnRef = payment.getTxnRef() ;
-        String vnp_Amount = payment.getAmount().toString() ;
-        String vnp_OrderInfo = "Refund order id: " + order.getId() ;
-        String vnp_TransactionNo = payment.getTransactionNo() ;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        String vnp_TransactionDate = payment.getPayDate().format(formatter);
-        String vnp_CreateBy = "USER" ;
-        String vnp_CreateDate = LocalDateTime.now().format(formatter);
-        String vnp_IpAddr = request.getHeader("X-Forwarded-For");
-        if (vnp_IpAddr == null || vnp_IpAddr.isEmpty()) {
-            vnp_IpAddr = request.getRemoteAddr();
+            Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
+
+            List<String> params  = new ArrayList<>();
+
+            String vnp_RequestId = String.valueOf(System.currentTimeMillis());
+            String vnp_Version = vnPayConfig.getVnp_Version() ;
+            String vnp_Command = "refund" ;
+            String vnp_TmnCode = vnPayConfig.getVnp_TmnCode() ;
+            String vnp_TransactionType = "03" ;
+            String vnp_TxnRef = payment.getTxnRef() ;
+            String vnp_Amount = payment.getAmount().toString() ;
+            String vnp_OrderInfo = "Refund order id: " + order.getId() ;
+            String vnp_TransactionNo = payment.getTransactionNo() ;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+            String vnp_TransactionDate = payment.getPayDate().format(formatter);
+            String vnp_CreateBy = "USER" ;
+            String vnp_CreateDate = LocalDateTime.now().format(formatter);
+            String vnp_IpAddr = request.getHeader("X-Forwarded-For");
+            if (vnp_IpAddr == null || vnp_IpAddr.isEmpty()) {
+                vnp_IpAddr = request.getRemoteAddr();
+            }
+
+
+            params.add(vnp_RequestId);
+            params.add(vnp_Version);
+            params.add(vnp_Command);
+            params.add(vnp_TmnCode);
+            params.add(vnp_TransactionType);
+            params.add(vnp_TxnRef);
+            params.add(vnp_Amount);
+            params.add(vnp_TransactionNo);
+            params.add(vnp_TransactionDate);
+            params.add(vnp_CreateBy);
+            params.add(vnp_CreateDate);
+            params.add(vnp_IpAddr);
+            params.add(vnp_OrderInfo);
+
+            String queryUrl = VNPayUtil.getRefundData(params);
+
+            String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), queryUrl);
+
+            RefundResponse refundResponse = new RefundResponse(
+                    vnp_RequestId,
+                    vnp_Version,
+                    vnp_Command,
+                    vnp_TmnCode,
+                    vnp_TransactionType,
+                    vnp_TxnRef,
+                    vnp_Amount,
+                    vnp_TransactionNo,
+                    vnp_TransactionDate,
+                    vnp_CreateBy,
+                    vnp_CreateDate,
+                    vnp_IpAddr,
+                    vnp_OrderInfo,
+                    vnpSecureHash)  ;
+
+            String url =
+                    "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction" ;
+            VNPayRefundResponse response = webClient.post()
+                    .uri(url)
+                    .bodyValue(refundResponse)
+                    .retrieve()
+                    .bodyToMono(VNPayRefundResponse.class)
+                    .block();
+
+            if ("00".equals(response.getResponseCode())) {
+                payment.setTransactionStatus("REFUNDED");
+                payment.setRefundTransactionNo(response.getTransactionNo()) ;
+
+                order.setPaymentStatus("REFUNDED");
+                order.setOrderStatus("CANCELLED");
+
+                paymentRepository.save(payment);
+                orderRepository.save(order);
+                return "Cancelled successfully" ;
+            }
+
+            return "Cancel failed" ;
         }
+            payment.setTransactionStatus("CANCELLED");
 
+            order.setPaymentStatus("CANCELLED");
+            order.setOrderStatus("CANCELLED");
 
-        params.add(vnp_RequestId);
-        params.add(vnp_Version);
-        params.add(vnp_Command);
-        params.add(vnp_TmnCode);
-        params.add(vnp_TransactionType);
-        params.add(vnp_TxnRef);
-        params.add(vnp_Amount);
-        params.add(vnp_TransactionNo);
-        params.add(vnp_TransactionDate);
-        params.add(vnp_CreateBy);
-        params.add(vnp_CreateDate);
-        params.add(vnp_IpAddr);
-        params.add(vnp_OrderInfo);
+            paymentRepository.save(payment);
+            orderRepository.save(order);
 
-        String queryUrl = VNPayUtil.getRefundData(params);
-
-        String vnpSecureHash = VNPayUtil.hmacSHA512(vnPayConfig.getSecretKey(), queryUrl);
-
-        RefundResponse refundResponse = new RefundResponse(
-                vnp_RequestId,
-                vnp_Version,
-                vnp_Command,
-                vnp_TmnCode,
-                vnp_TransactionType,
-                vnp_TxnRef,
-                vnp_Amount,
-                vnp_TransactionNo,
-                vnp_TransactionDate,
-                vnp_CreateBy,
-                vnp_CreateDate,
-                vnp_IpAddr,
-                vnp_OrderInfo,
-                vnpSecureHash)  ;
-
-        return refundResponse ;
+        return "Cancelled successfully" ;
     }
     public String codPayment(Long userId, Long totalPrice, Long cartItemId) {
         Order order = new Order();

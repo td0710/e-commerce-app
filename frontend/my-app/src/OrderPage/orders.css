@@ -82,6 +82,40 @@
 .order-done {
   width: 25px;
 }
+.order-status {
+  display: flex;
+  align-items: center;
+  font-family: "Poppins";
+  padding: 8px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  font-size: 15px;
+  width: fit-content;
+}
+
+/* ✅ Trạng thái PENDING */
+.order-pending {
+  color: #b57f00;
+  background-color: #ffe58f;
+}
+
+/* ✅ Trạng thái CONFIRMED, SHIPPED, DELIVERED */
+.order-processing {
+  color: #013d01;
+  background-color: #0cd80c62;
+}
+
+/* ✅ Trạng thái CANCEL + VNPAY */
+.order-refund {
+  color: #0b5394;
+  background-color: #b3d9ff;
+}
+
+/* ✅ Trạng thái CANCEL + COD */
+.order-cancel {
+  color: #d9534f;
+  background-color: #f8d7da;
+}
 
 .order-success {
   display: flex;

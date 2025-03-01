@@ -50,4 +50,8 @@ public class Payment {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "refund_transaction_no", length = 50)
+    private String refundTransactionNo;
+
+
 }

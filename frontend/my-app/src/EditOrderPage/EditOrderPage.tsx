@@ -170,52 +170,6 @@ export const EditOrderPage = () => {
       );
 
       console.log(response);
-
-      const url =
-        "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-
-      console.log(
-        response.data.vnp_RequestId,
-        response.data.vnp_Version,
-        response.data.vnp_Command,
-        response.data.vnp_TmnCode,
-        response.data.vnp_TransactionType,
-        response.data.vnp_TxnRef,
-        response.data.vnp_Amount,
-        response.data.vnp_TransactionNo,
-        response.data.vnp_TransactionDate,
-        response.data.vnp_CreateBy,
-        response.data.vnp_CreateDate,
-        response.data.vnp_IpAddr,
-        response.data.vnp_OrderInfo,
-        response.data.vnp_SecureHash
-      );
-      const response1 = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          vnp_RequestId: `${response.data.vnp_RequestId}`,
-          vnp_Version: `${response.data.vnp_Version}`,
-          vnp_Command: `${response.data.vnp_Command}`,
-          vnp_TmnCode: `${response.data.vnp_TmnCode}`,
-          vnp_TransactionType: `${response.data.vnp_TransactionType}`,
-          vnp_TxnRef: `${response.data.vnp_TxnRef}`,
-          vnp_Amount: `${response.data.vnp_Amount}`,
-          vnp_TransactionNo: `${response.data.vnp_TransactionNo}`,
-          vnp_TransactionDate: `${response.data.vnp_TransactionDate}`,
-          vnp_CreateBy: `${response.data.vnp_CreateBy}`,
-          vnp_CreateDate: `${response.data.vnp_CreateDate}`,
-          vnp_IpAddr: `${response.data.vnp_IpAddr}`,
-          vnp_OrderInfo: `${response.data.vnp_OrderInfo}`,
-          vnp_SecureHash: `${response.data.vnp_SecureHash}`,
-        }),
-      });
-
-      const result = await response1.json();
-
-      console.log(result);
     } catch (error) {
       console.error("Error fetching refund data:");
     }
@@ -256,22 +210,32 @@ export const EditOrderPage = () => {
                       Color: <b>{order.color}</b>
                     </p>
                   )}
-                  <div className="order-success">
-                    <img
-                      src={require("../imgs/order-done.png")}
-                      className="order-done"
-                    />
+                  {order && (
                     <p
-                      style={{
-                        marginLeft: "5px",
-                        marginTop: 0,
-                        marginBottom: 0,
-                      }}
-                      className="order-dispatch"
+                      className={`order-status ${
+                        order?.status === "PENDING"
+                          ? "order-pending"
+                          : ["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
+                              order?.status
+                            )
+                          ? "order-processing"
+                          : order?.status === "CANCELLED" &&
+                            order.paymentStatus === "REFUNDED"
+                          ? "order-refund"
+                          : "order-cancel"
+                      }`}
                     >
-                      Ordered successfully! Preparing for dispatch!
+                      {order?.status === "PENDING" &&
+                        "⏳ Your order is pending confirmation."}
+                      {["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
+                        order?.status
+                      ) && "📦 Ordered successfully! Preparing for dispatch!"}
+                      {order?.status === "CANCELLED" &&
+                        (order.paymentStatus === "REFUNDED"
+                          ? "💰 Order canceled. Refund is being processed. Please wait for the money to be returned to your account!"
+                          : "❌ Order canceled successfully.")}
                     </p>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -354,34 +318,36 @@ export const EditOrderPage = () => {
                   </div>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <button
-                  onClick={() => {
-                    if (
-                      Name.length !== 0 &&
-                      Address.length !== 0 &&
-                      Country.length !== 0 &&
-                      Number.length !== 0 &&
-                      Email.length !== 0 &&
-                      !NameError &&
-                      !AddressError &&
-                      !CountryError &&
-                      !NumberError &&
-                      !emailError
-                    ) {
-                      saveShippingDetails();
-                    } else {
-                      notify1();
-                    }
-                  }}
-                  className="save-address"
-                >
-                  Save
-                </button>
-                <button className="cancel-order" onClick={cancelOrder}>
-                  Cancel order
-                </button>
-              </div>
+              {order?.status !== "CANCELLED" && (
+                <div style={{ display: "flex", gap: "15px" }}>
+                  <button
+                    onClick={() => {
+                      if (
+                        Name.length !== 0 &&
+                        Address.length !== 0 &&
+                        Country.length !== 0 &&
+                        Number.length !== 0 &&
+                        Email.length !== 0 &&
+                        !NameError &&
+                        !AddressError &&
+                        !CountryError &&
+                        !NumberError &&
+                        !emailError
+                      ) {
+                        saveShippingDetails();
+                      } else {
+                        notify1();
+                      }
+                    }}
+                    className="save-address"
+                  >
+                    Save
+                  </button>
+                  <button className="cancel-order" onClick={cancelOrder}>
+                    Cancel order
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

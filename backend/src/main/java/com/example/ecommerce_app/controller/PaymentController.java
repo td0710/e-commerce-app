@@ -5,6 +5,7 @@ import com.example.ecommerce_app.dto.PaymentDto;
 
 import com.example.ecommerce_app.dto.PaymentVNPAYDto;
 import com.example.ecommerce_app.dto.response.RefundResponse;
+import com.example.ecommerce_app.dto.response.VNPayRefundResponse;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.repository.CartRepository;
 import com.example.ecommerce_app.repository.ShippingDetailsRepository;
@@ -84,16 +85,8 @@ public class PaymentController {
     }
     @PostMapping("/get/refund/{orderId}")
     public ResponseEntity<?> createPayment1(@PathVariable Long orderId,HttpServletRequest request) {
-        RefundResponse refundResponse = paymentService.refundVnPayPayment(orderId,request) ;
-        String url =
-                "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction" ;
-        String response = webClient.post()
-                .uri(url)
-                .bodyValue(refundResponse)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-        System.out.println(response);
-        return ResponseEntity.ok("ok");
+        String vnPayRefundResponse= paymentService.refundVnPayPayment(orderId,request) ;
+
+        return ResponseEntity.ok(vnPayRefundResponse);
     }
 }

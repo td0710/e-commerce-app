@@ -94,7 +94,9 @@ export const AdminOrdersPage = () => {
   useEffect(() => {
     fetchOrder();
   }, [currentPage]);
-
+  useEffect(() => {
+    fetchOrder();
+  }, []);
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <>
@@ -254,23 +256,31 @@ export const AdminOrdersPage = () => {
                           <p>
                             <b>Order Status:</b>
                           </p>
+                          {
+                            <select
+                              className="styled-select"
+                              value={order.status}
+                              onChange={(e) =>
+                                handleOrderStatusChange(
+                                  order.orderId,
 
-                          <select
-                            className="styled-select"
-                            value={order.status}
-                            onChange={(e) =>
-                              handleOrderStatusChange(
-                                order.orderId,
-
-                                e.target.value
-                              )
-                            }
-                          >
-                            <option value="PENDING">PENDING</option>
-                            <option value="CONFIRMED">CONFIRMED</option>
-                            <option value="SHIPPED">SHIPPED</option>
-                            <option value="DELIVERED">DELIVERED</option>
-                          </select>
+                                  e.target.value
+                                )
+                              }
+                              disabled={order.status === "CANCELLED" && true}
+                            >
+                              <option value="PENDING">PENDING</option>
+                              <option value="CONFIRMED">CONFIRMED</option>
+                              <option value="SHIPPED">SHIPPED</option>
+                              <option value="DELIVERED">DELIVERED</option>
+                              <option
+                                value="CANCELLED"
+                                disabled={order.status !== "CANCELLED"}
+                              >
+                                CANCELLED
+                              </option>{" "}
+                            </select>
+                          }
                         </div>
                       </div>
                     </div>
