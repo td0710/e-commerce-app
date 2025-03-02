@@ -196,28 +196,32 @@ export const Orders = () => {
 
                         <p
                           className={`order-status ${
-                            order.status === "PENDING"
+                            order?.status === "PENDING"
                               ? "order-pending"
-                              : ["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
-                                  order.status
-                                )
-                              ? "order-processing"
-                              : order.status === "CANCELLED" &&
+                              : order?.status === "CONFIRMED"
+                              ? "order-confirmed"
+                              : order?.status === "SHIPPED"
+                              ? "order-shipped"
+                              : order?.status === "DELIVERED"
+                              ? "order-delivered"
+                              : order?.status === "CANCELLED" &&
                                 order.paymentStatus === "REFUNDED"
                               ? "order-refund"
                               : "order-cancel"
                           }`}
                         >
-                          {order.status === "PENDING" &&
+                          {order?.status === "PENDING" &&
                             "⏳ Your order is pending confirmation."}
-                          {["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
-                            order.status
-                          ) &&
-                            "📦 Ordered successfully! Preparing for dispatch!"}
-                          {order.status === "CANCELLED" &&
+                          {order?.status === "CONFIRMED" &&
+                            "✅ Your order has been confirmed! If you wish to cancel, please do so within 24 hours, as cancellation is not possible once shipping begins."}
+                          {order?.status === "SHIPPED" &&
+                            "🚚 Your order has been shipped! Please wait for it to arrive soon."}
+                          {order?.status === "DELIVERED" &&
+                            "📬 Your order has been delivered successfully! Thank you for shopping with us."}
+                          {order?.status === "CANCELLED" &&
                             (order.paymentStatus === "REFUNDED"
-                              ? "💰 Order canceled. Refund is being processed. Please wait for the money to be returned to your account!"
-                              : "❌ Order canceled successfully.")}
+                              ? "💰 Your order has been canceled. The refund is being processed. Please wait for the money to be returned to your account!"
+                              : "❌ Your order has been canceled successfully.")}
                         </p>
                       </div>
                     </div>

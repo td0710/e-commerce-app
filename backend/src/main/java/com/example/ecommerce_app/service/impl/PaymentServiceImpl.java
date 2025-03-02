@@ -70,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(orderId).get();
         Payment payment = paymentRepository.findByOrder(order) ;
 
-        if(order.getPaymentStatus() == "PAID") {
+        if(order.getPaymentStatus().equals("PAID")) {
 
 
             Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
@@ -139,7 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .bodyToMono(VNPayRefundResponse.class)
                     .block();
 
-            if ("00".equals(response.getResponseCode())) {
+            if (response.getResponseCode().equals("00")) {
                 payment.setTransactionStatus("REFUNDED");
                 payment.setRefundTransactionNo(response.getTransactionNo()) ;
 

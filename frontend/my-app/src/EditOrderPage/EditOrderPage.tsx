@@ -170,6 +170,7 @@ export const EditOrderPage = () => {
       );
 
       console.log(response);
+      navigate(`/edit-order/${orderId}`);
     } catch (error) {
       console.error("Error fetching refund data:");
     }
@@ -215,10 +216,12 @@ export const EditOrderPage = () => {
                       className={`order-status ${
                         order?.status === "PENDING"
                           ? "order-pending"
-                          : ["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
-                              order?.status
-                            )
-                          ? "order-processing"
+                          : order?.status === "CONFIRMED"
+                          ? "order-confirmed"
+                          : order?.status === "SHIPPED"
+                          ? "order-shipped"
+                          : order?.status === "DELIVERED"
+                          ? "order-delivered"
                           : order?.status === "CANCELLED" &&
                             order.paymentStatus === "REFUNDED"
                           ? "order-refund"
@@ -227,13 +230,16 @@ export const EditOrderPage = () => {
                     >
                       {order?.status === "PENDING" &&
                         "⏳ Your order is pending confirmation."}
-                      {["CONFIRMED", "SHIPPED", "DELIVERED"].includes(
-                        order?.status
-                      ) && "📦 Ordered successfully! Preparing for dispatch!"}
+                      {order?.status === "CONFIRMED" &&
+                        "✅ Your order has been confirmed! If you wish to cancel, please do so within 24 hours, as cancellation is not possible once shipping begins."}
+                      {order?.status === "SHIPPED" &&
+                        "🚚 Your order has been shipped! Please wait for it to arrive soon."}
+                      {order?.status === "DELIVERED" &&
+                        "📬 Your order has been delivered successfully! Thank you for shopping with us."}
                       {order?.status === "CANCELLED" &&
                         (order.paymentStatus === "REFUNDED"
-                          ? "💰 Order canceled. Refund is being processed. Please wait for the money to be returned to your account!"
-                          : "❌ Order canceled successfully.")}
+                          ? "💰 Your order has been canceled. The refund is being processed. Please wait for the money to be returned to your account!"
+                          : "❌ Your order has been canceled successfully.")}
                     </p>
                   )}
                 </div>
@@ -343,9 +349,40 @@ export const EditOrderPage = () => {
                   >
                     Save
                   </button>
-                  <button className="cancel-order" onClick={cancelOrder}>
-                    Cancel order
-                  </button>
+                  {(order?.status === "PENDING" ||
+                    order?.status === "CONFIRMED") && (
+                    <button
+                      className="cancel-order"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Are you sure?",
+                          text: "Do you really want to cancel this order? This action cannot be undone.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#d33",
+                          cancelButtonColor: "#3085d6",
+                          confirmButtonText: "Yes, cancel it!",
+                          cancelButtonText: "No, keep it",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            cancelOrder();
+                            Swal.fire({
+                              toast: true,
+                              text: "Cancelled!",
+                              icon: "success",
+                              showConfirmButton: false,
+                              timer: 3000,
+                              timerProgressBar: true,
+                              position: "top",
+                            });
+                            window.location.reload();
+                          }
+                        });
+                      }}
+                    >
+                      Cancel order
+                    </button>
+                  )}
                 </div>
               )}
             </div>

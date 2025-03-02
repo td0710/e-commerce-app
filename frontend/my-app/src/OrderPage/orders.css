@@ -93,28 +93,47 @@
   width: fit-content;
 }
 
-/* ✅ Trạng thái PENDING */
+/* Định dạng chung cho tất cả trạng thái */
+.order-status {
+  padding: 10px;
+  border-radius: 5px;
+  margin: 0; /* Đảm bảo không có khoảng cách thừa */
+}
+
+/* Trạng thái PENDING */
 .order-pending {
-  color: #b57f00;
-  background-color: #ffe58f;
+  background-color: #fff3e0; /* Màu cam nhạt */
+  color: #e65100; /* Màu chữ cam đậm */
 }
 
-/* ✅ Trạng thái CONFIRMED, SHIPPED, DELIVERED */
-.order-processing {
-  color: #013d01;
-  background-color: #0cd80c62;
+/* Trạng thái CONFIRMED */
+.order-confirmed {
+  background-color: #e3f2fd; /* Màu xanh dương nhạt */
+  color: #1976d2; /* Màu chữ xanh dương đậm */
 }
 
-/* ✅ Trạng thái CANCEL + VNPAY */
+/* Trạng thái SHIPPED */
+.order-shipped {
+  background-color: #f3e5f5; /* Màu tím nhạt */
+  color: #7b1fa2; /* Màu chữ tím đậm */
+}
+
+/* Trạng thái DELIVERED */
+.order-delivered {
+  background-color: #e8f5e9; /* Màu xanh lá nhạt */
+  color: #2e7d32; /* Màu chữ xanh lá đậm */
+}
+
+/* Trạng thái CANCELLED với REFUNDED */
 .order-refund {
-  color: #0b5394;
-  background-color: #b3d9ff;
+  background-color: #e0f7fa; /* Màu teal nhạt */
+  color: #00695c; /* Màu chữ teal đậm */
 }
 
-/* ✅ Trạng thái CANCEL + COD */
+/* Trạng thái CANCELLED không REFUNDED */
 .order-cancel {
-  color: #d9534f;
-  background-color: #f8d7da;
+  background-color: #ffebee; /* Màu đỏ nhạt */
+  color: #c62828; /* Màu chữ đỏ đậm */
 }
 
 .order-success {

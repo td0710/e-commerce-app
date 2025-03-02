@@ -60,8 +60,8 @@ public class ProductServiceImpl implements ProductService {
                 content,
                 products.getNumber(),
                 products.getSize(),
-                products.getTotalPages(),
                 (int) products.getTotalElements(),
+                products.getTotalPages(),
                 products.isLast()
         );
 

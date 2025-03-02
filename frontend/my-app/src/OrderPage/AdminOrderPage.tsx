@@ -7,6 +7,7 @@ import "./orders.css";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
 import { AdminProductPage } from "../ProductPage/AdminProduct";
+import Swal from "sweetalert2";
 export const AdminOrdersPage = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
@@ -21,8 +22,24 @@ export const AdminOrdersPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const handleOrderStatusChange = async (orderId: number, status: string) => {
     try {
-      const url = `http://localhost:8080/api/orders/secure/admin/update/status/${orderId}?status=${status}`;
+      if (status === "DELIVERED") {
+        const result = await Swal.fire({
+          title: "Have you checked carefully?",
+          text: "Please ensure all details are verified before marking this order as delivered.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, mark as delivered",
+          cancelButtonText: "No, let me double-check",
+        });
 
+        if (!result.isConfirmed) {
+          return; // Thoát nếu admin không xác nhận
+        }
+      }
+
+      const url = `http://localhost:8080/api/orders/secure/admin/update/status/${orderId}?status=${status}`;
       const response = await axios.put(
         url,
         {},
@@ -33,13 +50,37 @@ export const AdminOrdersPage = () => {
           },
         }
       );
+
       setOrderItems((prevOrders) =>
         prevOrders.map((order) =>
           order.orderId === orderId ? { ...order, status } : order
         )
       );
-      fetchOrder();
-    } catch (e: any) {}
+
+      Swal.fire({
+        toast: true,
+        text:
+          status === "DELIVERED"
+            ? "Order marked as delivered!"
+            : "Status updated successfully!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        position: "top",
+      });
+    } catch (e: any) {
+      console.error("Error updating order status:", e);
+      Swal.fire({
+        toast: true,
+        text: "Failed to update status. Please try again.",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        position: "top",
+      });
+    }
   };
 
   const fetchOrder = async () => {
@@ -267,7 +308,10 @@ export const AdminOrdersPage = () => {
                                   e.target.value
                                 )
                               }
-                              disabled={order.status === "CANCELLED" && true}
+                              disabled={
+                                order.status === "CANCELLED" ||
+                                order.status === "DELIVERED"
+                              }
                             >
                               <option value="PENDING">PENDING</option>
                               <option value="CONFIRMED">CONFIRMED</option>
