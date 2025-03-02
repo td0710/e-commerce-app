@@ -121,10 +121,18 @@ export const Navbar = () => {
           )}
           {role === "ADMIN" && (
             <img
-              onClick={() => navigate("/admin/add/product")}
-              src={require("../../imgs/new-item.png")}
+              onClick={() => navigate("/admin/orders")}
+              src={require("../../imgs/delivery-truck.png")}
               className="orders"
-              style={{ marginRight: "150px" }}
+              style={{ marginRight: "30px" }}
+            />
+          )}
+          {role === "ADMIN" && (
+            <img
+              onClick={() => navigate("/admin/add/product")}
+              src={require("../../imgs/plus.png")}
+              className="orders"
+              style={{ marginRight: "60px" }}
             />
           )}
           {role === "USER" && (
@@ -187,6 +195,11 @@ export const Navbar = () => {
             onClick={() => navigate("/account")}
             src={require("../../imgs/default.png")}
             className="default"
+            style={
+              role === "ADMIN"
+                ? { marginRight: "50px" }
+                : { marginRight: "20px" }
+            }
           />
           <button className="signout-btn" onClick={logout}>
             Log out
