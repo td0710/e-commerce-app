@@ -166,29 +166,7 @@ export const ProductPage = () => {
             <p className="item-title">{product?.title}</p>
             <p className="item-desc">{product?.description}</p>
             <div className="price-section">
-              <div className="item-rating">
-                <img
-                  src={require("../imgs/rating.png")}
-                  className="rating-img"
-                />
-                <img
-                  src={require("../imgs/rating.png")}
-                  className="rating-img"
-                />
-                <img
-                  src={require("../imgs/rating.png")}
-                  className="rating-img"
-                />
-                <img
-                  src={require("../imgs/rating.png")}
-                  className="rating-img"
-                />
-                <img
-                  src={require("../imgs/rating.png")}
-                  className="rating-img"
-                />
-                <p className="rating-no">20</p>
-              </div>
+              <div className="item-rating"></div>
             </div>
             {showColorSelection && (
               <div style={{ display: "block" }} className="cloth-size">

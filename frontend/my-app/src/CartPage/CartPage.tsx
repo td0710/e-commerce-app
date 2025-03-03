@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import ProductCartModel from "../models/ProductCartModel";
 import "./cart.css";
 import { useAuth } from "../Context/useAuth";
@@ -14,11 +14,23 @@ export const CartSection = () => {
 
   const [cartItems, setCartItems] = useState<ProductCartModel[]>([]);
   const [total, setTotal] = useState(0);
+  const [code, setCode] = useState("");
+  const [codeDiscount, setCodeDiscount] = useState("");
+
+  const [discountValue, setDiscountValue] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isDiscountApplied, setIsDiscountApplied] = useState(false);
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
-  const { cartCount, wishlistCount, updateCartCount } = useAuth();
+  const {
+    cartCount,
+    wishlistCount,
+    updateCartCount,
+    updateOrderCount,
+    updateWishlistCount,
+  } = useAuth();
 
   const [error, setError] = useState("");
 
@@ -33,7 +45,10 @@ export const CartSection = () => {
     if (selectedItemDetails !== null) {
       total1 = (
         selectedItemDetails.price * selectedItemDetails.quantity +
-        selectedItemDetails.price * selectedItemDetails.quantity * 0.05
+        selectedItemDetails.price * selectedItemDetails.quantity * 0.05 -
+        selectedItemDetails.price *
+          selectedItemDetails.quantity *
+          (discountValue / 100)
       ).toFixed(2);
     }
     if (selectedItemDetails?.cartItemId != null) {
@@ -62,6 +77,11 @@ export const CartSection = () => {
 
   const handleSelectItem = async (id: number, quantity: number) => {
     const item = cartItems.find((item) => item.id === id);
+    setIsDiscountApplied(false);
+    setDiscountValue(0);
+    setCode("");
+    setErrorMessage("");
+    setCodeDiscount("");
     if (item) {
       setSelectedItemDetails(item);
     } else {
@@ -124,6 +144,9 @@ export const CartSection = () => {
 
         setCartItems(loadedProducts);
         setTotalPages(response.data.totalPages);
+        updateCartCount();
+        updateOrderCount();
+        updateWishlistCount();
       } catch (error) {
         console.error("Error fetching cart:", error);
         if (axios.isAxiosError(error)) {
@@ -147,6 +170,55 @@ export const CartSection = () => {
     setTotal(totalPrice);
   }, [cartItems]);
 
+  const applyDiscount = async (
+    code: string,
+    productId: number,
+    category: string
+  ) => {
+    try {
+      if (!category) {
+        setErrorMessage("Category is required to apply a discount.");
+        return;
+      }
+
+      const url = `http://localhost:8080/api/discounts/secure/get?code=${code}&productId=${productId}&category=${category}`;
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response data:", response.data);
+      setDiscountValue(response.data.value);
+      setIsDiscountApplied(true);
+      setCodeDiscount(response.data.code);
+      setErrorMessage("");
+    } catch (error) {
+      setCodeDiscount("");
+      setIsDiscountApplied(false);
+      setDiscountValue(0);
+      const axiosError = error as AxiosError;
+      console.error("Full error:", axiosError);
+
+      if (axiosError.response) {
+        const errorData = axiosError.response.data as {
+          code: number;
+          message: string;
+        };
+        if (errorData && errorData.message) {
+          setErrorMessage(errorData.message);
+        } else {
+          setErrorMessage(`Server error: ${axiosError.response.status}`);
+        }
+      } else if (axiosError.request) {
+        setErrorMessage("Network error: Could not connect to the server.");
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
   return (
     <>
@@ -214,27 +286,49 @@ export const CartSection = () => {
             }
             className="checkout-section"
           >
-            <div className="congrats">
-              <p>
-                Congrats! You're eligible for <b>Free Delivery</b>.
-                <p style={{ marginTop: "5px", marginBottom: "0px" }}>
-                  Use code <b>SHUBHO20</b> for 20% discount.
+            {!isDiscountApplied && !errorMessage && (
+              <div className="congrats">
+                <p style={{ color: "green" }}>
+                  Enter valid code to get discount
                 </p>
-              </p>
-            </div>
+              </div>
+            )}
+            {isDiscountApplied && !errorMessage && (
+              <div className="congrats">
+                <p style={{ color: "green" }}>
+                  Code <b>{codeDiscount}</b> applied! ({discountValue}% off)
+                </p>
+              </div>
+            )}{" "}
+            {errorMessage && (
+              <div className="failed">
+                <p>{errorMessage}</p>
+              </div>
+            )}
             <hr className="horizontal" />
             <div className="promocode">
-              <input type="text" placeholder="Promocode" />
-              <button className="promocode-btn">Apply</button>
+              <input
+                type="text"
+                placeholder="Promocode"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <button
+                className="promocode-btn"
+                onClick={() =>
+                  selectedItemDetails &&
+                  applyDiscount(
+                    code,
+                    selectedItemDetails.productId,
+                    selectedItemDetails.category
+                  )
+                }
+              >
+                Apply
+              </button>
             </div>
-            <p style={{ display: "none" }} className="applied">
-              <b>SHUBHO20</b> has been applied!
-            </p>
-            <p style={{ display: "block" }} className="applied2">
-              Enter a valid promocode.
-            </p>
+            <p style={{ display: "none" }} className="applied"></p>
             <hr className="horizontal" />
-
             <div className="money-data">
               <div className="money-1">
                 <p className="total">Sub-Total</p>
@@ -268,25 +362,48 @@ export const CartSection = () => {
                     : 0}
                 </p>
               </div>
+
+              <div className="money-4">
+                <p className="item-tax">Discount</p>
+                <p className="item-tax2">
+                  ({discountValue}%) - $
+                  {selectedItemDetails
+                    ? (
+                        selectedItemDetails.price *
+                        selectedItemDetails.quantity *
+                        (discountValue / 100)
+                      ).toFixed(2)
+                    : 0}
+                </p>
+              </div>
             </div>
             <hr className="horizontal" />
             <div className="money-5">
               <p className="total">Total</p>
               <p style={{ display: "none" }} className="total-price"></p>
               <p style={{ display: "block" }} className="total-price2">
-                $ $
+                $
                 {selectedItemDetails
                   ? (
                       selectedItemDetails.price * selectedItemDetails.quantity +
                       selectedItemDetails.price *
                         selectedItemDetails.quantity *
-                        0.05
+                        0.05 -
+                      (isDiscountApplied
+                        ? (selectedItemDetails.price *
+                            selectedItemDetails.quantity *
+                            discountValue) /
+                          100
+                        : 0)
                     ).toFixed(2)
                   : "0.00"}
               </p>
             </div>
             <div className="payment-btn">
-              <button className="payment" onClick={handlePayment}>
+              <button
+                className="payment"
+                onClick={() => selectedItemDetails && handlePayment()}
+              >
                 Proceed to Payment
               </button>
             </div>

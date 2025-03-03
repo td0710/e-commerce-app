@@ -119,12 +119,6 @@ export const Navbar = () => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <button className="search-btn">
-              <img
-                src={require("../../imgs/search.png")}
-                className="search-img"
-              />
-            </button>
           </div>
         </div>
         <div className="right-section">
@@ -240,19 +234,6 @@ export const Navbar = () => {
           />
           <button className="signout-btn" onClick={logout}>
             Log out
-          </button>
-        </div>
-
-        <div className="search-bar2">
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <button className="search-btn">
-            {/* <img src={search} className="search-img" /> */}
           </button>
         </div>
       </div>

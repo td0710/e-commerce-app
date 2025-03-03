@@ -80,8 +80,7 @@ a {
   outline: none;
   padding-left: 10px;
   border: 2px solid #455b6e;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+  border-radius: 10px;
   background-color: #2d3b47;
   font-family: "Poppins", sans-serif;
 }

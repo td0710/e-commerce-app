@@ -94,36 +94,12 @@ export const List: React.FC<{
       <div className="card-data">
         <p className="card-title">
           {props.product.title.length >= 32
-            ? props.product.title.slice(0, 32) + ".."
+            ? props.product.title.slice(0, 20) + ".."
             : props.product.title}
         </p>
         <div className="category-rating">
           <p className="card-category">{props.product.category}</p>
-          <div className="rating">
-            <img
-              src={require("../../imgs/rating.png")}
-              className="rating-img"
-            />
-            <img
-              src={require("../../imgs/rating.png")}
-              className="rating-img"
-            />
-            <img
-              src={require("../../imgs/rating.png")}
-              className="rating-img"
-            />
-            <img
-              src={require("../../imgs/rating.png")}
-              className="rating-img"
-            />
-            <img
-              src={require("../../imgs/rating.png")}
-              className="rating-img"
-            />
-            <p className="rating-text">
-              {/* {"5 " + "(" + props.product.reviewNumber + " reviews)"} */}
-            </p>
-          </div>
+          <div className="rating"></div>
         </div>
         <div className="card-price">
           <p className="discount">${props.product.price}</p>

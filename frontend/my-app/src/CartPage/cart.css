@@ -20,6 +20,7 @@
 }
 
 .checkout-section {
+  text-overflow: ellipsis;
   display: block;
   margin-top: 20px;
   background-color: white;
@@ -186,11 +187,24 @@
 
 .congrats > p {
   color: #013d01;
+  width: 332px;
+  height: 50px;
   font-family: "Poppins";
   padding: 8px;
   border-radius: 6px;
   font-size: 15px;
   background-color: #0cd80c62;
+}
+
+.failed > p {
+  color: #013d01;
+  height: 50px;
+  width: 332px;
+  font-family: "Poppins";
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #ff9999;
 }
 
 .applied,

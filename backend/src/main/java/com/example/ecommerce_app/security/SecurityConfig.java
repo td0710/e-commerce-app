@@ -46,7 +46,7 @@ public class SecurityConfig {
                                 requestMatchers("/api/products/secure/**",
                                         "/api/wishlists/secure/**",
                                         "/api/carts/secure/**","/api/shippingdetails/secure/**",
-                                        "/api/payment/secure/**").authenticated()
+                                        "/api/payment/secure/**","/api/discounts/secure/**").authenticated()
                                 .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults());
         http.cors(Customizer.withDefaults());

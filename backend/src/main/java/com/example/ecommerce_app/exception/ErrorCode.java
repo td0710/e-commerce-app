@@ -17,6 +17,9 @@ public enum ErrorCode {
     SHIPPING_DETAILS_NOT_FOUND(1008, "Shipping details not found", HttpStatus.NOT_FOUND),
     UNAUTHORIZED(1009, "Unauthorized", HttpStatus.UNAUTHORIZED),
     EXISTED_USER(10010, "User already exists", HttpStatus.CONFLICT),
+    EXPIRE_DISCOUNT(10011, "Expired discount", HttpStatus.CONFLICT),
+    INVALID_CODE(10012, "Invalid code", HttpStatus.NOT_FOUND),
+    NOT_APPLICABLE(10013, "Discount code is not applicable to this product", HttpStatus.BAD_REQUEST);
     ;
 
     private final int code;

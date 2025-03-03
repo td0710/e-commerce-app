@@ -25,10 +25,9 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
         disableHttpMethods(Product.class, config, theUnsupportedActions);
 
-        /* Configure CORS Mapping */
         cors.addMapping(config.getBasePath() + "/**")
                 .allowedOrigins(theAllowedOrigins)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 👈 Fix lỗi
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
