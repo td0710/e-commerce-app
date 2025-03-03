@@ -1,11 +1,13 @@
 import swal from "sweetalert";
 import "./navbar.css";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../Context/useAuth";
 import axios from "axios";
+import ProductModel from "../../models/ProductModel";
 export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState<ProductModel[]>([]);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { wishlistCount, orderCount, cartCount } = useAuth();
@@ -13,22 +15,57 @@ export const Navbar = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
+  const searchResultsRef = useRef<HTMLDivElement>(null); // Kiểu rõ ràng
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      if (searchText.length < 1) {
+        setSearchResults([]);
+        return;
+      }
 
-  // useEffect(() => {
-  //   const fetchTotalItemsWishList = async () => {
-  //     const url = `http://localhost:8080/api/wishlists/secure/total/${userId}`;
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/products/secure/search?query=${searchText}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setSearchResults(response.data.slice(0, 5));
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        setSearchResults([]);
+      }
+    };
 
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     console.log(response.data);
-  //     setTotalItemsWishlist(response.data);
-  //   };
-  //   fetchTotalItemsWishList();
-  // }, []);
+    fetchSearchResults();
+  }, [searchText, token]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target instanceof Node ? event.target : null; // Kiểm tra instanceof
+      if (
+        searchResultsRef.current &&
+        target &&
+        !searchResultsRef.current.contains(target) &&
+        !document.querySelector(".search-bar")?.contains(target)
+      ) {
+        setSearchText("");
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  const handleSearchNavigation = () => {
+    if (searchText) {
+      navigate(`/search?query=${searchText}`);
+    }
+  };
   return (
     <>
       <div className="navbar">
@@ -220,50 +257,56 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {searchText !== "" && (
-        <div
-        //   ref={searchResultsRef}
-        //   className={`search-results ${searchResults.length ? "show" : ""}`}
-        >
-          {/* {searchResults.length > 0 &&
-            searchResults.map((product) => (
-              <div
-                onClick={() => {
-                  if (window.location.href.includes("/payment")) {
-                    swal({
-                      title: "Are you sure?",
-                      text: "Your transaction is still pending!",
-                      icon: "warning",
-                      buttons: ["Cancel", "Yes"],
-                    }).then((willNavigate) => {
-                      if (willNavigate) {
-                        navigate(`/product/${product.id}`);
-                      }
-                    });
-                  } else {
-                    navigate(`/product/${product.id}`);
-                  }
-                }}
-                className="search-results2"
-                key={product.id}
-              >
-                <div className="product-img">
-                  <img src={product.image} className="product-image" />
-                </div>
-                <div className="product-data">
-                  <p className="product-title">
-                    {product.title.length > 50
-                      ? product.title.slice(0, 50) + "..."
-                      : product.title}
-                  </p>
-                  <p className="product-desc">
-                    {product.description.length > 50
-                      ? product.description.slice(0, 50) + "..."
-                      : product.description}
-                  </p>
-                </div>
+      {searchText && (
+        <div ref={searchResultsRef} className="search-results show">
+          {searchResults.length === 0 && (
+            <div className="search-results2">No results found</div>
+          )}
+          {searchResults.map((product) => (
+            <div
+              onClick={() => {
+                if (window.location.href.includes("/payment")) {
+                  swal({
+                    title: "Are you sure?",
+                    text: "Your transaction is still pending!",
+                    icon: "warning",
+                    buttons: ["Cancel", "Yes"],
+                  }).then((willNavigate) => {
+                    if (willNavigate) navigate(`/product/${product.id}`);
+                  });
+                } else {
+                  navigate(
+                    role === "ADMIN"
+                      ? `/admin/product/${product.id}`
+                      : `/product/${product.id}`
+                  );
+                }
+              }}
+              className="search-results2"
+              key={product.id}
+            >
+              <div className="product-img">
+                <img src={product.image} className="product-image" />
               </div>
-            ))} */}
+              <div className="product-data">
+                <p className="product-title">
+                  {product.title.length > 50
+                    ? product.title.slice(0, 50) + "..."
+                    : product.title}
+                </p>
+                <p className="product-desc">
+                  {product.category.length > 50
+                    ? product.category.slice(0, 50) + "..."
+                    : product.category}
+                </p>
+                <p className="product-desc">
+                  {product.description.length > 50
+                    ? product.description.slice(0, 50) + "..."
+                    : product.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </>

@@ -186,5 +186,24 @@ public class ProductServiceImpl implements ProductService {
         return "delete success";
     }
 
+    public List<ProductDto> searchProducts(String query) {
+        List<Product> products = productRepository.searchProducts(query);
 
+        List<ProductDto> result = new ArrayList<>();
+
+        for (Product product : products) {
+
+            ProductDto productDto = new ProductDto(
+                    product.getId(),
+                    product.getTitle(),
+                    product.getDescription(),
+                    product.getCategory(),
+                    product.getPrice(),
+                    product.getImage(),
+                    null
+            );
+            result.add(productDto);
+        }
+        return result;
+    }
 }

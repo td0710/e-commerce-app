@@ -143,12 +143,19 @@ export const ProductsPage = () => {
                 return <List product={items} key={items.id}></List>;
               })}
           </div>
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            paginate={paginate}
-          ></Pagination>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "50px",
+            }}
+          >
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              paginate={paginate}
+            ></Pagination>
+          </div>
         </div>
 
         <Footer />

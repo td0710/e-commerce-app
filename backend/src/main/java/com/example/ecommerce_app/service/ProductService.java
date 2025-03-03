@@ -6,6 +6,8 @@ import com.example.ecommerce_app.entity.Product;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 public interface ProductService {
 
     ProductResponse findAllProducts(int pageNo, int pageSize) ;
@@ -22,4 +24,5 @@ public interface ProductService {
 
     String deleteVariant(Long productId,String size, String color);
 
+    List<ProductDto> searchProducts(String query) ;
 }
