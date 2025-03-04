@@ -98,7 +98,6 @@ export const EditOrderPage = () => {
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
-        background: "#F44336",
       });
     }
   };
@@ -147,7 +146,7 @@ export const EditOrderPage = () => {
         } else {
           setError("Unexpected error!");
         }
-        console.error("Error fetching cart:", error);
+        console.error("Error fetching shipping details:", error);
       }
     };
 

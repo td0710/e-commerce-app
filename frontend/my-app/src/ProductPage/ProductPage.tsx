@@ -101,22 +101,19 @@ export const ProductPage = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 409) {
+      let errorMessage = "An unexpected error occurred!";
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<{ message?: string }>;
+        errorMessage =
+          axiosError.response?.data?.message || "Invalid username or password!";
+      }
+
+      if (axiosError.response) {
         Swal.fire({
           toast: true,
           position: "top",
           icon: "error",
-          title: "Product out of stock",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      } else {
-        Swal.fire({
-          toast: true,
-          position: "top",
-          icon: "error",
-          title: "Something went wrong!",
+          title: `${errorMessage}`,
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,

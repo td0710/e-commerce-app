@@ -15,12 +15,14 @@ public enum ErrorCode {
     PRODUCT_OUT_OF_STOCK(1006, "Product out of stock", HttpStatus.CONFLICT),
     PRODUCT_VARIANT_NOT_FOUND(1007, "Product variant not found", HttpStatus.NOT_FOUND),
     SHIPPING_DETAILS_NOT_FOUND(1008, "Shipping details not found", HttpStatus.NOT_FOUND),
-    UNAUTHORIZED(1009, "Unauthorized", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(1009, "Invalid username or password!", HttpStatus.UNAUTHORIZED),
     EXISTED_USER(10010, "User already exists", HttpStatus.CONFLICT),
     EXPIRE_DISCOUNT(10011, "Expired discount", HttpStatus.CONFLICT),
     INVALID_CODE(10012, "Invalid code", HttpStatus.NOT_FOUND),
-    NOT_APPLICABLE(10013, "Discount code is not applicable to this product", HttpStatus.BAD_REQUEST);
+    NOT_APPLICABLE(10013, "Discount code is not applicable to this product", HttpStatus.BAD_REQUEST),
+    EXISTED_USER_EMAIL(10014, "User email already exists", HttpStatus.CONFLICT),
     ;
+
 
     private final int code;
     private final String message;

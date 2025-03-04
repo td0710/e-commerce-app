@@ -9,6 +9,7 @@ import { useAuth } from "../../Context/useAuth";
 import { UserProfileToken } from "../../models/UserProfileToken";
 import axios from "axios";
 import { OAuthConfig } from "../../configuration/configuration";
+import { toast } from "react-toastify";
 
 type Props = {};
 
@@ -43,8 +44,22 @@ export const Signin = (props: Props) => {
     formState: { errors },
   } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
 
-  const handleLogin = (form: LoginFormsInputs) => {
-    loginUser(form.username, form.password);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleLogin = async (form: LoginFormsInputs) => {
+    try {
+      setLoginError(null); // Reset lỗi trước khi gọi API
+      await loginUser(form.username, form.password);
+    } catch (error) {
+      console.error("Login error:", error);
+
+      let errorMessage = "Login failed. Please try again!";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      setLoginError(errorMessage);
+    }
   };
 
   return (
@@ -67,13 +82,16 @@ export const Signin = (props: Props) => {
           <img src={require("../../imgs/login-BG.png")} className="BG1" />
           <img src={require("../../imgs/login-BG2.png")} className="BG2" />
         </div>
+
         <div className="main-form">
           <div className="login-form">
             <div className="some-text">
               <p className="user">User Login</p>
+
               <p className="user-desc">
                 Hey, Enter your details to get sign in to your account
               </p>
+              {loginError && <p className="error-message">{loginError}</p>}
             </div>
             <form className="user-details" onSubmit={handleSubmit(handleLogin)}>
               <input

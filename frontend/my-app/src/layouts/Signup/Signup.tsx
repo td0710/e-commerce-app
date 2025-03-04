@@ -15,8 +15,15 @@ type RegisterFormsInputs = {
 
 const validation = Yup.object().shape({
   username: Yup.string().required("Username is required"),
-  password: Yup.string().required("Password is required"),
-  email: Yup.string().required("Email is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
+    .matches(/\d/, "Password must contain at least one number"),
+  email: Yup.string()
+    .required("Email is required")
+    .email("Invalid email format")
+    .matches(/@.+\../, "Invalid email format(e.g., example@domain.com)"),
 });
 export const Signup = (props: Props) => {
   const { registerUser } = useAuth();
@@ -34,10 +41,23 @@ export const Signup = (props: Props) => {
   const handleBgLoad = () => {
     setBgLoaded(true);
   };
-  const handleLogin = (form: RegisterFormsInputs) => {
-    console.log(form);
-    registerUser(form.username, form.password, form.email);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+
+  const handleLogin = async (form: RegisterFormsInputs) => {
+    try {
+      await registerUser(form.username, form.password, form.email);
+    } catch (error) {
+      console.error("Register error:", error);
+
+      let errorMessage = "Register failed. Please try again!";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      setRegisterError(errorMessage);
+    }
   };
+
   return (
     <>
       <div className="signin-page">
@@ -73,6 +93,9 @@ export const Signup = (props: Props) => {
               <p className="user-desc">
                 Hey, Enter your details to create a new account
               </p>
+              {registerError && (
+                <p className="error-message">{registerError}</p>
+              )}
             </div>
             <form className="user-details" onSubmit={handleSubmit(handleLogin)}>
               <input

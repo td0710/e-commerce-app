@@ -53,7 +53,7 @@ function Deals() {
       } catch (error) {
         if (axios.isAxiosError(error)) {
           setErrorMessage(
-            error.response?.data?.message || "Could not fetch cart!"
+            error.response?.data?.message || "Could not fetch product cart!"
           );
         } else {
           setErrorMessage("Unexpected error!");

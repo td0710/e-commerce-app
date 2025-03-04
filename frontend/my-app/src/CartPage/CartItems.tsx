@@ -149,7 +149,6 @@ export const CartItems: React.FC<{
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
-        background: "#F44336",
       });
     }
   };

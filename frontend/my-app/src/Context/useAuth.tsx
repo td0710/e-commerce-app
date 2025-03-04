@@ -109,26 +109,37 @@ export const UserProvider = ({ children }: Props) => {
     password: string,
     email: string
   ) => {
-    await signupAPI(username, password, email)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem("token", res?.data.token);
-          const userObj = {
-            userName: res?.data.userName,
-            email: res?.data.email,
-          };
-          localStorage.setItem("user", JSON.stringify(userObj));
-          localStorage.setItem("username", res.data?.userName);
-          localStorage.setItem("email", res.data?.email);
-          localStorage.setItem("role", res.data?.role);
-          setLogin(true);
-          setToken(res?.data.token!);
-          setUser(userObj!);
-          navigate("/homepage");
-        }
-      })
-      .catch((e) => toast.warning("Server error occured"));
+    try {
+      const res = await signupAPI(username, password, email);
+
+      if (!res?.data) {
+        throw new Error("Invalid response from server");
+      }
+
+      const { token, userName, role } = res.data;
+      if (!token) {
+        throw new Error("Token is missing in the response");
+      }
+
+      const userObj = { userName, email };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userObj));
+      localStorage.setItem("username", userName);
+      localStorage.setItem("email", email);
+      localStorage.setItem("role", role);
+
+      setLogin(true);
+      setToken(token);
+      setUser(userObj);
+
+      toast.success("Registration Successful!");
+      navigate("/homepage");
+    } catch (error) {
+      throw error;
+    }
   };
+
   const loginGoogle = async (username: string, password: string) => {
     await signinGoogle(username, password)
       .then((res) => {
@@ -152,29 +163,34 @@ export const UserProvider = ({ children }: Props) => {
       })
       .catch((e) => toast.warning("Server error occured"));
   };
-
   const loginUser = async (username: string, password: string) => {
-    await signinAPI(username, password)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem("token", res?.data.token);
-          const userObj = {
-            userName: res?.data.userName,
-            email: res?.data.email,
-          };
-          console.log(res);
-          localStorage.setItem("user", JSON.stringify(userObj));
-          localStorage.setItem("username", res.data?.userName);
-          localStorage.setItem("email", res.data?.email);
-          localStorage.setItem("role", res.data?.role);
-          setLogin(true);
-          setToken(res?.data.token!);
-          setUser(userObj!);
-          toast.success("Login Success!");
-          navigate("/homepage");
-        }
-      })
-      .catch((e) => toast.warning("Server error occured"));
+    try {
+      const res = await signinAPI(username, password);
+
+      if (!res?.data) {
+        throw new Error("Invalid response from server");
+      }
+
+      const { token, userName, email, role } = res.data;
+      if (!token) {
+        throw new Error("Token is missing in the response");
+      }
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ userName, email }));
+      localStorage.setItem("username", userName);
+      localStorage.setItem("email", email);
+      localStorage.setItem("role", role);
+
+      setLogin(true);
+      setToken(token);
+      setUser({ userName, email });
+
+      toast.success("Login Success!");
+      navigate("/homepage");
+    } catch (error) {
+      throw error;
+    }
   };
 
   const isLoggedIn = () => {

@@ -54,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponseDTO login(LoginDto loginDto) {
         try {
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginDto.getUsername(),
@@ -74,6 +75,9 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseDTO register(RegisterDto registerDto) {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
             throw new AppException(ErrorCode.EXISTED_USER) ;
+        }
+        if(userRepository.findUserIdByEmail(registerDto.getEmail()).isPresent()) {
+            throw new AppException(ErrorCode.EXISTED_USER_EMAIL);
         }
         Users user = new Users();
         user.setUsername(registerDto.getUsername());

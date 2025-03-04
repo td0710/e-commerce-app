@@ -11,7 +11,17 @@ export const signinAPI = async (username: string, password: string) => {
     });
     console.log(data);
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.error("API error:", error);
+
+    if (axios.isAxiosError(error)) {
+      const errorMessage =
+        error.response?.data?.message || "Authentication failed!";
+      throw new Error(errorMessage);
+    }
+
+    throw new Error("An unexpected error occurred!");
+  }
 };
 
 export const signupAPI = async (
@@ -26,7 +36,16 @@ export const signupAPI = async (
       email: email,
     });
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.error("API error:", error);
+
+    if (axios.isAxiosError(error)) {
+      const errorMessage = error.response?.data?.message || "Register failed";
+      throw new Error(errorMessage);
+    }
+
+    throw new Error("An unexpected error occurred!");
+  }
 };
 
 export const signinGoogle = async (username: string, password: string) => {
