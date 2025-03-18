@@ -13,38 +13,48 @@ export const LoadingPage = () => {
   interface CustomJwtPayload extends JwtPayload {
     email: string;
   }
+  const [loginError, setLoginError] = useState<string | null>(null);
+
   useEffect(() => {
     const authenticateGoogle = async () => {
-      console.log(window.location.href);
+      try {
+        const authCodeRegex = /code=([^&]+)/;
+        const isMatch = window.location.href.match(authCodeRegex);
 
-      const authCodeRegex = /code=([^&]+)/;
-      const isMatch = window.location.href.match(authCodeRegex);
+        if (isMatch) {
+          const authCode = decodeURIComponent(`${isMatch[1]}`);
 
-      if (isMatch) {
-        const authCode = decodeURIComponent(`${isMatch[1]}`);
-        console.log(authCode);
+          const url = `https://oauth2.googleapis.com/token`;
 
-        const url = `https://oauth2.googleapis.com/token`;
+          const response = await axios.post(url, {
+            client_id: `${OAuthConfig.clientId}`,
+            client_secret: `${process.env.REACT_APP_GOOGLE_CLIENT_SECRET}`,
+            code: `${authCode}`,
+            grant_type: "authorization_code",
+            redirect_uri: `${OAuthConfig.redirectUri}`,
+          });
 
-        console.log(OAuthConfig.authUri);
+          const idToken = response.data.id_token;
+          const decodedUser = jwtDecode<CustomJwtPayload>(idToken);
+          const username = decodedUser.email;
 
-        const response = await axios.post(url, {
-          client_id: `${OAuthConfig.clientId}`,
-          client_secret: `${process.env.REACT_APP_GOOGLE_CLIENT_SECRET}`,
-          code: `${authCode}`,
-          grant_type: "authorization_code",
-          redirect_uri: `${OAuthConfig.redirectUri}`,
-        });
-        console.log(response);
-        const idToken = response.data.id_token;
-        const decodedUser = jwtDecode<CustomJwtPayload>(idToken);
-        const username = decodedUser.email;
+          await loginGoogle(username, "");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
 
-        loginGoogle(username, "");
+        let errorMessage = "Login failed. Please try again!";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
+
+        setLoginError(errorMessage);
       }
     };
+
     authenticateGoogle();
   }, []);
+
   return (
     <>
       <div className="centered-container">

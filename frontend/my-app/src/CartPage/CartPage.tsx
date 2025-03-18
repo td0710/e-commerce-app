@@ -119,8 +119,6 @@ export const CartSection = () => {
           currentPage - 1
         }&size=${productPerPage}`;
 
-        console.log("Fetching cart for user:", userId);
-
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -190,7 +188,6 @@ export const CartSection = () => {
         },
       });
 
-      console.log("Response data:", response.data);
       setDiscountValue(response.data.value);
       setIsDiscountApplied(true);
       setCodeDiscount(response.data.code);

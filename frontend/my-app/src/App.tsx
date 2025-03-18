@@ -19,6 +19,7 @@ import { AdminProductPage } from "./ProductPage/AdminProduct";
 import { AddProductPage } from "./ProductPage/AddProductPage";
 import AdminProtectedRoute from "./Routes/AdminProtectedRoute";
 import { AdminOrdersPage } from "./OrderPage/AdminOrderPage";
+import ChatPage from "./layouts/Chat/ChatPage";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
                   <Route path="payment" element={<PaymentPage />} />
                   <Route path="vnpay" element={<LoadingPayment />} />
                   <Route path="order" element={<OrderPage />} />
+                  <Route path="chat" element={<ChatPage></ChatPage>} />
                   <Route
                     path="edit-order/:orderId"
                     element={<EditOrderPage />}

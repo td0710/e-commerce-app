@@ -29,8 +29,6 @@ export const List: React.FC<{
           },
         });
 
-        console.log(response.data);
-
         setAdd(response.data);
       } catch (error) {
         console.error(error);
@@ -50,7 +48,6 @@ export const List: React.FC<{
       });
       setAdd(false);
     } else {
-      console.log(localStorage.getItem("token"));
       const url = `http://localhost:8080/api/wishlists/secure/add/${userId}?productId=${props.product.id}`;
       const data = await axios.post(
         url,

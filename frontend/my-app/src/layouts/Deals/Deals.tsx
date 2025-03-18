@@ -26,7 +26,6 @@ function Deals() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        console.log("Fetching products...");
         const url = `http://localhost:8080/api/products/secure/getall?page=0&size=12`;
 
         const response = await axios.get(url, {

@@ -1,4 +1,4 @@
-package com.example.ecommerce_app.security;
+package com.example.ecommerce_app.config;
 
 import lombok.Getter;
 import lombok.Setter;

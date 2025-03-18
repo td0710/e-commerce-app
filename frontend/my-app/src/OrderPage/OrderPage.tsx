@@ -56,7 +56,6 @@ export const Orders = () => {
         setTotalPages(response.data.totalPages);
         window.scrollTo(0, 0);
         isLoading(false);
-        console.log(loadedOrders);
       } catch (error) {
         const axiosError = error as AxiosError;
         console.error("Error fetching orders:", axiosError);

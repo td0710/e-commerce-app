@@ -32,8 +32,6 @@ export const WishlistPage = () => {
           },
         });
 
-        console.log("Fetched data:", response);
-
         const loadedProducts = response.data.content.map((item: any) => ({
           id: item.id,
           title: item.title,
@@ -43,7 +41,6 @@ export const WishlistPage = () => {
           image: item.image,
         }));
         setLoading(false);
-        console.log("Processed products:", loadedProducts);
         setProducts(loadedProducts);
         window.scrollTo(0, 0);
       } catch (error) {

@@ -7,7 +7,7 @@ import com.example.ecommerce_app.dto.response.RefundResponse;
 import com.example.ecommerce_app.dto.response.VNPayRefundResponse;
 import com.example.ecommerce_app.entity.*;
 import com.example.ecommerce_app.repository.*;
-import com.example.ecommerce_app.security.VNPayConfig;
+import com.example.ecommerce_app.config.VNPayConfig;
 import com.example.ecommerce_app.service.PaymentService;
 import com.example.ecommerce_app.util.VNPayUtil;
 import jakarta.servlet.http.HttpServletRequest;

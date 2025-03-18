@@ -11,7 +11,6 @@ import Swal from "sweetalert2";
 export const AdminOrdersPage = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
-  const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +34,7 @@ export const AdminOrdersPage = () => {
         });
 
         if (!result.isConfirmed) {
-          return; // Thoát nếu admin không xác nhận
+          return;
         }
       }
 
@@ -69,6 +68,7 @@ export const AdminOrdersPage = () => {
         timerProgressBar: true,
         position: "top",
       });
+      fetchOrder();
     } catch (e: any) {
       console.error("Error updating order status:", e);
       Swal.fire({
@@ -112,10 +112,8 @@ export const AdminOrdersPage = () => {
         paymentStatus: item.paymentStatus,
       }));
 
-      console.log(response);
       setOrderItems(loadedOrders);
       setTotalPages(response.data.totalPages);
-      window.scrollTo(0, 0);
       isLoading(false);
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -132,10 +130,12 @@ export const AdminOrdersPage = () => {
       isLoading(false);
     }
   };
+
   useEffect(() => {
     fetchOrder();
   }, [currentPage]);
   useEffect(() => {
+    window.scroll(0, 0);
     fetchOrder();
   }, []);
   const paginate = (pageNumer: number) => setCurrentPage(pageNumer);
@@ -168,7 +168,7 @@ export const AdminOrdersPage = () => {
               }
               className="order-head-text"
             >
-              Your Orders
+              Tracking Orders
             </p>
 
             <button

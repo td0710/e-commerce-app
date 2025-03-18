@@ -1,16 +1,11 @@
 import { useState } from "react";
-import React from "react";
 import "./signin.css";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../Context/useAuth";
-import { UserProfileToken } from "../../models/UserProfileToken";
-import axios from "axios";
 import { OAuthConfig } from "../../configuration/configuration";
-import { toast } from "react-toastify";
-
 type Props = {};
 
 type LoginFormsInputs = {
@@ -23,10 +18,7 @@ const handleClick = () => {
   const authUrl = OAuthConfig.authUri;
   const googleClientId = OAuthConfig.clientId;
 
-  console.log(googleClientId);
   const targetUrl = `${authUrl}?client_id=${googleClientId}&redirect_uri=${callbackUrl}&response_type=code&scope=openid%20email%20profile&prompt=consent`;
-
-  console.log(targetUrl);
 
   window.location.href = targetUrl;
 };
@@ -48,7 +40,7 @@ export const Signin = (props: Props) => {
 
   const handleLogin = async (form: LoginFormsInputs) => {
     try {
-      setLoginError(null); // Reset lỗi trước khi gọi API
+      setLoginError(null);
       await loginUser(form.username, form.password);
     } catch (error) {
       console.error("Login error:", error);

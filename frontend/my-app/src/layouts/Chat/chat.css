@@ -1,0 +1,143 @@
+.chat-container {
+  width: 95%;
+  height: 700px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin: 100px auto 0; /* Căn giữa theo chiều ngang */
+  position: relative; /* Giữ trong luồng và không thoát ra ngoài */
+}
+
+.header-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.header-text span {
+  font-weight: 400;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+
+.message.received {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 70%;
+}
+
+.message-inner {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.message.sent .message-inner {
+  background-color: #ff9800;
+  color: white;
+}
+
+.message.received .message-inner {
+  background-color: #e9ecef;
+  color: black;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.message-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.sender {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #adb5bd;
+}
+
+.chat-input-container {
+  width: 97%;
+  padding: 15px;
+  background-color: #fff;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  z-index: 1; /* Đảm bảo không bị footer đè */
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 9999px;
+  outline: none;
+  font-size: 1rem;
+}
+
+.chat-input button {
+  padding: 10px 20px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #ff9800;
+}
+
+/* Đảm bảo ChatBox nằm giữa navbar và footer */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+body > nav,
+body > header {
+  flex-shrink: 0; /* Navbar/Header không bị co lại */
+}
+
+body > footer {
+  flex-shrink: 0; /* Footer không bị co lại */
+}
+
+body > .App {
+  flex: 1; /* Phần còn lại linh hoạt để chứa ChatBox */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

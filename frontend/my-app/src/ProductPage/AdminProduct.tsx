@@ -54,7 +54,6 @@ export const AdminProductPage = () => {
     variantId: number
   ) => {
     const value = e.target.value;
-    console.log(e.target.value);
     setQuantity(value);
     setVariants((prevVariants) =>
       prevVariants.map((variant) =>
@@ -100,7 +99,6 @@ export const AdminProductPage = () => {
       }));
     variantsData.sort((a, b) => a.color.localeCompare(b.color));
     setVariants(variantsData);
-    console.log(1);
   };
   useEffect(() => {
     fetchVariants();
@@ -154,11 +152,6 @@ export const AdminProductPage = () => {
       return;
     }
     const url = `http://localhost:8080/api/products/secure/update/product/quantity/${id}?size=${size}&color=${color}&quantity=${quantity}`;
-
-    console.log(size);
-    console.log(color);
-
-    console.log(quantity);
 
     const response = await axios.put(
       url,

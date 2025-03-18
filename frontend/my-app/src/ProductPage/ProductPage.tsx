@@ -71,7 +71,6 @@ export const ProductPage = () => {
       alert("Please select size and color before adding to cart.");
       return;
     }
-    console.log(product);
 
     const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
 

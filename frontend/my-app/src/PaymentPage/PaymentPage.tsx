@@ -44,8 +44,6 @@ export const PaymentPage = () => {
     setNumber(e.target.value);
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
-  console.log(totalPrice);
-  const notify1 = () => alert("Vui lòng nhập đầy đủ thông tin!");
 
   const [paymentMode, setPaymentMode] = useState("COD");
 
@@ -319,8 +317,6 @@ export const PaymentPage = () => {
                   ) {
                     setDisabled(true);
                     saveShippingDetails();
-                  } else {
-                    notify1();
                   }
                 }}
                 className="save-address"

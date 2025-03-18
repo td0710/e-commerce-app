@@ -1,4 +1,4 @@
-package com.example.ecommerce_app.security;
+package com.example.ecommerce_app.config;
 
 import com.example.ecommerce_app.util.VNPayUtil;
 import org.springframework.context.annotation.Configuration;

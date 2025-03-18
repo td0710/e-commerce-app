@@ -108,7 +108,9 @@ public class AuthServiceImpl implements AuthService {
 
         Optional<Users> user= userRepository.findByUsername(username);
 
+        System.out.println(user);
         if(!user.isPresent()) {
+            System.out.println(1);
             Users user1 = new Users();
             user1.setUsername(username);
             user1.setUser_email(username);
@@ -125,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.findByUsername(username);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.get().getUsername(), null, Collections.singletonList(new SimpleGrantedAuthority("USER"))
+                user.get().getUsername(), null, Collections.singletonList(new SimpleGrantedAuthority(user.get().getRole().getName()))
         );;
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);

@@ -15,7 +15,7 @@ export const Navbar = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
-  const searchResultsRef = useRef<HTMLDivElement>(null); // Kiểu rõ ràng
+  const searchResultsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fetchSearchResults = async () => {
       if (searchText.length < 1) {
@@ -34,7 +34,6 @@ export const Navbar = () => {
           }
         );
         setSearchResults(response.data.slice(0, 5));
-        console.log(response);
       } catch (error) {
         console.error("Error fetching search results:", error);
         setSearchResults([]);
@@ -46,7 +45,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target instanceof Node ? event.target : null; // Kiểm tra instanceof
+      const target = event.target instanceof Node ? event.target : null;
       if (
         searchResultsRef.current &&
         target &&
@@ -122,6 +121,26 @@ export const Navbar = () => {
           </div>
         </div>
         <div className="right-section">
+          <img
+            onClick={() => {
+              if (window.location.href.includes("/payment")) {
+                swal({
+                  title: "Are you sure?",
+                  text: "Your transaction is still pending!",
+                  icon: "warning",
+                  buttons: ["Cancel", "Yes"],
+                }).then((willNavigate) => {
+                  if (willNavigate) {
+                    navigate("/wishlists");
+                  }
+                });
+              } else {
+                navigate("/chat");
+              }
+            }}
+            src={require("../../imgs/chat.png")}
+            className="wishlist"
+          />
           {role === "USER" && (
             <>
               <img

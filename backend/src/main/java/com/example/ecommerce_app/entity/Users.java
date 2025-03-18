@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class Users {
     @Column(name = "user_email")
     private String user_email ;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

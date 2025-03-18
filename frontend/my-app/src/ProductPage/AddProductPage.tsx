@@ -81,7 +81,6 @@ export const AddProductPage = () => {
       variants
     );
     const url = `http://localhost:8080/api/products/secure/create/product`;
-    console.log(newProduct);
     const response = await axios.post(url, newProduct, {
       headers: {
         Authorization: `Bearer ${token}`,

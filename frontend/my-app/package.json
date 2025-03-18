@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
+    "@stomp/stompjs": "^7.0.1",
     "@types/jest": "^29.5.14",
     "axios": "^1.7.9",
     "cra-template-typescript": "1.2.0",
@@ -15,6 +16,7 @@
     "react-router-dom": "^6.8.2",
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.3",
+    "sockjs-client": "^1.6.1",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.17.2",
     "toast": "^0.5.4",
@@ -49,6 +51,7 @@
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "@types/sockjs-client": "^1.5.4"
   }
 }

@@ -49,8 +49,6 @@ export const EditOrderPage = () => {
     setNumber(e.target.value);
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
-  console.log(totalPrice);
-  const notify1 = () => alert("Vui lòng nhập đầy đủ thông tin!");
   const saveShippingDetails = async () => {
     const url = `http://localhost:8080/api/orders/secure/edit/${orderId}`;
     const shippingDetails = {
@@ -168,7 +166,6 @@ export const EditOrderPage = () => {
         }
       );
 
-      console.log(response);
       navigate(`/edit-order/${orderId}`);
     } catch (error) {
       console.error("Error fetching refund data:");
@@ -340,8 +337,6 @@ export const EditOrderPage = () => {
                         !emailError
                       ) {
                         saveShippingDetails();
-                      } else {
-                        notify1();
                       }
                     }}
                     className="save-address"

@@ -62,7 +62,6 @@ export const LoadingPayment = () => {
             },
           }
         );
-        console.log(response);
         navigate("/order");
       } catch (error) {
         console.error("Payment request failed:", error);

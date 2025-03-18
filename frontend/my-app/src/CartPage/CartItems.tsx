@@ -159,8 +159,6 @@ export const CartItems: React.FC<{
       return;
     }
 
-    console.log(props.cartItem);
-
     const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
 
     try {
@@ -217,8 +215,6 @@ export const CartItems: React.FC<{
           },
         });
 
-        console.log(response.data);
-
         setAdd(response.data);
       } catch (error) {
         console.error(error);
@@ -238,7 +234,6 @@ export const CartItems: React.FC<{
       });
       setAdd(false);
     } else {
-      console.log(localStorage.getItem("token"));
       const url = `http://localhost:8080/api/wishlists/secure/add/${userId}?productId=${props.cartItem.productId}`;
       const data = await axios.post(
         url,
@@ -253,8 +248,6 @@ export const CartItems: React.FC<{
       setAdd(true);
     }
     updateWishlistCount();
-
-    console.log("kkk");
   };
 
   return (

@@ -141,28 +141,33 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   const loginGoogle = async (username: string, password: string) => {
-    await signinGoogle(username, password)
-      .then((res) => {
-        if (res) {
-          localStorage.setItem("token", res?.data.token);
-          const userObj = {
-            userName: res?.data.userName,
-            email: res?.data.email,
-          };
-          console.log(res);
-          localStorage.setItem("user", JSON.stringify(userObj));
-          localStorage.setItem("username", res.data?.userName);
-          localStorage.setItem("email", res.data?.email);
-          localStorage.setItem("role", res.data?.role);
-          setLogin(true);
-          setToken(res?.data.token!);
-          setUser(userObj!);
-          toast.success("Login Success!");
-          navigate("/homepage");
-        }
-      })
-      .catch((e) => toast.warning("Server error occured"));
+    try {
+      const res = await signinGoogle(username, password);
+
+      if (res) {
+        localStorage.setItem("token", res?.data.token);
+        const userObj = {
+          userName: res?.data.userName,
+          email: res?.data.email,
+        };
+
+        localStorage.setItem("user", JSON.stringify(userObj));
+        localStorage.setItem("username", res.data?.userName);
+        localStorage.setItem("email", res.data?.email);
+        localStorage.setItem("role", res.data?.role);
+
+        setLogin(true);
+        setToken(res?.data.token!);
+        setUser(userObj!);
+
+        toast.success("Login Success!");
+        navigate("/homepage");
+      }
+    } catch (error) {
+      throw error;
+    }
   };
+
   const loginUser = async (username: string, password: string) => {
     try {
       const res = await signinAPI(username, password);
