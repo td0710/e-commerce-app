@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin("http://localhost:3000")
@@ -60,5 +61,18 @@ public class ChatController {
 
         return ResponseEntity.ok(messages);
 
+    }
+
+    @GetMapping("/get/room")
+    public ResponseEntity<?> getRoom() {
+
+        List<Room> rooms =  roomRepository.findAll();
+
+        for(Room room : rooms) {
+            if(room.getMessageList().size()==0) {
+                rooms.remove(room);
+            }
+        }
+        return ResponseEntity.ok(rooms);
     }
 }

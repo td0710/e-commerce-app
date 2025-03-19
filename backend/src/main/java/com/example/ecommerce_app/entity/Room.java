@@ -26,7 +26,7 @@ public class Room {
         return JsonUtils.fromJsonList(listMessage, Message.class);
     }
 
-    public void addMessage(Message message) {
+        public void addMessage(Message message) {
         List<Message> messages = getMessageList();
         messages.add(message);
         this.listMessage = JsonUtils.toJson(messages);

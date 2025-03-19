@@ -9,7 +9,7 @@ import axios from "axios";
 interface Message {
   sender: string;
   content: string;
-  timeStamp: string;
+  timestamp: string;
 }
 
 const ChatPage: React.FC = () => {
@@ -17,28 +17,26 @@ const ChatPage: React.FC = () => {
   const [stompClient, setStompClient] = useState<CompatClient | null>(null);
   const [input, setInput] = useState<string>("");
   const chatBoxRef = useRef<HTMLDivElement>(null);
-  const currentUser: string = "User2";
+  const currentUser = localStorage?.getItem("username") ?? "Anonymous";
 
   useEffect(() => {
-    const connectWebSocket = () => {
-      const sock = new SockJS(`http://localhost:8080/chat`);
-      const client = Stomp.over(sock);
-      let test;
+    if (stompClient) return;
 
-      client.connect({}, () => {
-        setStompClient(client);
-        client.subscribe(`/topic/room/room_101`, (message) => {
-          const newMessage = JSON.parse(message.body);
-          test = newMessage;
-          console.log(newMessage);
-          setMessages((prev) => [...prev, newMessage]);
-        });
+    const sock = new SockJS(`http://localhost:8080/chat`);
+    const client = Stomp.over(sock);
+
+    client.connect({}, () => {
+      setStompClient(client);
+      client.subscribe(`/topic/room/${currentUser}`, (message) => {
+        const newMessage = JSON.parse(message.body);
+        setMessages((prev) => [...prev, newMessage]);
       });
-      console.log(test);
-    };
+    });
 
-    connectWebSocket();
-  }, []);
+    return () => {
+      client.disconnect();
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -52,27 +50,26 @@ const ChatPage: React.FC = () => {
     const newMessage: Message = {
       sender: currentUser,
       content: input,
-      timeStamp: `123`,
+      timestamp: `123`,
     };
 
     console.log(newMessage);
     stompClient.send(
-      `/app/sendMessage/room_101`,
+      `/app/sendMessage/${currentUser}`,
       {},
       JSON.stringify(newMessage)
     );
-
-    setMessages((prev) => [...prev, newMessage]);
     setInput("");
   };
   useEffect(() => {
     async function loadMessages() {
       try {
         const messages = await axios.get(
-          "http://localhost:8080/room_101/messages"
+          `http://localhost:8080/${currentUser}/messages`
         );
         console.log(messages);
         setMessages(messages.data);
+        console.log("kkk");
       } catch (error) {}
     }
     loadMessages();
@@ -82,24 +79,38 @@ const ChatPage: React.FC = () => {
       <Navbar />
       <div className="chat-container">
         <main ref={chatBoxRef} className="chat-messages">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`message ${
-                message.sender === currentUser ? "sent" : "received"
-              }`}
-            >
-              <div className="message-content">
-                <div className="message-inner">
-                  <div className="message-details">
+          {messages.map((message, index) => {
+            const currentDate = new Date(
+              message.timestamp
+            ).toLocaleDateString();
+            const previousDate =
+              index > 0
+                ? new Date(messages[index - 1].timestamp).toLocaleDateString()
+                : null;
+
+            return (
+              <React.Fragment key={index}>
+                {/* Hiển thị ngày nếu khác ngày trước đó */}
+                {currentDate !== previousDate && (
+                  <div className="chat-date-separator">{currentDate}</div>
+                )}
+
+                <div
+                  className={`message ${
+                    message.sender === currentUser ? "sent" : "received"
+                  }`}
+                >
+                  <div className="message-content">
                     <p className="sender">{message.sender}</p>
                     <p>{message.content}</p>
-                    <p className="timestamp">{message.timeStamp}</p>
+                    <p className="timestamp">
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </React.Fragment>
+            );
+          })}
         </main>
 
         <div className="chat-input-container">
@@ -115,7 +126,6 @@ const ChatPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };
