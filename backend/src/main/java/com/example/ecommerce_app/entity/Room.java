@@ -1,5 +1,6 @@
 package com.example.ecommerce_app.entity;
 
+import com.example.ecommerce_app.dto.response.MessageResponse;
 import com.example.ecommerce_app.util.JsonUtils;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,12 +23,12 @@ public class Room {
     @Column(name = "list_message", columnDefinition = "TEXT")
     private String listMessage;
 
-    public List<Message> getMessageList() {
-        return JsonUtils.fromJsonList(listMessage, Message.class);
+    public List<MessageResponse> getMessageList() {
+        return JsonUtils.fromJsonList(listMessage, MessageResponse.class);
     }
 
-        public void addMessage(Message message) {
-        List<Message> messages = getMessageList();
+        public void addMessage(MessageResponse message) {
+        List<MessageResponse> messages = getMessageList();
         messages.add(message);
         this.listMessage = JsonUtils.toJson(messages);
     }

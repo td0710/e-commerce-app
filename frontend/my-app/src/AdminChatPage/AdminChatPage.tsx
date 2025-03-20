@@ -1,4 +1,3 @@
-// ChatBox.tsx
 import React, { useState, useRef, useEffect } from "react";
 import "./adminchat.css";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
@@ -15,7 +14,7 @@ interface User {
 interface Message {
   sender: string;
   content: string;
-  timestamp: Date;
+  timestamp: string;
 }
 
 const AdminChatPage: React.FC = () => {
@@ -27,9 +26,10 @@ const AdminChatPage: React.FC = () => {
   const currentAdmin: string = "admin";
   const [currentUser, setCurrentUser] = useState("");
   const chatBoxRef = useRef<HTMLDivElement>(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (stompClient) return; // Tránh tạo lại kết nối khi `selectedUser` thay đổi
+    if (stompClient) return;
 
     const sock = new SockJS(`http://localhost:8080/chat`);
     const client = Stomp.over(sock);
@@ -74,7 +74,15 @@ const AdminChatPage: React.FC = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/get/room");
+        const response = await axios.get(
+          "http://localhost:8080/api/chat/secure/get/room",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const formattedUsers: User[] = response.data.map((room: any) => {
           const lastMessage = room.messageList?.at(-1);
           return {
@@ -83,24 +91,33 @@ const AdminChatPage: React.FC = () => {
             sender: lastMessage.sender,
           };
         });
+        console.log(response);
         setUsers(formattedUsers);
       } catch (error) {
-        console.error("Lỗi khi lấy danh sách phòng:", error);
+        console.error(error);
       }
     };
 
     fetchRooms();
   }, []);
-  useEffect(() => {
-    async function loadMessages() {
-      try {
-        const messages = await axios.get(
-          `http://localhost:8080/${selectedUser}/messages`
-        );
-        console.log(messages);
-        setMessages(messages.data);
-      } catch (error) {}
+  async function loadMessages() {
+    try {
+      const messages = await axios.get(
+        `http://localhost:8080/api/chat/secure/${selectedUser}/messages`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(messages);
+      setMessages(messages.data);
+    } catch (error) {
+      console.log(error);
     }
+  }
+  useEffect(() => {
     loadMessages();
   }, [selectedUser]);
   useEffect(() => {
@@ -115,7 +132,7 @@ const AdminChatPage: React.FC = () => {
     const newMessage: Message = {
       sender: currentAdmin,
       content: input,
-      timestamp: new Date(),
+      timestamp: "123",
     };
     stompClient?.send(
       `/app/sendMessage/${selectedUser}`,
@@ -123,7 +140,7 @@ const AdminChatPage: React.FC = () => {
       JSON.stringify(newMessage)
     );
     setInput("");
-    setInput("");
+    loadMessages();
   };
 
   return (
@@ -131,7 +148,7 @@ const AdminChatPage: React.FC = () => {
       <Navbar></Navbar>
       <div className="chat-container-sidebar">
         <div className="chat-sidebar">
-          <h3>Đoạn Chat</h3>
+          <h3>Chat box</h3>
           <ul>
             {users.map((user) => (
               <li
@@ -141,7 +158,7 @@ const AdminChatPage: React.FC = () => {
                 <div className="customer-info">
                   <p className="customer-name">{user.name}</p>
                   <p className="last-message">
-                    {user.sender} :
+                    {user.sender === "admin" ? "you" : user.name} :{" "}
                     {user.lastText.length > 20
                       ? user.lastText.slice(0, 20) + "..."
                       : user.lastText}
@@ -169,7 +186,7 @@ const AdminChatPage: React.FC = () => {
                         <div className="message-details">
                           <p className="sender">
                             {message.sender === "admin"
-                              ? "admin"
+                              ? "you"
                               : message.sender}
                           </p>
                           <p>{message.content}</p>
@@ -194,15 +211,15 @@ const AdminChatPage: React.FC = () => {
                       e.key === "Enter" && sendMessage()
                     }
                     type="text"
-                    placeholder="Nhập tin nhắn..."
+                    placeholder="Enter a message..."
                   />
-                  <button onClick={sendMessage}>Gửi</button>
+                  <button onClick={sendMessage}>Send</button>
                 </div>
               </div>
             </>
           ) : (
             <div className="chat-placeholder">
-              Chọn một cuộc trò chuyện để bắt đầu nhắn tin.
+              Select a conversation to start messaging.
             </div>
           )}
         </div>

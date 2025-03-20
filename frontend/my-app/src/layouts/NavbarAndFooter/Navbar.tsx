@@ -135,11 +135,12 @@ export const Navbar = () => {
                   }
                 });
               } else {
-                navigate("/chat");
+                navigate(role === "USER" ? "/chat" : "/admin/chat");
               }
             }}
             src={require("../../imgs/chat.png")}
             className="wishlist"
+            style={{ marginRight: "20px" }}
           />
           {role === "USER" && (
             <>
@@ -174,7 +175,7 @@ export const Navbar = () => {
               onClick={() => navigate("/admin/orders")}
               src={require("../../imgs/delivery-truck.png")}
               className="orders"
-              style={{ marginRight: "30px" }}
+              style={{ marginRight: "40px", marginLeft: "30px" }}
             />
           )}
           {role === "ADMIN" && (
@@ -241,16 +242,7 @@ export const Navbar = () => {
               </p>
             </>
           )}
-          <img
-            onClick={() => navigate("/account")}
-            src={require("../../imgs/default.png")}
-            className="default"
-            style={
-              role === "ADMIN"
-                ? { marginRight: "50px" }
-                : { marginRight: "20px" }
-            }
-          />
+
           <button className="signout-btn" onClick={logout}>
             Log out
           </button>

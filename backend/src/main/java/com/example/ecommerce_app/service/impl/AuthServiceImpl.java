@@ -1,20 +1,21 @@
 package com.example.ecommerce_app.service.impl;
 
-
+import com.example.ecommerce_app.util.JsonUtils;
 import com.example.ecommerce_app.dto.AuthResponseDTO;
 import com.example.ecommerce_app.dto.LoginDto;
 import com.example.ecommerce_app.dto.RegisterDto;
+import com.example.ecommerce_app.dto.response.MessageResponse;
 import com.example.ecommerce_app.entity.Role;
+import com.example.ecommerce_app.entity.Room;
 import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.exception.AppException;
 import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.RoleRepository;
+import com.example.ecommerce_app.repository.RoomRepository;
 import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.security.JWTGenerator;
 import com.example.ecommerce_app.service.AuthService;
 import com.example.ecommerce_app.service.CartService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,19 +39,22 @@ public class AuthServiceImpl implements AuthService {
     private CartService cartService;
     private PasswordEncoder passwordEncoder;
     private JWTGenerator jwtGenerator;
+    private RoomRepository roomRepository;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            UserRepository userRepository,
                            RoleRepository roleRepository,
                            PasswordEncoder passwordEncoder,
                            JWTGenerator jwtGenerator,
-                           CartService cartService) {
+                           CartService cartService,
+                           RoomRepository roomRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
         this.cartService = cartService;
+        this.roomRepository = roomRepository;
     }
 
     public AuthResponseDTO login(LoginDto loginDto) {
@@ -92,6 +97,14 @@ public class AuthServiceImpl implements AuthService {
 
         cartService.createCart(user.getId());
 
+        Room room = new Room();
+        room.setRoomId(registerDto.getUsername());
+        MessageResponse message = new MessageResponse();
+        message.setContent("Welcome " + registerDto.getUsername() + " to our shop! Feel free to ask any questions here.");
+        message.setSender("admin");
+        message.setTimestamp(LocalDateTime.now().toString());
+        room.setListMessage("["+JsonUtils.toJson(message)+"]");
+        roomRepository.save(room);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(registerDto.getUsername(), registerDto.getPassword())
         );
@@ -110,7 +123,6 @@ public class AuthServiceImpl implements AuthService {
 
         System.out.println(user);
         if(!user.isPresent()) {
-            System.out.println(1);
             Users user1 = new Users();
             user1.setUsername(username);
             user1.setUser_email(username);
@@ -122,6 +134,15 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(user1);
 
             cartService.createCart(user1.getId());
+
+            Room room = new Room();
+            room.setRoomId(loginDto.getUsername());
+            MessageResponse message = new MessageResponse();
+            message.setContent("Welcome " + loginDto.getUsername() + " to our shop! Feel free to ask any questions here.");
+            message.setSender("admin");
+            message.setTimestamp(LocalDateTime.now().toString());
+            room.setListMessage("["+JsonUtils.toJson(message)+"]");
+            roomRepository.save(room);
         }
 
         user = userRepository.findByUsername(username);

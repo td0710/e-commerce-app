@@ -18,7 +18,7 @@ const ChatPage: React.FC = () => {
   const [input, setInput] = useState<string>("");
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const currentUser = localStorage?.getItem("username") ?? "Anonymous";
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (stompClient) return;
 
@@ -65,7 +65,13 @@ const ChatPage: React.FC = () => {
     async function loadMessages() {
       try {
         const messages = await axios.get(
-          `http://localhost:8080/${currentUser}/messages`
+          `http://localhost:8080/api/chat/secure/${currentUser}/messages`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         console.log(messages);
         setMessages(messages.data);
@@ -90,7 +96,6 @@ const ChatPage: React.FC = () => {
 
             return (
               <React.Fragment key={index}>
-                {/* Hiển thị ngày nếu khác ngày trước đó */}
                 {currentDate !== previousDate && (
                   <div className="chat-date-separator">{currentDate}</div>
                 )}
@@ -120,9 +125,9 @@ const ChatPage: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
               type="text"
-              placeholder="Nhập tin nhắn..."
+              placeholder="Enter a message..."
             />
-            <button onClick={sendMessage}>Gửi</button>
+            <button onClick={sendMessage}>Send</button>
           </div>
         </div>
       </div>
