@@ -1,8 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { ChangeEvent, useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../Context/useAuth";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "../PaymentPage/payment.css";
 import "../OrderPage/orders.css";
 import OrderModel from "../models/OrderModel";
@@ -50,7 +49,7 @@ export const EditOrderPage = () => {
   const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
     setEmail(e.target.value);
   const saveShippingDetails = async () => {
-    const url = `http://localhost:8080/api/orders/secure/edit/${orderId}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/orders/secure/edit/${orderId}`;
     const shippingDetails = {
       userId: userId,
       country: Country,
@@ -103,7 +102,7 @@ export const EditOrderPage = () => {
   useEffect(() => {
     const fetchShippingDetails = async () => {
       try {
-        const url = `http://localhost:8080/api/orders/secure/get/${orderId}`;
+        const url = `${process.env.REACT_APP_API_URL}/api/orders/secure/get/${orderId}`;
 
         const response = await axios.get(url, {
           headers: {
@@ -152,7 +151,7 @@ export const EditOrderPage = () => {
   }, [orderId, token]);
 
   const cancelOrder = async () => {
-    const fetchRefund = `http://localhost:8080/api/payment/secure/get/refund/${orderId}`;
+    const fetchRefund = `${process.env.REACT_APP_API_URL}/api/payment/secure/get/refund/${orderId}`;
 
     try {
       const response = await axios.post(

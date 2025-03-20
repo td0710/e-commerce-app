@@ -3,7 +3,6 @@ package com.example.ecommerce_app.controller;
 
 import com.example.ecommerce_app.dto.response.CartResponse;
 import com.example.ecommerce_app.service.impl.CartServiceImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

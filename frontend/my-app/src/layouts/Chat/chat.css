@@ -1,4 +1,3 @@
-/* Tổng thể chat container */
 .chat-container {
   width: 95%;
   height: 840px;
@@ -11,7 +10,6 @@
   position: relative;
 }
 
-/* Header */
 .header-text {
   font-size: 1.25rem;
   font-weight: 600;
@@ -21,7 +19,6 @@
   font-weight: 400;
 }
 
-/* Vùng hiển thị tin nhắn */
 .chat-messages {
   flex: 1;
   padding: 20px;
@@ -31,7 +28,6 @@
   flex-direction: column;
 }
 
-/* Phân tách ngày */
 .chat-date-separator {
   text-align: center;
   margin: 15px 0;
@@ -44,7 +40,6 @@
   align-self: center;
 }
 
-/* Tin nhắn */
 .message {
   display: flex;
   max-width: 75%;
@@ -70,10 +65,9 @@
   word-wrap: break-word;
   position: relative;
   font-size: 0.95rem;
-  max-width: 70%;
+  max-width: 400px;
 }
 
-/* Màu tin nhắn */
 .message.sent .message-content {
   background-color: #ff9800;
   color: white;
@@ -86,14 +80,12 @@
   border-top-left-radius: 0px;
 }
 
-/* Tên người gửi */
 .sender {
   font-weight: bold;
   font-size: 0.9rem;
   margin-bottom: 2px;
 }
 
-/* Giờ tin nhắn */
 .timestamp {
   font-size: 0.75rem;
   color: #666;
@@ -101,7 +93,6 @@
   margin-top: 5px;
 }
 
-/* Ô nhập tin nhắn */
 .chat-input-container {
   width: 97%;
   padding: 15px;
@@ -140,7 +131,6 @@
   background-color: #e68900;
 }
 
-/* Đảm bảo ChatBox nằm giữa navbar và footer */
 body {
   display: flex;
   flex-direction: column;

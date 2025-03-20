@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./popular.css";
 
 import men from "./Img/men.png";
-import women from "./Img/women.png";
 import jwellery from "./Img/jwelery.png";
 import electronics from "./Img/pc.png";
 import perfume from "./Img/perfume-black.png";
 import beauty from "./Img/beauty-black.png";
 import MenWhite from "./Img/men-white.png";
-import WomenWhite from "./Img/women-white.png";
 import JwelleryWhite from "./Img/jwelery-white.png";
 import ElectronicsWhite from "./Img/pc-white.png";
 import perfumeWhite from "./Img/perfume-white.png";

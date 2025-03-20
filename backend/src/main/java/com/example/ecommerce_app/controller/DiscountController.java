@@ -1,9 +1,7 @@
 package com.example.ecommerce_app.controller;
 
-import com.example.ecommerce_app.dto.response.ErrorResponse;
 import com.example.ecommerce_app.entity.Discount;
-import com.example.ecommerce_app.exception.AppException;
-import com.example.ecommerce_app.exception.ErrorCode;
+
 import com.example.ecommerce_app.service.DiscountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

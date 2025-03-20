@@ -1,27 +1,11 @@
 package com.example.ecommerce_app.controller;
 
-import com.example.ecommerce_app.security.JWTGenerator;
-import com.example.ecommerce_app.repository.RoleRepository;
-import com.example.ecommerce_app.repository.UserRepository;
-import com.example.ecommerce_app.dto.AuthResponseDTO;
-import com.example.ecommerce_app.dto.LoginDto;
-import com.example.ecommerce_app.dto.RegisterDto;
-import com.example.ecommerce_app.entity.Role;
-import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.dto.request.AuthResponseDTO;
+import com.example.ecommerce_app.dto.request.LoginDto;
+import com.example.ecommerce_app.dto.request.RegisterDto;
 import com.example.ecommerce_app.service.AuthService;
-import com.example.ecommerce_app.service.CartService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.Optional;
 
 
 @CrossOrigin("http://localhost:3000")

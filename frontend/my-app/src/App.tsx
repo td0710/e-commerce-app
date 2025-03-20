@@ -1,4 +1,3 @@
-import React from "react";
 import "./App.css";
 import { Homepage } from "./layouts/Homepage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -20,7 +19,7 @@ import { AddProductPage } from "./ProductPage/AddProductPage";
 import AdminProtectedRoute from "./Routes/AdminProtectedRoute";
 import { AdminOrdersPage } from "./OrderPage/AdminOrderPage";
 import ChatPage from "./layouts/Chat/ChatPage";
-import AdminChatPage from "./AdminChatPage/AdminChatPage";
+import AdminChatPage from "./layouts/Chat/AdminChatPage";
 
 function App() {
   return (
@@ -47,11 +46,6 @@ function App() {
                   <Route path="order" element={<OrderPage />} />
                   <Route path="chat" element={<ChatPage></ChatPage>} />
                   <Route
-                    path="admin/chat"
-                    element={<AdminChatPage></AdminChatPage>}
-                  />
-
-                  <Route
                     path="edit-order/:orderId"
                     element={<EditOrderPage />}
                   />
@@ -76,6 +70,14 @@ function App() {
                     element={
                       <AdminProtectedRoute>
                         <AdminOrdersPage />
+                      </AdminProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="admin/chat"
+                    element={
+                      <AdminProtectedRoute>
+                        <AdminChatPage />
                       </AdminProtectedRoute>
                     }
                   />

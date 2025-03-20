@@ -83,7 +83,7 @@
 }
 
 .save-address:hover {
-  background-color: rgb(0, 102, 204); /* Xanh biển đậm hơn */
+  background-color: rgb(0, 102, 204); 
   transform: scale(1.06);
 }
 
@@ -92,7 +92,7 @@
   align-items: center;
   cursor: pointer;
   border: none;
-  background-color: rgb(255, 69, 58); /* Màu đỏ cảnh báo */
+  background-color: rgb(255, 69, 58); 
   padding: 8px 15px;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
@@ -114,7 +114,7 @@
   align-items: center;
   cursor: pointer;
   border: none;
-  background-color: rgb(46, 204, 113); /* Màu xanh lá cây */
+  background-color: rgb(46, 204, 113); 
   padding: 8px 15px;
   font-family: "Poppins", sans-serif;
   font-weight: 600;

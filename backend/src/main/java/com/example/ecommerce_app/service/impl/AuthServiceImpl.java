@@ -1,9 +1,9 @@
 package com.example.ecommerce_app.service.impl;
 
 import com.example.ecommerce_app.util.JsonUtils;
-import com.example.ecommerce_app.dto.AuthResponseDTO;
-import com.example.ecommerce_app.dto.LoginDto;
-import com.example.ecommerce_app.dto.RegisterDto;
+import com.example.ecommerce_app.dto.request.AuthResponseDTO;
+import com.example.ecommerce_app.dto.request.LoginDto;
+import com.example.ecommerce_app.dto.request.RegisterDto;
 import com.example.ecommerce_app.dto.response.MessageResponse;
 import com.example.ecommerce_app.entity.Role;
 import com.example.ecommerce_app.entity.Room;

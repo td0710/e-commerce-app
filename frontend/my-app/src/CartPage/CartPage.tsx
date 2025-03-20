@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import Footer from "../layouts/NavbarAndFooter/Footer";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import ProductCartModel from "../models/ProductCartModel";
 import "./cart.css";
@@ -36,7 +36,6 @@ export const CartSection = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [productPerPage] = useState(2);
-  const [totalAmountOfProducts, setTotalAmountOfProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, isLoading] = useState(true);
 
@@ -115,7 +114,9 @@ export const CartSection = () => {
     const fetchCart = async () => {
       try {
         setError("");
-        const url = `http://localhost:8080/api/carts/secure/get/cart/${userId}?page=${
+        const url = `${
+          process.env.REACT_APP_API_URL
+        }/api/carts/secure/get/cart/${userId}?page=${
           currentPage - 1
         }&size=${productPerPage}`;
 
@@ -179,7 +180,7 @@ export const CartSection = () => {
         return;
       }
 
-      const url = `http://localhost:8080/api/discounts/secure/get?code=${code}&productId=${productId}&category=${category}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/discounts/secure/get?code=${code}&productId=${productId}&category=${category}`;
 
       const response = await axios.get(url, {
         headers: {

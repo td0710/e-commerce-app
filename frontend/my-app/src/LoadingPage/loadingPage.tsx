@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import Spinner from "../utils/Spinner";
 import "./loadingpage.css";
 import { useEffect, useState } from "react";
@@ -6,10 +5,10 @@ import axios from "axios";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useAuth } from "../Context/useAuth";
 import { OAuthConfig } from "../configuration/configuration";
+import { error } from "console";
 
 export const LoadingPage = () => {
-  const navigate = useNavigate();
-  const { token, setlogin, loginGoogle } = useAuth();
+  const { loginGoogle } = useAuth();
   interface CustomJwtPayload extends JwtPayload {
     email: string;
   }
@@ -25,7 +24,7 @@ export const LoadingPage = () => {
           const authCode = decodeURIComponent(`${isMatch[1]}`);
 
           const url = `https://oauth2.googleapis.com/token`;
-
+          console.log();
           const response = await axios.post(url, {
             client_id: `${OAuthConfig.clientId}`,
             client_secret: `${process.env.REACT_APP_GOOGLE_CLIENT_SECRET}`,
@@ -57,6 +56,7 @@ export const LoadingPage = () => {
 
   return (
     <>
+      {loginError && <h2 className="auth-text">{loginError}</h2>}
       <div className="centered-container">
         <h2 className="auth-text">Authenticated....</h2>
         <Spinner />

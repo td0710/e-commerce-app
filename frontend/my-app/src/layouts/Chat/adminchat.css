@@ -5,17 +5,16 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: row; /* Đảm bảo bố trí ngang: sidebar bên trái, chat bên phải */
+  flex-direction: row;
   margin: 100px auto 0;
 }
 
-/* Sidebar bên trái */
 .chat-sidebar {
-  width: 300px; /* Chiều rộng cố định cho sidebar */
+  width: 300px;
   background-color: #f1f3f5;
   border-right: 1px solid #ddd;
-  overflow-y: auto; /* Cuộn dọc nếu danh sách dài */
-  flex-shrink: 0; /* Ngăn sidebar bị co lại */
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .chat-sidebar h3 {
@@ -69,9 +68,8 @@
   color: #666;
 }
 
-/* Nội dung chat bên phải */
 .chat-main {
-  flex: 1; /* Chiếm toàn bộ không gian còn lại */
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -121,7 +119,7 @@
   padding: 10px 15px;
   border-radius: 15px;
   font-size: 0.95rem;
-  max-width: 70%;
+  max-width: 400px;
 }
 
 .message.sent .message-content {
@@ -142,6 +140,11 @@
   margin-bottom: 2px;
 }
 
+.message-text {
+  white-space: pre-line;
+  word-wrap: break-word;
+  margin-bottom: 4px;
+}
 .timestamp {
   font-size: 0.75rem;
   color: #666;

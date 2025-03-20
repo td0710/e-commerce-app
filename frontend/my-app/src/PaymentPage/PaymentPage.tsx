@@ -54,7 +54,9 @@ export const PaymentPage = () => {
   };
   const handleCODPayment = async () => {
     try {
-      const url = `http://localhost:8080/api/payment/secure/cod?userId=${userId}&totalPrice=${
+      const url = `${
+        process.env.REACT_APP_API_URL
+      }/api/payment/secure/cod?userId=${userId}&totalPrice=${
         totalPrice * 25500
       }&cartItemId=${cartItems}`;
 
@@ -96,9 +98,9 @@ export const PaymentPage = () => {
 
   const handleCardPayment = async () => {
     try {
-      const url = `http://localhost:8080/api/payment/secure/vn-pay?amount=${
-        totalPrice * 25500
-      }&bankCode=NCB`;
+      const url = `${
+        process.env.REACT_APP_API_URL
+      }/api/payment/secure/vn-pay?amount=${totalPrice * 25500}&bankCode=NCB`;
 
       const response = await axios.get(url, {
         headers: {
@@ -136,7 +138,7 @@ export const PaymentPage = () => {
   useEffect(() => {
     const fetchShippingDetails = async () => {
       try {
-        const url = `http://localhost:8080/api/shippingdetails/secure/get?id=${userId}`;
+        const url = `${process.env.REACT_APP_API_URL}/api/shippingdetails/secure/get?id=${userId}`;
 
         const response = await axios.get(url, {
           headers: {
@@ -172,7 +174,7 @@ export const PaymentPage = () => {
 
   const saveShippingDetails = async () => {
     try {
-      const url = `http://localhost:8080/api/shippingdetails/secure/save?id=${userId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/shippingdetails/secure/save?id=${userId}`;
       const shippingDetails = {
         userId: userId,
         country: Country,

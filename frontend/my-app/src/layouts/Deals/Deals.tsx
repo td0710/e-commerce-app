@@ -1,7 +1,5 @@
 import ProductModel from "../../models/ProductModel";
-import { Navbar } from "../NavbarAndFooter/Navbar";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./lists.css";
 import "./deals.css";
 import Spinner from "../../utils/Spinner";
@@ -26,7 +24,7 @@ function Deals() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const url = `http://localhost:8080/api/products/secure/getall?page=0&size=12`;
+        const url = `${process.env.REACT_APP_API_URL}/api/products/secure/getall?page=0&size=12`;
 
         const response = await axios.get(url, {
           headers: {
@@ -67,7 +65,7 @@ function Deals() {
   return (
     <div className="Deals">
       <p className="deals-head" ref={productRef}>
-        Hot Deals 🔥 {orderCount}
+        Hot Deals 🔥
       </p>
       {loading && <Spinner />}
       {errorMessage && (

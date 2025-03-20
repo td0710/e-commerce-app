@@ -1,7 +1,7 @@
 package com.example.ecommerce_app.service.impl;
 
 
-import com.example.ecommerce_app.dto.ProductDto;
+import com.example.ecommerce_app.dto.request.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
 import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.entity.ProductVariant;
@@ -13,10 +13,8 @@ import com.example.ecommerce_app.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;

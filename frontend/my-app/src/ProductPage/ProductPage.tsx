@@ -9,7 +9,6 @@ import { useAuth } from "../Context/useAuth";
 import Swal from "sweetalert2";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
-  const [variants, setVariants] = useState([]);
 
   const { updateCartCount } = useAuth();
 
@@ -30,8 +29,8 @@ export const ProductPage = () => {
 
   const fetchProduct = async () => {
     try {
-      const url = `http://localhost:8080/api/products/${id}`;
-      const url1 = `http://localhost:8080/api/products/${id}/variants`;
+      const url = `${process.env.REACT_APP_API_URL}/api/products/${id}`;
+      const url1 = `${process.env.REACT_APP_API_URL}/api/products/${id}/variants`;
 
       const [response, response1] = await Promise.all([
         axios.get(url),
@@ -72,7 +71,7 @@ export const ProductPage = () => {
       return;
     }
 
-    const url = `http://localhost:8080/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
 
     try {
       const response = await axios.post(

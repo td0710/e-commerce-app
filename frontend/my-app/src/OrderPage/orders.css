@@ -35,8 +35,8 @@
   margin-top: 25px;
   border-radius: 10px;
   width: 640px;
-  border: none; /* Đảm bảo không có viền */
-  box-shadow: none; /* Loại bỏ viền bóng */
+  border: none;
+  box-shadow: none;
 }
 
 .order-img {
@@ -93,47 +93,40 @@
   width: fit-content;
 }
 
-/* Định dạng chung cho tất cả trạng thái */
 .order-status {
   padding: 10px;
   border-radius: 5px;
-  margin: 0; /* Đảm bảo không có khoảng cách thừa */
+  margin: 0;
 }
 
-/* Trạng thái PENDING */
 .order-pending {
-  background-color: #fff3e0; /* Màu cam nhạt */
-  color: #e65100; /* Màu chữ cam đậm */
+  background-color: #fff3e0;
+  color: #e65100;
 }
 
-/* Trạng thái CONFIRMED */
 .order-confirmed {
-  background-color: #e3f2fd; /* Màu xanh dương nhạt */
-  color: #1976d2; /* Màu chữ xanh dương đậm */
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
-/* Trạng thái SHIPPED */
 .order-shipped {
-  background-color: #f3e5f5; /* Màu tím nhạt */
-  color: #7b1fa2; /* Màu chữ tím đậm */
+  background-color: #f3e5f5;
+  color: #7b1fa2;
 }
 
-/* Trạng thái DELIVERED */
 .order-delivered {
-  background-color: #e8f5e9; /* Màu xanh lá nhạt */
-  color: #2e7d32; /* Màu chữ xanh lá đậm */
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
-/* Trạng thái CANCELLED với REFUNDED */
 .order-refund {
-  background-color: #e0f7fa; /* Màu teal nhạt */
-  color: #00695c; /* Màu chữ teal đậm */
+  background-color: #e0f7fa;
+  color: #00695c;
 }
 
-/* Trạng thái CANCELLED không REFUNDED */
 .order-cancel {
-  background-color: #ffebee; /* Màu đỏ nhạt */
-  color: #c62828; /* Màu chữ đỏ đậm */
+  background-color: #ffebee;
+  color: #c62828;
 }
 
 .order-success {

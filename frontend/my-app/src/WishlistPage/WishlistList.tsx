@@ -17,7 +17,7 @@ export const WhishlistList: React.FC<{
 
   const deleteItem = async () => {
     try {
-      const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
       const data = await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,

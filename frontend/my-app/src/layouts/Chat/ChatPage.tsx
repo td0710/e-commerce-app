@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./chat.css";
 import { Navbar } from "../NavbarAndFooter/Navbar";
-import Footer from "../NavbarAndFooter/Footer";
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import axios from "axios";
@@ -22,7 +21,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (stompClient) return;
 
-    const sock = new SockJS(`http://localhost:8080/chat`);
+    const sock = new SockJS(`${process.env.REACT_APP_API_URL}/chat`);
     const client = Stomp.over(sock);
 
     client.connect({}, () => {
@@ -65,7 +64,7 @@ const ChatPage: React.FC = () => {
     async function loadMessages() {
       try {
         const messages = await axios.get(
-          `http://localhost:8080/api/chat/secure/${currentUser}/messages`,
+          `${process.env.REACT_APP_API_URL}/api/chat/secure/${currentUser}/messages`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -106,7 +105,6 @@ const ChatPage: React.FC = () => {
                   }`}
                 >
                   <div className="message-content">
-                    <p className="sender">{message.sender}</p>
                     <p>{message.content}</p>
                     <p className="timestamp">
                       {new Date(message.timestamp).toLocaleTimeString()}

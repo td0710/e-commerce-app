@@ -1,7 +1,6 @@
-package com.example.ecommerce_app.dto;
+package com.example.ecommerce_app.dto.request;
 
 import com.example.ecommerce_app.entity.ProductVariant;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

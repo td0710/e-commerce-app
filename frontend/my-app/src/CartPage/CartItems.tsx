@@ -35,7 +35,7 @@ export const CartItems: React.FC<{
     props.onSelect(props.cartItem.cartItemId, quantity);
   };
   const increaseItem = async () => {
-    const url = `http://localhost:8080/api/carts/secure/add/cartpage/${userId}/${props.cartItem.id}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/carts/secure/add/cartpage/${userId}/${props.cartItem.id}`;
 
     try {
       const response = await axios.post(
@@ -95,7 +95,7 @@ export const CartItems: React.FC<{
   };
 
   const decreaseItem = async () => {
-    const url = `http://localhost:8080/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/carts/secure/decrease/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
 
     try {
       const response = await axios.post(
@@ -159,7 +159,7 @@ export const CartItems: React.FC<{
       return;
     }
 
-    const url = `http://localhost:8080/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/carts/secure/delete/cart/${userId}/${props.cartItem.id}?size=${props.cartItem.size}&color=${props.cartItem.color}`;
 
     try {
       const response = await axios.delete(url, {
@@ -207,7 +207,7 @@ export const CartItems: React.FC<{
     const checkWishlist = async () => {
       if (!userId || !token) return;
       try {
-        const url = `http://localhost:8080/api/wishlists/secure/check/${userId}?productId=${props.cartItem.productId}`;
+        const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/check/${userId}?productId=${props.cartItem.productId}`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -225,7 +225,7 @@ export const CartItems: React.FC<{
 
   const addControll = async () => {
     if (add) {
-      const url = `http://localhost:8080/api/wishlists/secure/delete/${userId}?productId=${props.cartItem.productId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/delete/${userId}?productId=${props.cartItem.productId}`;
       const data = await axios.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -234,7 +234,7 @@ export const CartItems: React.FC<{
       });
       setAdd(false);
     } else {
-      const url = `http://localhost:8080/api/wishlists/secure/add/${userId}?productId=${props.cartItem.productId}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/add/${userId}?productId=${props.cartItem.productId}`;
       const data = await axios.post(
         url,
         {},

@@ -1,10 +1,8 @@
 package com.example.ecommerce_app.controller;
 
 
-import com.example.ecommerce_app.dto.ProductDto;
+import com.example.ecommerce_app.dto.request.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
-import com.example.ecommerce_app.entity.Product;
-import com.example.ecommerce_app.entity.ProductVariant;
 import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;

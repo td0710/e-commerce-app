@@ -1,6 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
-import com.example.ecommerce_app.dto.ShippingDetailsDto;
+import com.example.ecommerce_app.dto.request.ShippingDetailsDto;
 import com.example.ecommerce_app.entity.ShippingDetails;
 import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.exception.AppException;
@@ -8,10 +8,8 @@ import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.ShippingDetailsRepository;
 import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.service.ShippingDetailsService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Transactional
 @Service

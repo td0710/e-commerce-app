@@ -11,8 +11,6 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { wishlistCount, orderCount, cartCount } = useAuth();
-
-  const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const searchResultsRef = useRef<HTMLDivElement>(null);
@@ -25,7 +23,7 @@ export const Navbar = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/products/secure/search?query=${searchText}`,
+          `${process.env.REACT_APP_API_URL}/api/products/secure/search?query=${searchText}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

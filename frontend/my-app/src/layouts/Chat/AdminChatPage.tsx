@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./adminchat.css";
-import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
+import { Navbar } from "../NavbarAndFooter/Navbar";
 import axios from "axios";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
@@ -31,7 +31,7 @@ const AdminChatPage: React.FC = () => {
   useEffect(() => {
     if (stompClient) return;
 
-    const sock = new SockJS(`http://localhost:8080/chat`);
+    const sock = new SockJS(`${process.env.REACT_APP_API_URL}/chat`);
     const client = Stomp.over(sock);
 
     client.connect({}, () => {
@@ -42,68 +42,72 @@ const AdminChatPage: React.FC = () => {
         client.subscribe(`/topic/room/${selectedUser}`, (message) => {
           const newMessage = JSON.parse(message.body);
           setMessages((prev) => [...prev, newMessage]);
+          fetchRooms();
         });
       }
     });
-
     return () => {
       client.disconnect(() => console.log("STOMP Disconnected"));
     };
   }, []);
 
   useEffect(() => {
-    if (!stompClient || !stompClient.connected) return;
+    if (!stompClient?.connected || users.length === 0) return;
 
-    let subscription: any;
-    if (selectedUser) {
-      subscription = stompClient.subscribe(
-        `/topic/room/${selectedUser}`,
-        (message) => {
-          const newMessage = JSON.parse(message.body);
-          setMessages((prev) => [...prev, newMessage]);
+    users.forEach((user) => {
+      const channel = `/topic/room/${user.name}`;
+      console.log(`Subscribing to ${channel}`);
+      stompClient.subscribe(channel, (message) => {
+        const newMessage = JSON.parse(message.body);
+        console.log(`Received message from ${user.name}:`, newMessage);
+        if (user.name === selectedUser) {
+          setMessages((prev) => {
+            const lastMessage = prev[prev.length - 1];
+            if (
+              !lastMessage ||
+              lastMessage.timestamp !== newMessage.timestamp
+            ) {
+              return [...prev, newMessage];
+            }
+            return prev;
+          });
+        }
+        fetchRooms();
+      });
+    });
+  }, [stompClient, users, selectedUser]);
+  const fetchRooms = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/chat/secure/get/room`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
+      const formattedUsers: User[] = response.data.map((room: any) => {
+        const lastMessage = room.messageList?.at(-1);
+        return {
+          name: room.roomId,
+          lastText: lastMessage ? lastMessage.content : "No messages yet",
+          sender: lastMessage.sender,
+        };
+      });
+      console.log(response);
+      setUsers(formattedUsers);
+    } catch (error) {
+      console.error(error);
     }
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-  }, [selectedUser, stompClient]);
-
+  };
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/chat/secure/get/room",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const formattedUsers: User[] = response.data.map((room: any) => {
-          const lastMessage = room.messageList?.at(-1);
-          return {
-            name: room.roomId,
-            lastText: lastMessage ? lastMessage.content : "No messages yet",
-            sender: lastMessage.sender,
-          };
-        });
-        console.log(response);
-        setUsers(formattedUsers);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchRooms();
   }, []);
   async function loadMessages() {
     try {
       const messages = await axios.get(
-        `http://localhost:8080/api/chat/secure/${selectedUser}/messages`,
+        `${process.env.REACT_APP_API_URL}/api/chat/secure/${selectedUser}/messages`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -140,7 +144,7 @@ const AdminChatPage: React.FC = () => {
       JSON.stringify(newMessage)
     );
     setInput("");
-    loadMessages();
+    fetchRooms();
   };
 
   return (
@@ -174,30 +178,44 @@ const AdminChatPage: React.FC = () => {
             <>
               <div className="chat-header">{selectedUser}</div>
               <main ref={chatBoxRef} className="chat-messages">
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`message ${
-                      message.sender === selectedUser ? "received" : "sent"
-                    }`}
-                  >
-                    <div className="message-content">
-                      <div className="message-inner">
-                        <div className="message-details">
-                          <p className="sender">
-                            {message.sender === "admin"
-                              ? "you"
-                              : message.sender}
-                          </p>
-                          <p>{message.content}</p>
-                          <p className="timestamp">
-                            {new Date(message.timestamp).toLocaleTimeString()}
-                          </p>
+                {messages.map((message, index) => {
+                  const currentDate = new Date(
+                    message.timestamp
+                  ).toLocaleDateString();
+                  const previousDate =
+                    index > 0
+                      ? new Date(
+                          messages[index - 1].timestamp
+                        ).toLocaleDateString()
+                      : null;
+
+                  return (
+                    <React.Fragment key={index}>
+                      {currentDate !== previousDate && (
+                        <div className="chat-date-separator">{currentDate}</div>
+                      )}
+
+                      <div
+                        className={`message ${
+                          message.sender === selectedUser ? "received" : "sent"
+                        }`}
+                      >
+                        <div className="message-content">
+                          <div className="message-inner">
+                            <div className="message-details">
+                              <p className="message-text">{message.content}</p>
+                              <p className="timestamp">
+                                {new Date(
+                                  message.timestamp
+                                ).toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </React.Fragment>
+                  );
+                })}
               </main>
 
               <div className="chat-input-container">

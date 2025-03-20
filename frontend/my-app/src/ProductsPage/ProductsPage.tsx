@@ -12,7 +12,6 @@ import { Category } from "./Category";
 
 export const ProductsPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
-  const [loading, setLoading] = useState(true);
   const [category, setCatergory] = useState("all");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -36,11 +35,15 @@ export const ProductsPage = () => {
       try {
         let url = "";
         if (category === "all") {
-          url = `http://localhost:8080/api/products/secure/getall?page=${
+          url = `${
+            process.env.REACT_APP_API_URL
+          }/api/products/secure/getall?page=${
             currentPage - 1
           }&size=${productPerPage}`;
         } else {
-          url = `http://localhost:8080/api/products/secure/category?page=${
+          url = `${
+            process.env.REACT_APP_API_URL
+          }/api/products/secure/category?page=${
             currentPage - 1
           }&size=${productPerPage}&category=${category}`;
         }
@@ -63,7 +66,6 @@ export const ProductsPage = () => {
 
         setProducts(loadedProducts);
         setTotalPages(response.data.totalPages);
-        setLoading(false);
 
         updateWishlistCount();
         updateCartCount();
@@ -87,8 +89,6 @@ export const ProductsPage = () => {
             "Failed to load products. Please check your internet connection."
           );
         }
-
-        setLoading(false);
       }
     };
 

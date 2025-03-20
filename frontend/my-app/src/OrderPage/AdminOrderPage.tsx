@@ -6,7 +6,6 @@ import axios, { AxiosError } from "axios";
 import "./orders.css";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
-import { AdminProductPage } from "../ProductPage/AdminProduct";
 import Swal from "sweetalert2";
 export const AdminOrdersPage = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
@@ -38,7 +37,7 @@ export const AdminOrdersPage = () => {
         }
       }
 
-      const url = `http://localhost:8080/api/orders/secure/admin/update/status/${orderId}?status=${status}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/orders/secure/admin/update/status/${orderId}?status=${status}`;
       const response = await axios.put(
         url,
         {},
@@ -85,7 +84,9 @@ export const AdminOrdersPage = () => {
 
   const fetchOrder = async () => {
     try {
-      const url = `http://localhost:8080/api/orders/secure/admin/getall?page=${
+      const url = `${
+        process.env.REACT_APP_API_URL
+      }/api/orders/secure/admin/getall?page=${
         currentPage - 1
       }&size=${orderPerPage}`;
       const response = await axios.get(url, {

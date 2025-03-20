@@ -66,7 +66,7 @@ export const AdminProductPage = () => {
 
   const fetchProductDetails = async () => {
     try {
-      const url = `http://localhost:8080/api/products/${id}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/products/${id}`;
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ export const AdminProductPage = () => {
     }
   };
   const fetchVariants = async () => {
-    const url = `http://localhost:8080/api/products/${id}/variants`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/${id}/variants`;
 
     const response = await axios.get(url);
 
@@ -105,7 +105,7 @@ export const AdminProductPage = () => {
   }, []);
 
   const updateProductDetails = async () => {
-    const url = `http://localhost:8080/api/products/secure/update/product/${id}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/update/product/${id}`;
     const updatedProduct = {
       title,
       description,
@@ -151,7 +151,7 @@ export const AdminProductPage = () => {
       });
       return;
     }
-    const url = `http://localhost:8080/api/products/secure/update/product/quantity/${id}?size=${size}&color=${color}&quantity=${quantity}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/update/product/quantity/${id}?size=${size}&color=${color}&quantity=${quantity}`;
 
     const response = await axios.put(
       url,
@@ -177,7 +177,7 @@ export const AdminProductPage = () => {
     setQuantity("");
   };
   const createVariant = async () => {
-    const url = `http://localhost:8080/api/products/secure/create/variant/${id}?size=${size}&color=${color}&quantity=${saveQuantity}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/create/variant/${id}?size=${size}&color=${color}&quantity=${saveQuantity}`;
 
     const response = await axios.post(
       url,
@@ -199,7 +199,7 @@ export const AdminProductPage = () => {
   }, []);
 
   const deleteVariant = async (size: string, color: string) => {
-    const url = `http://localhost:8080/api/products/secure/delete/variant/${id}?size=${size}&color=${color}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/delete/variant/${id}?size=${size}&color=${color}`;
     const response = await axios.delete(url, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -210,7 +210,7 @@ export const AdminProductPage = () => {
   };
 
   const deleteProduct = async () => {
-    const url = `http://localhost:8080/api/products/secure/delete/product/${id}`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/delete/product/${id}`;
 
     const response = await axios.delete(url, {
       headers: {

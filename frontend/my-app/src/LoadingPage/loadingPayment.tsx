@@ -4,15 +4,11 @@ import "./loadingpage.css";
 import axios from "axios";
 
 import { useAuth } from "../Context/useAuth";
-import { useEffect, useRef, useState } from "react";
-import PaymentVNPAYModel from "../models/VNPayPaymentModel";
+import { useEffect, useRef } from "react";
 
 export const LoadingPayment = () => {
-  const [VnpayPayment, setVnpayPayment] = useState<PaymentVNPAYModel | null>(
-    null
-  );
   const navigate = useNavigate();
-  const { token, setlogin, loginGoogle } = useAuth();
+  const { token } = useAuth();
 
   const userId = localStorage.getItem("id");
   const cartItemId = localStorage.getItem("currentItem");
@@ -23,7 +19,7 @@ export const LoadingPayment = () => {
     hasRun.current = true;
 
     const handlePayment = async () => {
-      const url = `http://localhost:8080/api/payment/secure/vn-pay-callback`;
+      const url = `${process.env.REACT_APP_API_URL}/api/payment/secure/vn-pay-callback`;
       const params = new URLSearchParams(window.location.search);
 
       const vnpPayDateString = params.get("vnp_PayDate") || "";

@@ -22,9 +22,9 @@ export const WishlistPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const url = `http://localhost:8080/api/wishlists/secure/${localStorage.getItem(
-          "id"
-        )}?page=0&size=10`;
+        const url = `${
+          process.env.REACT_APP_API_URL
+        }/api/wishlists/secure/${localStorage.getItem("id")}?page=0&size=10`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

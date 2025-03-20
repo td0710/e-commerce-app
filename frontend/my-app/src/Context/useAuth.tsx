@@ -60,7 +60,7 @@ export const UserProvider = ({ children }: Props) => {
     if (!userId || !token) return;
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/wishlists/secure/total/${userId}`,
+        `${process.env.REACT_APP_API_URL}/api/wishlists/secure/total/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -79,7 +79,7 @@ export const UserProvider = ({ children }: Props) => {
     if (!userId || !token) return;
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/orders/secure/total/${userId}`,
+        `${process.env.REACT_APP_API_URL}/api/orders/secure/total/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -94,7 +94,7 @@ export const UserProvider = ({ children }: Props) => {
     if (!userId || !token) return;
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/carts/secure/total/${userId}`,
+        `${process.env.REACT_APP_API_URL}/api/carts/secure/total/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

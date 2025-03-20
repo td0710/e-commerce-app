@@ -1,6 +1,6 @@
 package com.example.ecommerce_app.service;
 
-import com.example.ecommerce_app.dto.MessageDto;
+import com.example.ecommerce_app.dto.request.MessageDto;
 import com.example.ecommerce_app.dto.response.MessageResponse;
 import com.example.ecommerce_app.entity.Room;
 

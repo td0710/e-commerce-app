@@ -1,7 +1,6 @@
 package com.example.ecommerce_app.service;
 
-import com.example.ecommerce_app.dto.ShippingDetailsDto;
-import com.example.ecommerce_app.entity.ShippingDetails;
+import com.example.ecommerce_app.dto.request.ShippingDetailsDto;
 
 public interface ShippingDetailsService {
     ShippingDetailsDto getShippingDetails(Long id);

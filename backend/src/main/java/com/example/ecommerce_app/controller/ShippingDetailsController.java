@@ -1,12 +1,9 @@
 package com.example.ecommerce_app.controller;
 
 
-import com.example.ecommerce_app.dto.ShippingDetailsDto;
-import com.example.ecommerce_app.entity.ShippingDetails;
-import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.dto.request.ShippingDetailsDto;
 import com.example.ecommerce_app.service.ShippingDetailsService;
 import com.example.ecommerce_app.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

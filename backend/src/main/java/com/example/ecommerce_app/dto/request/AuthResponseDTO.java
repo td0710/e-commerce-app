@@ -1,6 +1,5 @@
-package com.example.ecommerce_app.dto;
+package com.example.ecommerce_app.dto.request;
 
-import com.example.ecommerce_app.entity.Role;
 import lombok.Data;
 
 @Data

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { UserProfileToken } from "../models/UserProfileToken";
 
-const api = "http://localhost:8080/api/auth/";
+const api = `${process.env.REACT_APP_API_URL}/api/auth/`;
 
 export const signinAPI = async (username: string, password: string) => {
   try {
@@ -50,7 +50,7 @@ export const signupAPI = async (
 export const signinGoogle = async (username: string, password: string) => {
   try {
     const data = await axios.post<UserProfileToken>(
-      "http://localhost:8080/api/auth/login/google",
+      `${process.env.REACT_APP_API_URL}/api/auth/login/google`,
       {
         username: username,
         password: password,

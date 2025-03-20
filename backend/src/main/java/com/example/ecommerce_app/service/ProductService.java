@@ -1,10 +1,7 @@
 package com.example.ecommerce_app.service;
 
-import com.example.ecommerce_app.dto.ProductDto;
+import com.example.ecommerce_app.dto.request.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
-import com.example.ecommerce_app.entity.Product;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 

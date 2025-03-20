@@ -25,7 +25,9 @@ export const Orders = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const url = `http://localhost:8080/api/orders/secure/getall?userId=${userId}&page=${
+        const url = `${
+          process.env.REACT_APP_API_URL
+        }/api/orders/secure/getall?userId=${userId}&page=${
           currentPage - 1
         }&size=${orderPerPage}`;
         const response = await axios.get(url, {

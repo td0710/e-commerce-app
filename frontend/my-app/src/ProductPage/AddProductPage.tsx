@@ -9,7 +9,6 @@ import Footer from "../layouts/NavbarAndFooter/Footer";
 import axios from "axios";
 import { useAuth } from "../Context/useAuth";
 import { useNavigate } from "react-router-dom";
-import swal from "sweetalert";
 import Swal from "sweetalert2";
 
 export const AddProductPage = () => {
@@ -80,7 +79,7 @@ export const AddProductPage = () => {
       selectedImage,
       variants
     );
-    const url = `http://localhost:8080/api/products/secure/create/product`;
+    const url = `${process.env.REACT_APP_API_URL}/api/products/secure/create/product`;
     const response = await axios.post(url, newProduct, {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,8 +1,8 @@
 package com.example.ecommerce_app.service.impl;
 
 
-import com.example.ecommerce_app.dto.PaymentDto;
-import com.example.ecommerce_app.dto.PaymentVNPAYDto;
+import com.example.ecommerce_app.dto.request.PaymentDto;
+import com.example.ecommerce_app.dto.request.PaymentVNPAYDto;
 import com.example.ecommerce_app.dto.response.RefundResponse;
 import com.example.ecommerce_app.dto.response.VNPayRefundResponse;
 import com.example.ecommerce_app.entity.*;

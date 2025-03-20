@@ -1,6 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
-import com.example.ecommerce_app.dto.ShippingDetailsDto;
+import com.example.ecommerce_app.dto.request.ShippingDetailsDto;
 import com.example.ecommerce_app.dto.response.OrderPageResponse;
 import com.example.ecommerce_app.dto.response.OrderResponse;
 import com.example.ecommerce_app.entity.Order;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service

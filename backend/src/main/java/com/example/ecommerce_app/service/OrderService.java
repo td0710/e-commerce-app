@@ -1,9 +1,8 @@
 package com.example.ecommerce_app.service;
 
-import com.example.ecommerce_app.dto.ShippingDetailsDto;
+import com.example.ecommerce_app.dto.request.ShippingDetailsDto;
 import com.example.ecommerce_app.dto.response.OrderPageResponse;
 import com.example.ecommerce_app.dto.response.OrderResponse;
-import com.example.ecommerce_app.entity.Order;
 
 public interface OrderService {
     OrderPageResponse getAllOrders(Long userId,int page, int size);
