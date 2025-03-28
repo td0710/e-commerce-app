@@ -140,7 +140,7 @@ export const CartSection = () => {
           color: item.color,
           quantity: item.quantity,
         }));
-
+        console.log(response);
         setCartItems(loadedProducts);
         setTotalPages(response.data.totalPages);
         updateCartCount();

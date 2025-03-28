@@ -70,7 +70,7 @@ export const PaymentPage = () => {
           },
         }
       );
-
+      console.log(response);
       updateOrderCount();
 
       if (response.status === 200) {

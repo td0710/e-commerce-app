@@ -2,6 +2,7 @@ package com.example.ecommerce_app.service;
 
 import com.example.ecommerce_app.dto.request.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
+import com.example.ecommerce_app.entity.Product;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface ProductService {
     String deleteVariant(Long productId,String size, String color);
 
     List<ProductDto> searchProducts(String query) ;
+
+    Product findById(Long productId) ;
 }

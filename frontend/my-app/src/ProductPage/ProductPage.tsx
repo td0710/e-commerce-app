@@ -29,11 +29,16 @@ export const ProductPage = () => {
 
   const fetchProduct = async () => {
     try {
-      const url = `${process.env.REACT_APP_API_URL}/api/products/${id}`;
+      const url = `${process.env.REACT_APP_API_URL}/api/products/secure/${id}`;
       const url1 = `${process.env.REACT_APP_API_URL}/api/products/${id}/variants`;
 
       const [response, response1] = await Promise.all([
-        axios.get(url),
+        axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
         axios.get(url1),
       ]);
 

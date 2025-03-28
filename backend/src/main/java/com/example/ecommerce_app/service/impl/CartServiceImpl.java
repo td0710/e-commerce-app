@@ -11,6 +11,8 @@ import com.example.ecommerce_app.exception.AppException;
 import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.*;
 import com.example.ecommerce_app.service.CartService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import java.util.List;
 
 @Transactional
 @Service
+@EnableCaching
 public class CartServiceImpl implements CartService {
 
     private final ProductVariantRepository productVariantRepository;
@@ -54,6 +57,7 @@ public class CartServiceImpl implements CartService {
         return cart.getTotal();
     }
 
+    @Cacheable(value = "carts", key = "#userId + ':' + #page + ':' + #size")
     public CartResponse getCart(Long userId, int page, int size) {
         Cart cart = cartRepository.findByUserId(userId);
 

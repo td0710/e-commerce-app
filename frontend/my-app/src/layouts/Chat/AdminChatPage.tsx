@@ -24,7 +24,6 @@ const AdminChatPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState("");
   const [input, setInput] = useState<string>("");
   const currentAdmin: string = "admin";
-  const [currentUser, setCurrentUser] = useState("");
   const chatBoxRef = useRef<HTMLDivElement>(null);
   const token = localStorage.getItem("token");
 

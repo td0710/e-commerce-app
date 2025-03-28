@@ -10,6 +10,8 @@ import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.repository.ProductVariantRepository;
 import com.example.ecommerce_app.service.ProductService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @Service
 @Transactional
+@EnableCaching
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -31,12 +34,12 @@ public class ProductServiceImpl implements ProductService {
         this.productVariantRepository = productVariantRepository;
     }
 
-
+    @Cacheable(value = "products", key = "#pageNo + ':' + #pageSize")
     public ProductResponse findAllProducts(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Product> products = productRepository.findAll(pageable);
         List<Product> productList = products.getContent();
-
+        System.out.println("123");
         List<ProductDto> content = new ArrayList<>();
         for (Product product : productList) {
 
@@ -64,6 +67,11 @@ public class ProductServiceImpl implements ProductService {
         );
 
         return productResponse;
+    }
+
+    @Cacheable(value = "product", key = "#productId")
+    public Product findById(Long productId) {
+        return productRepository.findById(productId).get();
     }
 
     public ProductResponse findProductsByCategory(int pageNo, int pageSize, String category) {

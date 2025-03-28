@@ -3,6 +3,7 @@ package com.example.ecommerce_app.controller;
 
 import com.example.ecommerce_app.dto.request.ProductDto;
 import com.example.ecommerce_app.dto.response.ProductResponse;
+import com.example.ecommerce_app.entity.Product;
 import com.example.ecommerce_app.repository.ProductRepository;
 import com.example.ecommerce_app.service.impl.ProductServiceImpl;
 import com.example.ecommerce_app.service.impl.ProductVariantServiceImpl;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -32,6 +34,11 @@ public class ProductController {
         return new ResponseEntity<>(productService.findAllProducts(page, size), HttpStatus.OK);
     }
 
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProduct(@PathVariable Long productId) {
+
+        return  ResponseEntity.ok(productService.findById(productId)) ;
+    }
     @GetMapping("/category")
     public ResponseEntity<ProductResponse> getByCategory(@RequestParam int page, @RequestParam int size,
                                                          @RequestParam String category) {
