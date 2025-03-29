@@ -1,5 +1,7 @@
 package com.example.ecommerce_app.service.impl;
 
+import com.example.ecommerce_app.service.RedisService;
+import com.example.ecommerce_app.util.CookieUtil;
 import com.example.ecommerce_app.util.JsonUtils;
 import com.example.ecommerce_app.dto.request.AuthResponseDTO;
 import com.example.ecommerce_app.dto.request.LoginDto;
@@ -16,6 +18,9 @@ import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.security.JWTGenerator;
 import com.example.ecommerce_app.service.AuthService;
 import com.example.ecommerce_app.service.CartService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 @Transactional
 @Service
@@ -40,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
     private JWTGenerator jwtGenerator;
     private RoomRepository roomRepository;
+    private RedisService redisService ;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            UserRepository userRepository,
@@ -47,7 +54,8 @@ public class AuthServiceImpl implements AuthService {
                            PasswordEncoder passwordEncoder,
                            JWTGenerator jwtGenerator,
                            CartService cartService,
-                           RoomRepository roomRepository) {
+                           RoomRepository roomRepository,
+            RedisService redisService){
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -55,9 +63,10 @@ public class AuthServiceImpl implements AuthService {
         this.jwtGenerator = jwtGenerator;
         this.cartService = cartService;
         this.roomRepository = roomRepository;
+        this.redisService = redisService;
     }
 
-    public AuthResponseDTO login(LoginDto loginDto) {
+    public AuthResponseDTO login(LoginDto loginDto,HttpServletResponse response) {
         try {
 
             Authentication authentication = authenticationManager.authenticate(
@@ -67,17 +76,22 @@ public class AuthServiceImpl implements AuthService {
                     ));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtGenerator.generateToken(authentication);
-
+            String refreshToken = jwtGenerator.generateToken(authentication);
             Users user = userRepository.findByUsername(loginDto.getUsername())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-            return new AuthResponseDTO(token, user.getUsername(), user.getUser_email(), user.getRole().getName());
+            CookieUtil.addRefreshTokenCookie(response, refreshToken);
+
+            redisService.saveRefreshToken(user.getUsername(), refreshToken);
+
+            return new AuthResponseDTO(token, refreshToken,
+                    user.getUsername(), user.getUser_email(), user.getRole().getName());
         } catch (BadCredentialsException e) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
     }
 
-    public AuthResponseDTO register(RegisterDto registerDto) {
+    public AuthResponseDTO register(RegisterDto registerDto, HttpServletResponse response) {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
             throw new AppException(ErrorCode.EXISTED_USER) ;
         }
@@ -110,12 +124,17 @@ public class AuthServiceImpl implements AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateToken(authentication);
 
-        return new AuthResponseDTO(token, user.getUsername(), user.getUser_email(),user.getRole().getName());
+        CookieUtil.addRefreshTokenCookie(response, refreshToken);
+
+        redisService.saveRefreshToken(user.getUsername(), refreshToken);
+
+        return new AuthResponseDTO(token, refreshToken, user.getUsername(), user.getUser_email(),user.getRole().getName());
 
     }
 
-    public AuthResponseDTO loginGoogle (LoginDto loginDto) {
+    public AuthResponseDTO loginGoogle (LoginDto loginDto, HttpServletResponse response) {
 
         String username = loginDto.getUsername();
 
@@ -152,10 +171,66 @@ public class AuthServiceImpl implements AuthService {
         );;
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateToken(authentication);
+
+        CookieUtil.addRefreshTokenCookie(response, refreshToken);
+
+        redisService.saveRefreshToken(loginDto.getUsername(), refreshToken);
+
 
         System.out.println("!"+token);
 
-        return new AuthResponseDTO(token,
+        return new AuthResponseDTO(token, refreshToken,
                 user.get().getUsername(),user.get().getUser_email(),user.get().getRole().getName());
+    }
+
+    public AuthResponseDTO refreshToken(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshTokenCookie = CookieUtil.getRefreshTokenFromCookie(request);
+
+        String username = jwtGenerator.getUsernameFromJwt(refreshTokenCookie);
+
+        if (refreshTokenCookie == null) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        else if(redisService.validateRefreshToken(username,refreshTokenCookie)) {
+            redisService.deleteRefreshToken(username);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        System.out.println(refreshTokenCookie+"123");
+
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getUsername(), null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()))
+        );
+
+        System.out.println(username);
+        String newAccessToken = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateToken(authentication);
+
+        redisService.saveRefreshToken(username, refreshToken);
+
+        CookieUtil.addRefreshTokenCookie(response, refreshToken);
+
+        return new AuthResponseDTO(newAccessToken, refreshToken,
+                user.getUsername(), user.getUser_email(), user.getRole().getName());
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
+
+        if (refreshToken != null) {
+                String username = jwtGenerator.getUsernameFromJwt(refreshToken);
+
+                if (username != null) {
+                    redisService.deleteRefreshToken(username);
+                }
+            }
+
+        CookieUtil.clearRefreshTokenCookie(response);
     }
 }

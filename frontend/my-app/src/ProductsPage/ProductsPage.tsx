@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { Navbar } from "../layouts/NavbarAndFooter/Navbar";
 import { Link } from "react-router-dom";
 import Footer from "../layouts/NavbarAndFooter/Footer";
-import { WhishlistList } from "../WishlistPage/WishlistList";
 import ProductModel from "../models/ProductModel";
 import { useAuth } from "../Context/useAuth";
 import { List } from "../layouts/Deals/List";

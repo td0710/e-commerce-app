@@ -4,25 +4,34 @@ import com.example.ecommerce_app.entity.Users;
 import com.example.ecommerce_app.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
 
 @Component
 public class JWTGenerator {
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    @Value("${signerKey}")
+    private String signerKey ;
 
+    private SecretKey key;
 
     private UserRepository userRepository;
 
     public JWTGenerator(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(signerKey.getBytes());
     }
 
     public String generateToken(Authentication authentication) {
@@ -38,7 +47,7 @@ public class JWTGenerator {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expireDate)
-                .signWith(key,SignatureAlgorithm.HS512)
+                .signWith(key)
                 .compact();
         return token;
     }
