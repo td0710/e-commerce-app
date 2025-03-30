@@ -13,4 +13,8 @@ public interface RedisService {
     boolean isBlacklisted(String token) ;
 
     void blacklistToken(String token) ;
+
+    void saveOTP(String mail,String OTP) ;
+
+    boolean checkOTP(String mail,String OTP) ;
 }

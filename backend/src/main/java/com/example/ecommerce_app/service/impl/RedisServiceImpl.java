@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisServiceImpl implements RedisService {
 
     private static final long REFRESH_TOKEN_EXPIRY = 2;
-
+    private static final long OTP_EXPIRY = 5;
     private RedisTemplate<String, String> redisTemplate;
 
     public RedisServiceImpl(RedisTemplate<String, String> redisTemplate) {
@@ -70,14 +70,23 @@ public class RedisServiceImpl implements RedisService {
         }
 
         if (token.startsWith("{\"token\":\"") && token.endsWith("\"}")) {
-            int start = token.indexOf(":\"") + 2;  // Bắt đầu sau "token":"
-            int end = token.length() - 2;         // Trước "}"
+            int start = token.indexOf(":\"") + 2;
+            int end = token.length() - 2;
             return token.substring(start, end);
         }
 
         return token;
     }
 
+    public void saveOTP(String mail, String OTP) {
+        String key = mail + ":" + "OTP";
+        redisTemplate.opsForValue().set(key, OTP, Duration.ofMinutes(OTP_EXPIRY));
+    }
 
+    public boolean checkOTP(String mail, String OTP) {
+
+        String key = mail + ":" + "OTP";
+        return redisTemplate.opsForValue().get(key).equals(OTP);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
+import com.example.ecommerce_app.dto.request.OTPRequest;
 import com.example.ecommerce_app.service.RedisService;
 import com.example.ecommerce_app.util.CookieUtil;
 import com.example.ecommerce_app.util.JsonUtils;
@@ -20,6 +21,10 @@ import com.example.ecommerce_app.service.AuthService;
 import com.example.ecommerce_app.service.CartService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,14 +35,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.UUID;
 
 @Transactional
 @Service
 public class AuthServiceImpl implements AuthService {
+
+
+    private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
@@ -54,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
                            JWTGenerator jwtGenerator,
                            CartService cartService,
                            RoomRepository roomRepository,
-            RedisService redisService){
+            RedisService redisService,JavaMailSender javaMailSender){
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -63,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
         this.cartService = cartService;
         this.roomRepository = roomRepository;
         this.redisService = redisService;
+        this.mailSender = javaMailSender;
     }
 
     public AuthResponseDTO login(LoginDto loginDto,HttpServletResponse response) {
@@ -97,6 +110,7 @@ public class AuthServiceImpl implements AuthService {
         if(userRepository.findUserIdByEmail(registerDto.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.EXISTED_USER_EMAIL);
         }
+
         Users user = new Users();
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
@@ -232,4 +246,37 @@ public class AuthServiceImpl implements AuthService {
 
         CookieUtil.clearRefreshTokenCookie(response);
     }
+
+    public void getOTP(OTPRequest otpRequest) {
+        Optional<Users> users = userRepository.findByUsername(otpRequest.getUsername()) ;
+        Optional<Long> users2 = userRepository.findUserIdByEmail(otpRequest.getToEmail());
+
+        if(users.isPresent() ) {
+            throw new AppException(ErrorCode.EXISTED_USER) ;
+        }
+        if(users2.isPresent()) {
+            throw new AppException(ErrorCode.EXISTED_USER_EMAIL);
+        }
+
+        SecureRandom random = new SecureRandom();
+        int otp = 100000 + random.nextInt(900000);
+        String subject = "Your OTP Code for Thai Duong Ecommerce App";
+        String body = "Your One-Time Password (OTP) is: " + otp + "\nThis code is valid for 5 minutes.";
+
+        System.out.println(fromEmail);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(otpRequest.getToEmail());
+        message.setText(body);
+        message.setSubject(subject);
+
+        redisService.saveOTP(otpRequest.getToEmail(),String.valueOf(otp));
+
+        mailSender.send(message);
+    }
+
+    public boolean checkOTP(String mail,String OTP) {
+        return redisService.checkOTP(mail,OTP);
+    }
+
 }

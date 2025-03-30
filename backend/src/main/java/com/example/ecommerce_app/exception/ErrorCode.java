@@ -16,13 +16,14 @@ public enum ErrorCode {
     PRODUCT_VARIANT_NOT_FOUND(1007, "Product variant not found", HttpStatus.NOT_FOUND),
     SHIPPING_DETAILS_NOT_FOUND(1008, "Shipping details not found", HttpStatus.NOT_FOUND),
     UNAUTHORIZED(1009, "Invalid username or password!", HttpStatus.UNAUTHORIZED),
-    EXISTED_USER(10010, "User already exists", HttpStatus.CONFLICT),
+    EXISTED_USER(10010, "Username already exists", HttpStatus.CONFLICT),
     EXPIRE_DISCOUNT(10011, "Expired discount", HttpStatus.CONFLICT),
     INVALID_CODE(10012, "Invalid code", HttpStatus.NOT_FOUND),
     NOT_APPLICABLE(10013, "Discount code is not applicable to this product", HttpStatus.BAD_REQUEST),
     EXISTED_USER_EMAIL(10014, "User email already exists", HttpStatus.CONFLICT),
     ROOM_NOT_FOUND(10015, "Room not found", HttpStatus.NOT_FOUND),
     EXPIRED_REFRESH_TOKEN(10016, "Refresh token has expired", HttpStatus.UNAUTHORIZED),
+    INVALID_OTP(10017, "Invalid OTP", HttpStatus.CONFLICT),
     ;
 
 

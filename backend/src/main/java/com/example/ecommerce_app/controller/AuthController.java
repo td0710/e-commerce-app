@@ -2,11 +2,13 @@ package com.example.ecommerce_app.controller;
 
 import com.example.ecommerce_app.dto.request.AuthResponseDTO;
 import com.example.ecommerce_app.dto.request.LoginDto;
+import com.example.ecommerce_app.dto.request.OTPRequest;
 import com.example.ecommerce_app.dto.request.RegisterDto;
+import com.example.ecommerce_app.dto.response.CheckOTPResponse;
 import com.example.ecommerce_app.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,4 +62,15 @@ public class AuthController {
         return ResponseEntity.ok("Logout successful") ;
     }
 
+    @PostMapping("/getOTP")
+    public ResponseEntity<?> getOTP(@RequestBody OTPRequest otpRequest) {
+        authService.getOTP(otpRequest);
+
+        return ResponseEntity.ok("OTP successful") ;
+    }
+
+    @PostMapping("/checkOTP")
+    public ResponseEntity<Boolean> checkOTP(@RequestBody CheckOTPResponse checkOTPResponse) {
+        return ResponseEntity.ok(authService.checkOTP(checkOTPResponse.getMail(),checkOTPResponse.getOTP())) ;
+    }
 }
