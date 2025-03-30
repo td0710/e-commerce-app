@@ -9,4 +9,8 @@ public interface RedisService {
     boolean validateRefreshToken(String username, String refreshToken) ;
 
     void deleteRefreshToken(String username) ;
+
+    boolean isBlacklisted(String token) ;
+
+    void blacklistToken(String token) ;
 }

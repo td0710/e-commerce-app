@@ -188,7 +188,6 @@ public class AuthServiceImpl implements AuthService {
         String refreshTokenCookie = CookieUtil.getRefreshTokenFromCookie(request);
 
 
-
         String username = jwtGenerator.getUsernameFromJwt(refreshTokenCookie);
 
 
@@ -221,18 +220,15 @@ public class AuthServiceImpl implements AuthService {
                 user.getUsername(), user.getUser_email(), user.getRole().getName());
     }
 
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(String token, HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = CookieUtil.getRefreshTokenFromCookie(request);
 
         if (refreshToken != null) {
-                String username = jwtGenerator.getUsernameFromJwt(refreshToken);
-
-            System.out.println(username+"123");
-                if (username != null) {
-                    redisService.deleteRefreshToken(username);
-                }
-            }
+            String username = jwtGenerator.getUsernameFromJwt(refreshToken);
+            redisService.blacklistToken(token);
+            redisService.deleteRefreshToken(username) ;
+        }
 
         CookieUtil.clearRefreshTokenCookie(response);
     }

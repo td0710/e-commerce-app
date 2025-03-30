@@ -1,11 +1,13 @@
 package com.example.ecommerce_app.security;
 
 import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.service.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +25,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    RedisService redisService;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,6 +37,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String token = getJWTFromRequest(request);
 
             if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
+                System.out.println(redisService.isBlacklisted(token));
+                System.out.println(token);
+                if (redisService.isBlacklisted(token)) {
+                    System.out.println(redisService.isBlacklisted(token));
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"code\": \"TOKEN_BLACKLISTED\", \"message\": \"Token has been revoked!\"}");
+                    return;
+                }
+
                 String username = tokenGenerator.getUsernameFromJwt(token);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);

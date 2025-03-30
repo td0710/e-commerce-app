@@ -204,7 +204,12 @@ export const UserProvider = ({ children }: Props) => {
 
   const logout = async () => {
     const url = `${process.env.REACT_APP_API_URL}/api/auth/logout`;
-    const response = await axios.post(url, {}, { withCredentials: true });
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      url,
+      { token },
+      { withCredentials: true }
+    );
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");
