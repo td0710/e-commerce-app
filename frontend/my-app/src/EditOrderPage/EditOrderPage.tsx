@@ -6,7 +6,7 @@ import "../PaymentPage/payment.css";
 import "../OrderPage/orders.css";
 import OrderModel from "../models/OrderModel";
 import Swal from "sweetalert2";
-
+import api from "../configuration/axiosconf";
 export const EditOrderPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -60,7 +60,7 @@ export const EditOrderPage = () => {
     };
 
     try {
-      const response = await axios.put(url, shippingDetails, {
+      const response = await api.put(url, shippingDetails, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export const EditOrderPage = () => {
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/orders/secure/get/${orderId}`;
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -154,7 +154,7 @@ export const EditOrderPage = () => {
     const fetchRefund = `${process.env.REACT_APP_API_URL}/api/payment/secure/get/refund/${orderId}`;
 
     try {
-      const response = await axios.post(
+      const response = await api.post(
         fetchRefund,
         {},
         {

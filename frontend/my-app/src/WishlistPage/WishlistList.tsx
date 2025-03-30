@@ -6,6 +6,7 @@ import axios from "axios";
 import { useAuth } from "../Context/useAuth";
 import { NavLink } from "react-router-dom";
 import Swal from "sweetalert2";
+import api from "../configuration/axiosconf";
 export const WhishlistList: React.FC<{
   product: ProductModel;
   onDelete: (id: number) => void;
@@ -18,7 +19,7 @@ export const WhishlistList: React.FC<{
   const deleteItem = async () => {
     try {
       const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
-      const data = await axios.delete(url, {
+      const data = await api.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

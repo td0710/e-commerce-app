@@ -18,7 +18,6 @@ import com.example.ecommerce_app.repository.UserRepository;
 import com.example.ecommerce_app.security.JWTGenerator;
 import com.example.ecommerce_app.service.AuthService;
 import com.example.ecommerce_app.service.CartService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -76,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
                     ));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtGenerator.generateToken(authentication);
-            String refreshToken = jwtGenerator.generateToken(authentication);
+            String refreshToken = jwtGenerator.generateRefreshToken(authentication);
             Users user = userRepository.findByUsername(loginDto.getUsername())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -124,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        String refreshToken = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateRefreshToken(authentication);
 
         CookieUtil.addRefreshTokenCookie(response, refreshToken);
 
@@ -171,7 +170,7 @@ public class AuthServiceImpl implements AuthService {
         );;
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        String refreshToken = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateRefreshToken(authentication);
 
         CookieUtil.addRefreshTokenCookie(response, refreshToken);
 
@@ -188,17 +187,21 @@ public class AuthServiceImpl implements AuthService {
 
         String refreshTokenCookie = CookieUtil.getRefreshTokenFromCookie(request);
 
+
+
         String username = jwtGenerator.getUsernameFromJwt(refreshTokenCookie);
 
+
         if (refreshTokenCookie == null) {
-            throw new AppException(ErrorCode.UNAUTHORIZED);
+            throw new AppException(ErrorCode. EXPIRED_REFRESH_TOKEN);
         }
 
-        else if(redisService.validateRefreshToken(username,refreshTokenCookie)) {
+        if(!redisService.validateRefreshToken(username,refreshTokenCookie)) {
             redisService.deleteRefreshToken(username);
-            throw new AppException(ErrorCode.UNAUTHORIZED);
+            throw new AppException(ErrorCode. EXPIRED_REFRESH_TOKEN);
         }
-        System.out.println(refreshTokenCookie+"123");
+
+
 
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -207,9 +210,8 @@ public class AuthServiceImpl implements AuthService {
                 user.getUsername(), null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()))
         );
 
-        System.out.println(username);
         String newAccessToken = jwtGenerator.generateToken(authentication);
-        String refreshToken = jwtGenerator.generateToken(authentication);
+        String refreshToken = jwtGenerator.generateRefreshToken(authentication);
 
         redisService.saveRefreshToken(username, refreshToken);
 
@@ -226,6 +228,7 @@ public class AuthServiceImpl implements AuthService {
         if (refreshToken != null) {
                 String username = jwtGenerator.getUsernameFromJwt(refreshToken);
 
+            System.out.println(username+"123");
                 if (username != null) {
                     redisService.deleteRefreshToken(username);
                 }

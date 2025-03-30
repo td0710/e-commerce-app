@@ -22,7 +22,7 @@ public enum ErrorCode {
     NOT_APPLICABLE(10013, "Discount code is not applicable to this product", HttpStatus.BAD_REQUEST),
     EXISTED_USER_EMAIL(10014, "User email already exists", HttpStatus.CONFLICT),
     ROOM_NOT_FOUND(10015, "Room not found", HttpStatus.NOT_FOUND),
-
+    EXPIRED_REFRESH_TOKEN(10016, "Refresh token has expired", HttpStatus.UNAUTHORIZED),
     ;
 
 

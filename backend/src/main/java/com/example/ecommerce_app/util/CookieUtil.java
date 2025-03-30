@@ -13,7 +13,7 @@ public class CookieUtil {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge((int) Duration.ofDays(7).toSeconds());
+        cookie.setMaxAge((int) Duration.ofHours(2).toSeconds());
         response.addCookie(cookie);
     }
 

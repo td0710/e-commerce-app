@@ -10,7 +10,7 @@ import axios from "axios";
 import { useAuth } from "../Context/useAuth";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import api from "../configuration/axiosconf";
 export const AddProductPage = () => {
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
@@ -80,7 +80,7 @@ export const AddProductPage = () => {
       variants
     );
     const url = `${process.env.REACT_APP_API_URL}/api/products/secure/create/product`;
-    const response = await axios.post(url, newProduct, {
+    const response = await api.post(url, newProduct, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

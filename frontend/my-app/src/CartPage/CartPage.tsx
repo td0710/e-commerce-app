@@ -9,6 +9,7 @@ import { useAuth } from "../Context/useAuth";
 import { CartItems } from "./CartItems";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
+import api from "../configuration/axiosconf";
 export const CartSection = () => {
   const navigate = useNavigate();
 
@@ -120,7 +121,7 @@ export const CartSection = () => {
           currentPage - 1
         }&size=${productPerPage}`;
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -147,11 +148,21 @@ export const CartSection = () => {
         updateOrderCount();
         updateWishlistCount();
       } catch (error) {
-        console.error("Error fetching cart:", error);
-        if (axios.isAxiosError(error)) {
-          setError(error.response?.data?.message || "Could not fetch cart!");
+        const axiosError = error as AxiosError;
+        console.log(axiosError);
+        console.error("Error fetching cart:", axiosError);
+        if (
+          axiosError.response &&
+          (axiosError.response.data as any).code === "1009"
+        ) {
+          setErrorMessage("");
+        } else if (axiosError.response && axiosError.response.data) {
+          const errorMessage =
+            (axiosError.response.data as any).message ||
+            "Unknown error occurred";
+          setErrorMessage(errorMessage);
         } else {
-          setError("Unexpected error!");
+          setErrorMessage("Failed to load products. Please try again.");
         }
       } finally {
         isLoading(false);

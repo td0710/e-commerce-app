@@ -1,7 +1,6 @@
 package com.example.ecommerce_app.service.impl;
 
 import com.example.ecommerce_app.service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,7 @@ import java.time.Duration;
 @Service
 public class RedisServiceImpl implements RedisService {
 
-    private static final long REFRESH_TOKEN_EXPIRY = 7;
+    private static final long REFRESH_TOKEN_EXPIRY = 2;
 
     private RedisTemplate<String, String> redisTemplate;
 
@@ -20,7 +19,7 @@ public class RedisServiceImpl implements RedisService {
 
     public void saveRefreshToken(String username, String refreshToken) {
         String key = "refresh_token:" + username;
-        redisTemplate.opsForValue().set(key, refreshToken, Duration.ofDays(REFRESH_TOKEN_EXPIRY));
+        redisTemplate.opsForValue().set(key, refreshToken, Duration.ofHours(REFRESH_TOKEN_EXPIRY));
     }
 
     public String getRefreshToken(String username) {

@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { useAuth } from "../Context/useAuth";
 import { useEffect, useRef } from "react";
-
+import api from "../configuration/axiosconf";
 export const LoadingPayment = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -35,7 +35,7 @@ export const LoadingPayment = () => {
         : null;
 
       try {
-        const response = await axios.post(
+        const response = await api.post(
           url,
           {
             userId: userId,

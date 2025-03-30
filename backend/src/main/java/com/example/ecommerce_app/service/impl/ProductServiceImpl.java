@@ -33,13 +33,12 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
         this.productVariantRepository = productVariantRepository;
     }
-
+    
     @Cacheable(value = "products", key = "#pageNo + ':' + #pageSize")
     public ProductResponse findAllProducts(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Product> products = productRepository.findAll(pageable);
         List<Product> productList = products.getContent();
-        System.out.println("123");
         List<ProductDto> content = new ArrayList<>();
         for (Product product : productList) {
 

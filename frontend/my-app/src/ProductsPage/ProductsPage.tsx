@@ -8,7 +8,7 @@ import { useAuth } from "../Context/useAuth";
 import { List } from "../layouts/Deals/List";
 import { Pagination } from "../utils/Pagination";
 import { Category } from "./Category";
-
+import api from "../configuration/axiosconf";
 export const ProductsPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [category, setCatergory] = useState("all");
@@ -47,7 +47,7 @@ export const ProductsPage = () => {
           }&size=${productPerPage}&category=${category}`;
         }
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

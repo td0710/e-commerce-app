@@ -37,6 +37,7 @@ public class AuthController {
 
         return ResponseEntity.ok(authResponseDTO);
     }
+
     @PostMapping("/login/google")
     public ResponseEntity<AuthResponseDTO> loginGoogle(@RequestBody LoginDto loginDto, HttpServletResponse response) {
 
@@ -44,13 +45,12 @@ public class AuthController {
 
         return ResponseEntity.ok(authResponseDTO);
     }
+
     @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponseDTO> refreshToken(HttpServletRequest request,
                                                         HttpServletResponse response) {
         return ResponseEntity.ok(authService.refreshToken(request,response));
     }
-
-
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {

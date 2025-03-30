@@ -9,7 +9,7 @@ import "../layouts/Deals/lists.css";
 import { List } from "../layouts/Deals/List";
 import { WhishlistList } from "./WishlistList";
 import Spinner from "../utils/Spinner";
-
+import api from "../configuration/axiosconf";
 export const WishlistPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ export const WishlistPage = () => {
         const url = `${
           process.env.REACT_APP_API_URL
         }/api/wishlists/secure/${localStorage.getItem("id")}?page=0&size=10`;
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",

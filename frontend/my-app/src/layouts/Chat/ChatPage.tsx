@@ -4,7 +4,7 @@ import { Navbar } from "../NavbarAndFooter/Navbar";
 import SockJS from "sockjs-client";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import axios from "axios";
-
+import api from "../../configuration/axiosconf";
 interface Message {
   sender: string;
   content: string;
@@ -63,7 +63,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     async function loadMessages() {
       try {
-        const messages = await axios.get(
+        const messages = await api.get(
           `${process.env.REACT_APP_API_URL}/api/chat/secure/${currentUser}/messages`,
           {
             headers: {

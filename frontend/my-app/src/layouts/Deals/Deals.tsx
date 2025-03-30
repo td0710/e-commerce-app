@@ -7,8 +7,8 @@ import Footer from "../NavbarAndFooter/Footer";
 import { List } from "./List";
 import { useAuth } from "../../Context/useAuth";
 import { Pagination } from "../../utils/Pagination";
-import axios from "axios";
-
+import axios, { AxiosError } from "axios";
+import api from "../../configuration/axiosconf";
 function Deals() {
   const [products, setProducts] = useState<ProductModel[]>([]);
   const token = localStorage.getItem("token");
@@ -26,7 +26,7 @@ function Deals() {
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/products/secure/getall?page=0&size=12`;
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -48,14 +48,22 @@ function Deals() {
         updateOrderCount();
         updateWishlistCount();
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setErrorMessage(
-            error.response?.data?.message || "Could not fetch product cart!"
-          );
+        const axiosError = error as AxiosError;
+        console.log(axiosError);
+        console.error("Error fetching orders:", axiosError);
+        if (
+          axiosError.response &&
+          (axiosError.response.data as any).code === "1009"
+        ) {
+          setErrorMessage("");
+        } else if (axiosError.response && axiosError.response.data) {
+          const errorMessage =
+            (axiosError.response.data as any).message ||
+            "Unknown error occurred";
+          setErrorMessage(errorMessage);
         } else {
-          setErrorMessage("Unexpected error!");
+          setErrorMessage("Failed to load products. Please try again.");
         }
-        setLoading(false);
       }
     };
 

@@ -5,6 +5,7 @@ import "./deals.css";
 import axios from "axios";
 import { useAuth } from "../../Context/useAuth";
 import { NavLink } from "react-router-dom";
+import api from "../../configuration/axiosconf";
 export const List: React.FC<{
   product: ProductModel;
 }> = (props) => {
@@ -20,7 +21,7 @@ export const List: React.FC<{
       if (!userId || !token) return;
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/check/${userId}?productId=${props.product.id}`;
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -38,7 +39,7 @@ export const List: React.FC<{
   const addControll = async () => {
     if (add) {
       const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/delete/${userId}?productId=${props.product.id}`;
-      const data = await axios.delete(url, {
+      const data = await api.delete(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -47,7 +48,7 @@ export const List: React.FC<{
       setAdd(false);
     } else {
       const url = `${process.env.REACT_APP_API_URL}/api/wishlists/secure/add/${userId}?productId=${props.product.id}`;
-      const data = await axios.post(
+      const data = await api.post(
         url,
         {},
         {

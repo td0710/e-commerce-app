@@ -5,10 +5,14 @@ const api = `${process.env.REACT_APP_API_URL}/api/auth/`;
 
 export const signinAPI = async (username: string, password: string) => {
   try {
-    const data = await axios.post<UserProfileToken>(api + "login", {
-      username: username,
-      password: password,
-    });
+    const data = await axios.post<UserProfileToken>(
+      api + "login",
+      {
+        username: username,
+        password: password,
+      },
+      { withCredentials: true }
+    );
     return data;
   } catch (error) {
     console.error("API error:", error);
@@ -29,11 +33,15 @@ export const signupAPI = async (
   email: string
 ) => {
   try {
-    const data = await axios.post<UserProfileToken>(api + "register", {
-      username: username,
-      password: password,
-      email: email,
-    });
+    const data = await axios.post<UserProfileToken>(
+      api + "register",
+      {
+        username: username,
+        password: password,
+        email: email,
+      },
+      { withCredentials: true }
+    );
     return data;
   } catch (error) {
     console.error("API error:", error);
@@ -54,7 +62,8 @@ export const signinGoogle = async (username: string, password: string) => {
       {
         username: username,
         password: password,
-      }
+      },
+      { withCredentials: true }
     );
     return data;
   } catch (error) {

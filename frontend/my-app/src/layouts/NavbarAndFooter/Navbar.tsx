@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../Context/useAuth";
 import axios from "axios";
 import ProductModel from "../../models/ProductModel";
+import api from "../../configuration/axiosconf";
 export const Navbar = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState<ProductModel[]>([]);
@@ -22,7 +23,7 @@ export const Navbar = () => {
       }
 
       try {
-        const response = await axios.get(
+        const response = await api.get(
           `${process.env.REACT_APP_API_URL}/api/products/secure/search?query=${searchText}`,
           {
             headers: {

@@ -4,7 +4,7 @@ import { Navbar } from "../NavbarAndFooter/Navbar";
 import axios from "axios";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-
+import api from "../../configuration/axiosconf";
 interface User {
   name: string;
   lastText: string;
@@ -77,7 +77,7 @@ const AdminChatPage: React.FC = () => {
   }, [stompClient, users, selectedUser]);
   const fetchRooms = async () => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${process.env.REACT_APP_API_URL}/api/chat/secure/get/room`,
         {
           headers: {
@@ -105,7 +105,7 @@ const AdminChatPage: React.FC = () => {
   }, []);
   async function loadMessages() {
     try {
-      const messages = await axios.get(
+      const messages = await api.get(
         `${process.env.REACT_APP_API_URL}/api/chat/secure/${selectedUser}/messages`,
         {
           headers: {

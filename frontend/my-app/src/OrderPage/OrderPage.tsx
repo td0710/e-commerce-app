@@ -7,6 +7,8 @@ import axios, { AxiosError } from "axios";
 import "./orders.css";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
+import api from "../configuration/axiosconf";
+
 export const Orders = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
@@ -30,7 +32,7 @@ export const Orders = () => {
         }/api/orders/secure/getall?userId=${userId}&page=${
           currentPage - 1
         }&size=${orderPerPage}`;
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -60,18 +62,21 @@ export const Orders = () => {
         isLoading(false);
       } catch (error) {
         const axiosError = error as AxiosError;
+        console.log(axiosError);
         console.error("Error fetching orders:", axiosError);
-
-        if (axiosError.response && axiosError.response.data) {
+        if (
+          axiosError.response &&
+          (axiosError.response.data as any).code === "1009"
+        ) {
+          setErrorMessage("");
+        } else if (axiosError.response && axiosError.response.data) {
           const errorMessage =
             (axiosError.response.data as any).message ||
             "Unknown error occurred";
           setErrorMessage(errorMessage);
         } else {
-          setErrorMessage("Failed to load orders. Please try again.");
+          setErrorMessage("Failed to load products. Please try again.");
         }
-
-        isLoading(false);
       }
     };
 

@@ -7,6 +7,7 @@ import axios, { AxiosError } from "axios";
 import "./productpage.css";
 import { useAuth } from "../Context/useAuth";
 import Swal from "sweetalert2";
+import api from "../configuration/axiosconf";
 export const ProductPage = () => {
   const [product, setProduct] = useState<ProductModel | null>(null);
 
@@ -33,13 +34,13 @@ export const ProductPage = () => {
       const url1 = `${process.env.REACT_APP_API_URL}/api/products/${id}/variants`;
 
       const [response, response1] = await Promise.all([
-        axios.get(url, {
+        api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }),
-        axios.get(url1),
+        api.get(url1),
       ]);
 
       const product = new ProductModel(
@@ -56,7 +57,7 @@ export const ProductPage = () => {
       setProduct(product);
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.error("Error fetching orders:", axiosError);
+      console.error("Error fetching products:", axiosError);
 
       if (axiosError.response && axiosError.response.data) {
         const errorMessage =
@@ -79,7 +80,7 @@ export const ProductPage = () => {
     const url = `${process.env.REACT_APP_API_URL}/api/carts/secure/add/cart/${userId}/${product?.id}?size=${size}&color=${color}`;
 
     try {
-      const response = await axios.post(
+      const response = await api.post(
         url,
         {},
         {

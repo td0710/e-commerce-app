@@ -1,8 +1,11 @@
 package com.example.ecommerce_app.security;
 
 import com.example.ecommerce_app.entity.Users;
+import com.example.ecommerce_app.exception.AppException;
+import com.example.ecommerce_app.exception.ErrorCode;
 import com.example.ecommerce_app.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -29,6 +32,8 @@ public class JWTGenerator {
         this.userRepository = userRepository;
     }
 
+    public static final long JWT_EXPIRATION = 2 * 60 * 60 * 1000;
+
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(signerKey.getBytes());
@@ -51,15 +56,37 @@ public class JWTGenerator {
                 .compact();
         return token;
     }
+    public String generateRefreshToken(Authentication authentication) {
+        String username = authentication.getName();
+        Optional<Users> user = userRepository.findByUsername(username);
+        Long userid = user.get().getId();
+        String userId = userid.toString();
+        Date currentDate = new Date();
+        Date expireDate = new Date(currentDate.getTime() + JWT_EXPIRATION);
+
+        String token = Jwts.builder()
+                .claim("id",userId)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(expireDate)
+                .signWith(key)
+                .compact();
+        return token;
+    }
 
     public String getUsernameFromJwt(String token) {
-        Claims claims = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
-        return claims.getSubject();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException ex) {
+            return ex.getClaims().getSubject();
+        }
     }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -68,7 +95,7 @@ public class JWTGenerator {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was exprired or incorrect",ex.fillInStackTrace());
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
     }
 }

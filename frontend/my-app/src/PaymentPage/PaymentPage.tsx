@@ -6,7 +6,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/useAuth";
 import Swal from "sweetalert2";
-
+import api from "../configuration/axiosconf";
 export const PaymentPage = () => {
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
@@ -60,7 +60,7 @@ export const PaymentPage = () => {
         totalPrice * 25500
       }&cartItemId=${cartItems}`;
 
-      const response = await axios.post(
+      const response = await api.post(
         url,
         {},
         {
@@ -102,7 +102,7 @@ export const PaymentPage = () => {
         process.env.REACT_APP_API_URL
       }/api/payment/secure/vn-pay?amount=${totalPrice * 25500}&bankCode=NCB`;
 
-      const response = await axios.get(url, {
+      const response = await api.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export const PaymentPage = () => {
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/shippingdetails/secure/get?id=${userId}`;
 
-        const response = await axios.get(url, {
+        const response = await api.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -155,17 +155,20 @@ export const PaymentPage = () => {
         setEmail(response.data.email);
       } catch (error: any) {
         console.error("Failed to fetch shipping details:", error);
-        Swal.fire({
-          icon: "error",
-          text:
-            error.response?.data?.message ||
-            "Could not fetch shipping details!",
-          toast: true,
-          position: "top",
-          showConfirmButton: false,
-          timer: 1000,
-          timerProgressBar: true,
-        });
+
+        if (error.response?.status !== 401) {
+          Swal.fire({
+            icon: "error",
+            text:
+              error.response?.data?.message ||
+              "Could not fetch shipping details!",
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 1000,
+            timerProgressBar: true,
+          });
+        }
       }
     };
 
@@ -184,7 +187,7 @@ export const PaymentPage = () => {
         homeAddress: Address,
       };
 
-      const response = await axios.put(url, shippingDetails, {
+      const response = await api.put(url, shippingDetails, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -206,6 +209,24 @@ export const PaymentPage = () => {
         });
       }
     } catch (error: any) {
+      console.log(error.response?.data?.code);
+      if (error.response?.data?.status === 10016) {
+        Swal.fire({
+          icon: "error",
+          title: "Phiên đăng nhập đã hết hạn!",
+          text: "Vui lòng đăng nhập lại!",
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("id");
+          navigate("/login");
+        });
+
+        return;
+      }
+
       console.error("Failed to save shipping details:", error);
       Swal.fire({
         icon: "error",

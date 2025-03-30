@@ -7,6 +7,7 @@ import "./orders.css";
 import { Pagination } from "../utils/Pagination";
 import Spinner from "../utils/Spinner";
 import Swal from "sweetalert2";
+import api from "../configuration/axiosconf";
 export const AdminOrdersPage = () => {
   const [orderItems, setOrderItems] = useState<OrderModel[]>([]);
 
@@ -38,7 +39,7 @@ export const AdminOrdersPage = () => {
       }
 
       const url = `${process.env.REACT_APP_API_URL}/api/orders/secure/admin/update/status/${orderId}?status=${status}`;
-      const response = await axios.put(
+      const response = await api.put(
         url,
         {},
         {
@@ -89,7 +90,7 @@ export const AdminOrdersPage = () => {
       }/api/orders/secure/admin/getall?page=${
         currentPage - 1
       }&size=${orderPerPage}`;
-      const response = await axios.get(url, {
+      const response = await api.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

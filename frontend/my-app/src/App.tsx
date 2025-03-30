@@ -22,12 +22,21 @@ import ChatPage from "./layouts/Chat/ChatPage";
 import AdminChatPage from "./layouts/Chat/AdminChatPage";
 
 function App() {
+  const token = localStorage.getItem("token");
+
   return (
     <BrowserRouter>
       <UserProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/signin" />} />
-          <Route path="/signin" element={<Signin />} />
+          <Route
+            path="/"
+            element={<Navigate to={token ? "/homepage" : "/signin"} />}
+          />
+
+          <Route
+            path="/signin"
+            element={token ? <Navigate to="/homepage" /> : <Signin />}
+          />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/google/callback" element={<LoadingPage />} />
 
@@ -44,11 +53,12 @@ function App() {
                   <Route path="payment" element={<PaymentPage />} />
                   <Route path="vnpay" element={<LoadingPayment />} />
                   <Route path="order" element={<OrderPage />} />
-                  <Route path="chat" element={<ChatPage></ChatPage>} />
+                  <Route path="chat" element={<ChatPage />} />
                   <Route
                     path="edit-order/:orderId"
                     element={<EditOrderPage />}
                   />
+
                   <Route
                     path="admin/product/:id"
                     element={
