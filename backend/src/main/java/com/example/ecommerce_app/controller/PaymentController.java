@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static io.jsonwebtoken.Jwts.header;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://tdecommerce.online")
 @RestController
 @RequestMapping("/api/payment/secure")
 public class PaymentController {

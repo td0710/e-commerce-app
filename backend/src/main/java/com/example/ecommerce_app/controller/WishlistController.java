@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://tdecommerce.online")
 @RestController
 @RequestMapping("/api/wishlists/secure")
 public class WishlistController {

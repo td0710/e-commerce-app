@@ -19,6 +19,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -37,6 +39,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final CartRepository cartRepository;
     private WebClient webClient;
 
+    private static final DateTimeFormatter VNPAY_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     @Autowired
     public void setWebClient(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
@@ -66,6 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(orderId).get();
         Payment payment = paymentRepository.findByOrder(order) ;
 
+
         if(order.getPaymentStatus().equals("PAID")) {
 
 
@@ -82,10 +87,15 @@ public class PaymentServiceImpl implements PaymentService {
             String vnp_Amount = payment.getAmount().toString() ;
             String vnp_OrderInfo = "Refund order id: " + order.getId() ;
             String vnp_TransactionNo = payment.getTransactionNo() ;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-            String vnp_TransactionDate = payment.getPayDate().format(formatter);
             String vnp_CreateBy = "USER" ;
-            String vnp_CreateDate = LocalDateTime.now().format(formatter);
+            ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+            String vnp_TransactionDate = payment.getPayDate()
+                    .atZone(vietnamZone)
+                    .format(formatter);
+
+            String vnp_CreateDate = ZonedDateTime.now(vietnamZone)
+                    .format(formatter);
             String vnp_IpAddr = request.getHeader("X-Forwarded-For");
             if (vnp_IpAddr == null || vnp_IpAddr.isEmpty()) {
                 vnp_IpAddr = request.getRemoteAddr();
@@ -208,7 +218,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     public String VNPAYPayment (PaymentVNPAYDto paymentVNPAYDto) {
 
-
+        ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
+        ZonedDateTime now = ZonedDateTime.now(vietnamZone);
         String status = paymentVNPAYDto.getVnpResponseCode();
 
         Users user = userRepository.findById(paymentVNPAYDto.getUserId()).get();
@@ -228,7 +239,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setShippingContact(shippingDetails.getContactNumber());
         order.setShippingName(shippingDetails.getName());
         order.setShippingEmail(shippingDetails.getEmail());
-        order.setCreatedAt(LocalDateTime.now());
+        order.setCreatedAt(now.toLocalDateTime());
 
         if ("00".equals(status)) {
             order.setOrderStatus("PENDING");
@@ -247,7 +258,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setAmount(order.getTotalPrice() / 100);
         payment.setBankCode(paymentVNPAYDto.getVnpBankCode());
         payment.setCardType(paymentVNPAYDto.getVnpCardType());
-        payment.setPayDate(LocalDateTime.now());
+        payment.setPayDate(now.toLocalDateTime());
         payment.setResponseCode(paymentVNPAYDto.getVnpResponseCode());
         if(paymentVNPAYDto.getVnpResponseCode().equals("00")) {
             payment.setTransactionStatus("SUCCESS");
@@ -255,7 +266,7 @@ public class PaymentServiceImpl implements PaymentService {
         else {
             payment.setTransactionStatus("FAILED");
         }
-        payment.setCreatedAt(LocalDateTime.now());
+        payment.setCreatedAt(now.toLocalDateTime());
 
         paymentRepository.save(payment);
 

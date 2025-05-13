@@ -6,7 +6,7 @@ import com.example.ecommerce_app.service.DiscountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://tdecommerce.online")
 @RestController
 @RequestMapping("/api/discounts/secure")
 public class DiscountController {

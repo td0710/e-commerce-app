@@ -7,7 +7,7 @@ import com.example.ecommerce_app.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://tdecommerce.online")
 @RestController
 @RequestMapping("/api/orders/secure")
 public class OrderController {

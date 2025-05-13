@@ -6,6 +6,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +35,8 @@ public class VNPayConfig {
     @Value("${payment.vnPay.orderType}")
     private String orderType;
 
+    private static final DateTimeFormatter VNPAY_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public Map<String, String> getVNPayConfig() {
         Map<String, String> vnpParamsMap = new HashMap<>();
         vnpParamsMap.put("vnp_Version", this.vnp_Version);
@@ -43,13 +48,11 @@ public class VNPayConfig {
         vnpParamsMap.put("vnp_OrderType", this.orderType);
         vnpParamsMap.put("vnp_Locale", "vn");
         vnpParamsMap.put("vnp_ReturnUrl", this.vnp_ReturnUrl);
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnpCreateDate = formatter.format(calendar.getTime());
-        vnpParamsMap.put("vnp_CreateDate", vnpCreateDate);
-        calendar.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(calendar.getTime());
-        vnpParamsMap.put("vnp_ExpireDate", vnp_ExpireDate);
+        ZoneId vietnamZone = ZoneId.of("Asia/Ho_Chi_Minh");
+        ZonedDateTime now = ZonedDateTime.now(vietnamZone);
+        vnpParamsMap.put("vnp_CreateDate", now.format(VNPAY_DATE_FORMAT));
+        vnpParamsMap.put("vnp_ExpireDate",
+                now.plusMinutes(15).format(VNPAY_DATE_FORMAT));
         return vnpParamsMap;
     }
 }

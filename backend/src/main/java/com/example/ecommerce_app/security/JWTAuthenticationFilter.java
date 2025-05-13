@@ -37,10 +37,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String token = getJWTFromRequest(request);
 
             if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
-                System.out.println(redisService.isBlacklisted(token));
-                System.out.println(token);
                 if (redisService.isBlacklisted(token)) {
-                    System.out.println(redisService.isBlacklisted(token));
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"code\": \"TOKEN_BLACKLISTED\", \"message\": \"Token has been revoked!\"}");

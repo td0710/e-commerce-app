@@ -17,10 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +55,6 @@ public class CartServiceImpl implements CartService {
         return cart.getTotal();
     }
 
-    @Cacheable(value = "carts", key = "#userId + ':' + #page + ':' + #size")
     public CartResponse getCart(Long userId, int page, int size) {
         Cart cart = cartRepository.findByUserId(userId);
 
@@ -116,9 +113,11 @@ public class CartServiceImpl implements CartService {
 
         ProductVariant productVariant = productVariantRepository.findByProduct_IdSizeAndColor(productId,size,color) ;
 
+        
         if (productVariant.getStock() <= 0) {
             throw new AppException(ErrorCode.PRODUCT_OUT_OF_STOCK) ;
         }
+
         cart.setTotal(cart.getTotal()+1);
         cartRepository.save(cart);
         productVariant.setStock(productVariant.getStock()-1);
@@ -133,9 +132,8 @@ public class CartServiceImpl implements CartService {
         newCartItem.setProductVariant(productVariant);
         newCartItem.setQuantity(1);
         newCartItem.setProduct(productRepository.findById(productId).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
-        newCartItem.setCart(cartRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND)));
+        newCartItem.setCart(cartRepository.findByUserId(userId));
         cartItemRepository.save(newCartItem);
-
         return "Added item to the cart";
     }
 
@@ -167,7 +165,7 @@ public class CartServiceImpl implements CartService {
         newCartItem.setProductVariant(productVariant);
         newCartItem.setQuantity(1);
         newCartItem.setProduct(productRepository.findById(productId).orElseThrow(()->new AppException(ErrorCode.PRODUCT_NOT_FOUND)));
-        newCartItem.setCart(cartRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.CART_NOT_FOUND)));
+        newCartItem.setCart(cartRepository.findByUserId(userId));
         cartItemRepository.save(newCartItem);
 
         return "Added item to the cart";
